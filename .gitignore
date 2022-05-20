@@ -1,5 +1,15 @@
+HELP.md
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
 # Compiled class file
 *.class
+
+## Node Modules ##
+module-admin/src/main/resources/static/node_modules
 
 # Log file
 *.log
