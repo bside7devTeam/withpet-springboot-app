@@ -12,6 +12,9 @@ build/
 ## Node Modules ##
 module-admin/src/main/resources/static/node_modules
 
+## Credential
+module-core/src/main/resources/application-credentials.yml
+
 # Log file
 *.log
 
