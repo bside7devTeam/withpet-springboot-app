@@ -9,6 +9,9 @@ build/
 # Compiled class file
 *.class
 
+## Node Modules ##
+module-admin/src/main/resources/static/node_modules
+
 # Log file
 *.log
 
