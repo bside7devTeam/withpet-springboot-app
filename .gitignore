@@ -1,6 +1,7 @@
 # basic git ignore
 HELP.md
 .gradle
+.gradle/**
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -13,7 +14,7 @@ build/
 module-admin/src/main/resources/static/node_modules
 
 ## Credential
-module-core/src/main/resources/application-credentials.yml
+# module-core/src/main/resources/application-credentials.yml
 
 # Log file
 *.log
