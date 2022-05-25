@@ -21,7 +21,7 @@ import javax.persistence.*;
 public class AdministratorRole {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "admin_role_id")
     private Long id;
 
