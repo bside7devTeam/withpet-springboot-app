@@ -21,7 +21,7 @@ import javax.persistence.*;
 public class AdministratorRole {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "admin_role_id")
     private Long id;
 
@@ -30,6 +30,13 @@ public class AdministratorRole {
     private Administrator administrator;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_name")
     private Role role;
+
+    public static AdministratorRole addAdministratorRole(Administrator administrator, Role role) {
+        return AdministratorRole.builder()
+                .administrator(administrator)
+                .role(role)
+                .build();
+    }
 }

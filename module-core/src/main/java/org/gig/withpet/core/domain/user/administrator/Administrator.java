@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.user.AbstractUser;
+import org.gig.withpet.core.domain.user.UserStatus;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 public class Administrator extends AbstractUser {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "admin_id")
     private Long id;
 
@@ -43,5 +44,18 @@ public class Administrator extends AbstractUser {
     @Override
     public Set<Role> getRoles() {
         return administratorRoles.stream().map(AdministratorRole::getRole).collect(Collectors.toSet());
+    }
+
+    public static Administrator initAdministrator(String username, String password, String name) {
+        return Administrator.builder()
+                .username(username)
+                .password(password)
+                .name(name)
+                .status(UserStatus.NORMAL)
+                .build();
+    }
+
+    public void addRole(AdministratorRole role) {
+        this.administratorRoles.add(role);
     }
 }

@@ -15,16 +15,9 @@ import java.io.Serializable;
 @Getter @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class Role extends BaseTimeEntity implements Serializable {
-
-    @Transient
-    private static final long serialVersionUID = 1L;
+public class Role extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "role_id")
-    private Long id;
-
     @Column(nullable = false, unique = true)
     private String name;
 
@@ -33,4 +26,12 @@ public class Role extends BaseTimeEntity implements Serializable {
 
     @Builder.Default
     private int sortOrder = 0;
+
+    public static Role createRole(String name, String description, int sortOrder) {
+        return Role.builder()
+                .name(name)
+                .description(description)
+                .sortOrder(sortOrder)
+                .build();
+    }
 }
