@@ -1,0 +1,36 @@
+domain: http://localhost:8081/
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  h2:
+    console:
+      enabled: false
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url:
+    username:
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        default_batch_fetch_size: 500
+        #        show_sql: true
+        format_sql: true
+        use_sql_comments: false
+    show-sql: true
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+
