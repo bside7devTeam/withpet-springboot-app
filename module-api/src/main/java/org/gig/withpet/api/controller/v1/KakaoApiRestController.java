@@ -46,7 +46,7 @@ public class KakaoApiRestController {
                     ),
                     @ApiImplicitParam(
                             name = "analyze_type"
-                            , value = "검색 결과 제공 바식"
+                            , value = "검색 결과 제공 방식"
                             , required = false
                             , dataType = "string"
                             , paramType = "query"
@@ -71,7 +71,7 @@ public class KakaoApiRestController {
             }
     )
     @GetMapping(value = "/address", produces="application/json;charset=UTF-8")
-    public ResponseEntity<ApiResponse> getAnimalInfo(
+    public ResponseEntity<ApiResponse> getSearchAddressInfo(
             @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "analyze_type", required = false) String analyzeType,
             @RequestParam(value = "page", required = false) Integer page,
@@ -86,6 +86,115 @@ public class KakaoApiRestController {
                 .build();
 
         Map<String, Object> resDto = kakaoMapApiService.getKakaoLocalApi(reqParam, "/v2/local/search/address.json");
+
+        return new ResponseEntity<>(ApiResponse.OK(resDto), HttpStatus.OK);
+    }
+
+
+    @ApiOperation(
+            value = "좌표로 행정구역 검색 API"
+    )
+    @ApiImplicitParams(
+            {
+                    @ApiImplicitParam(
+                            name = "x"
+                            , value = "x 좌표값, 경도"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "127.1086228"
+                    ),
+                    @ApiImplicitParam(
+                            name = "y"
+                            , value = "y 좌표값, 위도"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "37.4012191"
+                    ),
+                    @ApiImplicitParam(
+                            name = "input_coord"
+                            , value = "x, y 로 입력되는 값에 대한 좌표계"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "WGS84"
+                    ),
+                    @ApiImplicitParam(
+                            name = "output_coord"
+                            , value = "결과에 출력될 좌표계"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "WGS84"
+                    )
+            }
+    )
+    @GetMapping(value = "/coord/region-code", produces="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> getRegionCodeByCoord(
+            @RequestParam(value = "x", required = true) String x,
+            @RequestParam(value = "y", required = true) String y,
+            @RequestParam(value = "input_coord", required = false) String inputCoord,
+            @RequestParam(value = "output_coord", required = false) String outputCoord
+    ) throws IOException {
+
+        KakaoMapReqDto reqParam = KakaoMapReqDto.builder()
+                .x(x)
+                .y(y)
+                .inputCoord(inputCoord)
+                .outputCoord(outputCoord)
+                .build();
+
+        Map<String, Object> resDto = kakaoMapApiService.getKakaoLocalApi(reqParam, "/v2/local/geo/coord2regioncode.json");
+
+        return new ResponseEntity<>(ApiResponse.OK(resDto), HttpStatus.OK);
+    }
+
+    @ApiOperation(
+            value = "좌표로 주소 검색 API"
+    )
+    @ApiImplicitParams(
+            {
+                    @ApiImplicitParam(
+                            name = "x"
+                            , value = "x 좌표값, 경도"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "127.1086228"
+                    ),
+                    @ApiImplicitParam(
+                            name = "y"
+                            , value = "y 좌표값, 위도"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "37.4012191"
+                    ),
+                    @ApiImplicitParam(
+                            name = "input_coord"
+                            , value = "x, y 로 입력되는 값에 대한 좌표계"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "WGS84"
+                    )
+            }
+    )
+    @GetMapping(value = "coord/address", produces="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> getAddressByCoord(
+            @RequestParam(value = "x", required = true) String x,
+            @RequestParam(value = "y", required = true) String y,
+            @RequestParam(value = "input_coord", required = false) String inputCoord
+    ) throws IOException {
+
+        KakaoMapReqDto reqParam = KakaoMapReqDto.builder()
+                .x(x)
+                .y(y)
+                .inputCoord(inputCoord)
+                .build();
+
+        Map<String, Object> resDto = kakaoMapApiService.getKakaoLocalApi(reqParam, "/v2/local/geo/coord2address.json");
 
         return new ResponseEntity<>(ApiResponse.OK(resDto), HttpStatus.OK);
     }
