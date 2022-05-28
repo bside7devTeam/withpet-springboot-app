@@ -17,6 +17,11 @@ public class KakaoMapReqDto {
     private String query;
     private String analyzeType;
 
+    private String x;
+    private String y;
+    private String inputCoord;
+    private String outputCoord;
+
     @Builder.Default
     private Integer page = 1;
 
