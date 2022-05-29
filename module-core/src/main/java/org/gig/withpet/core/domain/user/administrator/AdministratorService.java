@@ -6,6 +6,9 @@ import org.gig.withpet.core.domain.exception.NotFoundException;
 import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.role.RoleService;
 import org.gig.withpet.core.domain.user.UserService;
+import org.gig.withpet.core.domain.user.administrator.dto.AdminSearchDto;
+import org.gig.withpet.core.domain.user.administrator.dto.AdministratorListDto;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,5 +72,10 @@ public class AdministratorService implements UserService<Administrator> {
             initAdministrator.addRole(newRole);
         }
         administratorRepository.save(initAdministrator);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AdministratorListDto> getAdminPageListBySearch(AdminSearchDto searchDto) {
+        return queryRepository.getAdminPageListBySearch(searchDto);
     }
 }
