@@ -2,11 +2,14 @@ package org.gig.withpet.core.domain.role;
 
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.exception.NotFoundException;
+import org.gig.withpet.core.domain.role.dto.RoleDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author : JAKE
@@ -26,6 +29,19 @@ public class RoleService {
         return roleRepository.save(newRole);
     }
 
+    public Role findByRoleName(String roleName) {
+        Optional<Role> findRole = roleRepository.findByName(roleName);
+        if (findRole.isPresent()) {
+            return findRole.get();
+        } else {
+            throw new NotFoundException(">>> Role Not Found");
+        }
+    }
+
+    public List<RoleDto> getAllRoles() {
+        return roleRepository.findAllByOrderBySortOrderAsc().stream().map(RoleDto::new).collect(Collectors.toList());
+    }
+
     private void validationRoleName(String name) {
         if (!StringUtils.hasText(name)) { throw new IllegalArgumentException(""); }
         if (existsRoleName(name))  { throw new RuntimeException(); }
@@ -40,12 +56,4 @@ public class RoleService {
         return name.toUpperCase().startsWith(prefix);
     }
 
-    public Role findByRoleName(String roleName) {
-        Optional<Role> findRole = roleRepository.findByName(roleName);
-        if (findRole.isPresent()) {
-            return findRole.get();
-        } else {
-            throw new NotFoundException(">>> Role Not Found");
-        }
-    }
 }
