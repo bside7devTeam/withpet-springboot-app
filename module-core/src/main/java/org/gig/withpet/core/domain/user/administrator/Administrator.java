@@ -2,12 +2,14 @@ package org.gig.withpet.core.domain.user.administrator;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.gig.withpet.core.domain.common.dto.AdministratorCreateForm;
 import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.user.AbstractUser;
 import org.gig.withpet.core.domain.user.UserStatus;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,6 +55,21 @@ public class Administrator extends AbstractUser {
                 .name(name)
                 .status(UserStatus.NORMAL)
                 .build();
+    }
+
+    public static Administrator create(AdministratorCreateForm createForm, String encodedPassword) {
+        return Administrator.builder()
+                .username(createForm.getUsername())
+                .name(createForm.getName())
+                .password(encodedPassword)
+                .passwordFailureCount(0)
+                .status(createForm.getStatus())
+                .build();
+    }
+
+    public void createAdministratorRoles(List<Role> roles) {
+        roles.stream().map(role -> AdministratorRole.addAdministratorRole(this, role))
+                .forEach(administratorRole -> this.getAdministratorRoles().add(administratorRole));
     }
 
     public void addRole(AdministratorRole role) {

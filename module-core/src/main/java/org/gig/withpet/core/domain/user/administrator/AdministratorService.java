@@ -2,17 +2,21 @@ package org.gig.withpet.core.domain.user.administrator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.gig.withpet.core.domain.common.dto.AdministratorCreateForm;
 import org.gig.withpet.core.domain.exception.NotFoundException;
 import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.role.RoleService;
 import org.gig.withpet.core.domain.user.UserService;
 import org.gig.withpet.core.domain.user.administrator.dto.AdminSearchDto;
 import org.gig.withpet.core.domain.user.administrator.dto.AdministratorListDto;
+import org.gig.withpet.core.domain.utils.CommonUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -77,5 +81,15 @@ public class AdministratorService implements UserService<Administrator> {
     @Transactional(readOnly = true)
     public Page<AdministratorListDto> getAdminPageListBySearch(AdminSearchDto searchDto) {
         return queryRepository.getAdminPageListBySearch(searchDto);
+    }
+
+    @Transactional
+    public Long create(@NotNull AdministratorCreateForm createForm) {
+        String password = CommonUtils.getRandomPassword(12);
+        Administrator newAdmin = Administrator.create(createForm, passwordEncoder.encode(password));
+        List<Role> roles = roleService.findByRoleNamesIn(createForm.getRoleNames());
+        newAdmin.createAdministratorRoles(roles);
+        Administrator savedAdmin = administratorRepository.save(newAdmin);
+        return savedAdmin.getId();
     }
 }

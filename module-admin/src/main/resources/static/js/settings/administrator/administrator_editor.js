@@ -1,5 +1,5 @@
 const onReady = function() {
-    var $frm = $('form[name="frmRegister"]');
+    let $frm = $('form[name="frmRegister"]');
     console.log("dto", dto);
     loadRole();
     onlyNumberKeyEvent({className: "only-number"});
@@ -48,7 +48,7 @@ const createValidate = function($frm) {
             },
         },
         submitHandler: function($frm) {
-            save($frm);
+            save();
         }
     });
 }
@@ -130,21 +130,24 @@ const removeRole = function(e) {
     $('#include-role option[value="' + role + '"]').hide();
 };
 
-const save = function($frm) {
+const save = function() {
 
+    let $frm = $('form[name="frmRegister"]');
     let formMethod = isModify($frm, 'adminId') ? 'put' : 'post';
     let param = serializeObject({form:$frm[0]}).json();
+    param['username'] = $frm.find('input[name="username"]').val();
+    param['name'] = $frm.find('input[name="name"]').val();
     param['roleNames'] = getRoleNames();
     console.log("params", param);
 
     $.ajax({
         url: "/settings/admin-manager",
-        method: formMethod,
+        method: "post",
         type: "json",
         contentType: "application/json",
         data: JSON.stringify(param),
         success: function (result) {
-            var message = isModify($frm, 'adminId') ? '정상적으로 수정되었습니다.' : '정상적으로 저장되었습니다.';
+            let message = isModify($frm, 'adminId') ? '정상적으로 수정되었습니다.' : '정상적으로 저장되었습니다.';
             twoBtnModal(message, function() {
                 location.href = '/settings/admin-manager/' + result + '/edit';
             });

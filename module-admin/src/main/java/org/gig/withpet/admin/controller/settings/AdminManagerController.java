@@ -2,16 +2,20 @@ package org.gig.withpet.admin.controller.settings;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.gig.withpet.core.domain.common.dto.AdministratorCreateForm;
 import org.gig.withpet.core.domain.role.RoleService;
 import org.gig.withpet.core.domain.role.dto.RoleDto;
 import org.gig.withpet.core.domain.user.administrator.AdministratorService;
 import org.gig.withpet.core.domain.user.administrator.dto.AdminSearchDto;
 import org.gig.withpet.core.domain.user.administrator.dto.AdministratorDetailDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -43,5 +47,28 @@ public class AdminManagerController {
         model.addAttribute("dto", dto);
 
         return "settings/administrator/editor";
+    }
+
+    @GetMapping("check-duplicate/username/{value}")
+    @ResponseBody
+    public ResponseEntity checkDuplicateData(
+            @PathVariable(value = "value") String value) {
+
+        boolean isDuplicate = administratorService.existsUsername(value);
+        return ResponseEntity.ok().body(isDuplicate);
+    }
+
+    @PostMapping
+    @ResponseBody
+    public ResponseEntity save(@Valid @RequestBody AdministratorCreateForm createForm,
+                               Errors errors,
+                               RedirectAttributes redirectAttributes) {
+
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().body(errors.getAllErrors());
+        }
+
+        Long adminId = administratorService.create(createForm);
+        return ResponseEntity.ok().body(adminId);
     }
 }

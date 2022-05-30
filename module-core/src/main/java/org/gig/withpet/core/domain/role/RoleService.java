@@ -56,4 +56,7 @@ public class RoleService {
         return name.toUpperCase().startsWith(prefix);
     }
 
+    public List<Role> findByRoleNamesIn(List<String> roleNames) {
+        return roleRepository.findAllByNameIn(roleNames);
+    }
 }
