@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimal;
+import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimalRepository;
 import org.gig.withpet.core.utils.AnimalProtectProperties;
 import org.gig.withpet.core.utils.CommonUtils;
 import org.json.JSONArray;
@@ -29,13 +31,14 @@ import java.util.Map;
  * @date : 2022/05/20
  */
 @Service
-@Transactional(readOnly = true)
 @Log
 @RequiredArgsConstructor
 public class AnimalProtectApiService {
 
     private final AnimalProtectProperties properties;
+    private final AdoptAnimalRepository adoptAnimalRepository;
 
+    @Transactional
     public Map<String, Object> getAbandonmentPublicApi(AnimalProtectReqDto reqParam, String suffixUrl) throws IOException {
 
         String apiPath = properties.getUrl() + suffixUrl;
@@ -60,15 +63,12 @@ public class AnimalProtectApiService {
         while ((line = rd.readLine()) != null) {
             sb.append(line);
         }
-        log.info(sb.toString());
         rd.close();
         conn.disconnect();
 
         JSONObject convertResult = CommonUtils.convertXmlToJson(sb.toString());
 
         saveAbandonmentInfo(convertResult);
-
-        log.info(convertResult.toMap().toString());
         return convertResult.toMap();
     }
 
@@ -86,9 +86,19 @@ public class AnimalProtectApiService {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>(){});
+            saveAdoptAnimal(animalProtectList);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+    }
+
+    private void saveAdoptAnimal(List<AnimalProtectDto> animalProtectDtoList) throws JsonProcessingException {
+
+        for (AnimalProtectDto dto : animalProtectDtoList) {
+            AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(dto);
+            adoptAnimalRepository.save(adoptAnimal);
+        }
+
     }
 
     private void setAbandonmentParam(StringBuilder urlBuilder, AnimalProtectReqDto reqParam, String suffixUrl) throws UnsupportedEncodingException {

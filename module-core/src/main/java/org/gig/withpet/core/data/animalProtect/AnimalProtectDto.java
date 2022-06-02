@@ -54,4 +54,6 @@ public class AnimalProtectDto {
     private String happenDt;
 
     private String age;
+
+    private String noticeComment;
 }
