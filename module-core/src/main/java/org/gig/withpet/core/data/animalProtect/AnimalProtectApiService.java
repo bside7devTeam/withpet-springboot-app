@@ -1,9 +1,14 @@
 package org.gig.withpet.core.data.animalProtect;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.gig.withpet.core.utils.AnimalProtectProperties;
 import org.gig.withpet.core.utils.CommonUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +20,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,8 +66,29 @@ public class AnimalProtectApiService {
 
         JSONObject convertResult = CommonUtils.convertXmlToJson(sb.toString());
 
+        saveAbandonmentInfo(convertResult);
+
         log.info(convertResult.toMap().toString());
         return convertResult.toMap();
+    }
+
+    private void saveAbandonmentInfo(JSONObject data) {
+        JSONObject response = data.getJSONObject("response");
+        JSONObject header = response.getJSONObject("header");
+        if (!header.getString("resultCode").equals("00")) {
+            return;
+        }
+
+        JSONObject body = response.getJSONObject("body");
+        JSONObject items = body.getJSONObject("items");
+        JSONArray jsonArray = items.getJSONArray("item");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>(){});
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setAbandonmentParam(StringBuilder urlBuilder, AnimalProtectReqDto reqParam, String suffixUrl) throws UnsupportedEncodingException {

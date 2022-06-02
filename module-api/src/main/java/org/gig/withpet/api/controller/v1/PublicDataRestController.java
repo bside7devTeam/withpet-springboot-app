@@ -38,7 +38,7 @@ public class PublicDataRestController {
                     @ApiImplicitParam(
                             name = "bgnde"
                             , value = "유기날짜 시작일"
-                            , required = false
+                            , required = true
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "20220101"
@@ -46,7 +46,7 @@ public class PublicDataRestController {
                     @ApiImplicitParam(
                             name = "endde"
                             , value = "유기날짜 종료일"
-                            , required = false
+                            , required = true
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "20220630"
@@ -54,7 +54,7 @@ public class PublicDataRestController {
                     @ApiImplicitParam(
                             name = "upkind"
                             , value = "축종코드"
-                            , required = true
+                            , required = false
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "417000"
@@ -63,7 +63,7 @@ public class PublicDataRestController {
                     @ApiImplicitParam(
                             name = "state"
                             , value = "상태"
-                            , required = true
+                            , required = false
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "notice"
