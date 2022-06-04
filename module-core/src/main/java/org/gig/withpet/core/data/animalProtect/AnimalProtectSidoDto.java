@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
  */
 @Getter
 @NoArgsConstructor
-public class AnimalKindDto {
+public class AnimalProtectSidoDto {
 
-    @JsonProperty(value = "kindCd")
-    private String kindCd;
+    @JsonProperty(value = "orgCd")
+    private String admCode;
 
-    @JsonProperty(value = "KNm")
-    private String kNm;
+    @JsonProperty(value = "orgdownNm")
+    private String admName;
 }

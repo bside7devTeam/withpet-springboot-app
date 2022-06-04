@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.adoptAnimal;
+package org.gig.withpet.core.domain.sidoArea;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.animalProtect.AnimalProtectKindDto;
+import org.gig.withpet.core.data.animalProtect.AnimalProtectSidoDto;
+import org.gig.withpet.core.domain.adoptAnimal.AnimalKind;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -19,24 +21,24 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class AnimalKind extends BaseTimeEntity {
+public class SidoArea extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "animal_kind_id")
+    @Column(name = "sido_area_id")
     private Long id;
 
-    private String kindCd;
+    private String admCode;
 
-    private String KNm;
+    private String admName;
 
-    private String upKindCd;
+    private String version;
 
-    public static AnimalKind insertPublicData(AnimalProtectKindDto dto, String upKindCd) {
-        return AnimalKind.builder()
-                .kindCd(dto.getKindCd())
-                .KNm(dto.getKNm())
-                .upKindCd(upKindCd)
+    public static SidoArea insertPublicData(AnimalProtectSidoDto dto) {
+        return SidoArea.builder()
+                .admCode(dto.getAdmCode())
+                .admName(dto.getAdmName())
                 .build();
     }
+
 }

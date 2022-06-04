@@ -3,13 +3,14 @@ package org.gig.withpet.core.data.animalProtect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimal;
 import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimalRepository;
 import org.gig.withpet.core.domain.adoptAnimal.AnimalKind;
 import org.gig.withpet.core.domain.adoptAnimal.AnimalKindRepository;
+import org.gig.withpet.core.domain.sidoArea.SidoArea;
+import org.gig.withpet.core.domain.sidoArea.SidoAreaRepository;
 import org.gig.withpet.core.utils.AnimalProtectProperties;
 import org.gig.withpet.core.utils.CommonUtils;
 import org.json.JSONArray;
@@ -26,7 +27,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +42,7 @@ public class AnimalProtectApiService {
     private final AnimalProtectProperties properties;
     private final AdoptAnimalRepository adoptAnimalRepository;
     private final AnimalKindRepository animalKindRepository;
+    private final SidoAreaRepository sidoAreaRepository;
 
     @Transactional
     public Map<String, Object> getAbandonmentPublicApi(AnimalProtectReqDto reqParam, String suffixUrl) throws IOException {
@@ -100,13 +101,15 @@ public class AnimalProtectApiService {
                     saveAdoptAnimal(animalProtectList);
                     break;
                 case "/sido" :
+                    List<AnimalProtectSidoDto> sidoDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSidoDto>>(){});
+                    saveSido(sidoDtoList);
                     break;
                 case "/sigungu" :
                     break;
                 case "/shelter" :
                     break;
                 case "/kind" :
-                    List<AnimalKindDto> animalKindList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalKindDto>>(){});
+                    List<AnimalProtectKindDto> animalKindList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectKindDto>>(){});
                     saveAnimalKind(animalKindList, reqParam.getUpkind());
                     break;
                 default:
@@ -132,15 +135,28 @@ public class AnimalProtectApiService {
 
     }
 
-    private void saveAnimalKind(List<AnimalKindDto> animalKindList, String upKindCd) {
+    private void saveAnimalKind(List<AnimalProtectKindDto> animalKindList, String upKindCd) {
 
         if (CollectionUtils.isEmpty(animalKindList)) {
             return;
         }
 
-        for (AnimalKindDto dto : animalKindList) {
+        for (AnimalProtectKindDto dto : animalKindList) {
             AnimalKind animalKind = AnimalKind.insertPublicData(dto, upKindCd);
             animalKindRepository.save(animalKind);
+        }
+
+    }
+
+    private void saveSido(List<AnimalProtectSidoDto> sidoList) {
+
+        if (CollectionUtils.isEmpty(sidoList)) {
+            return;
+        }
+
+        for (AnimalProtectSidoDto dto : sidoList) {
+            SidoArea sidoArea = SidoArea.insertPublicData(dto);
+            sidoAreaRepository.save(sidoArea);
         }
 
     }
