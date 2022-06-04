@@ -1,4 +1,4 @@
-package org.gig.withpet.core.data.animalProtect;
+package org.gig.withpet.core.data.animalProtect.dto;
 
 import lombok.Getter;
 import org.json.JSONObject;

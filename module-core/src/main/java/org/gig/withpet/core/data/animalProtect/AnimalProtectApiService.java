@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.gig.withpet.core.data.animalProtect.dto.*;
 import org.gig.withpet.core.domain.Area.SiggArea;
 import org.gig.withpet.core.domain.Area.SiggAreaRepository;
 import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimal;

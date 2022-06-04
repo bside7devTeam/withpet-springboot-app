@@ -1,4 +1,4 @@
-package org.gig.withpet.core.data.animalProtect;
+package org.gig.withpet.core.data.animalProtect.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

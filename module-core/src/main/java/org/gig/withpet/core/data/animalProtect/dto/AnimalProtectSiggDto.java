@@ -1,4 +1,4 @@
-package org.gig.withpet.core.data.animalProtect;
+package org.gig.withpet.core.data.animalProtect.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -10,11 +10,14 @@ import lombok.NoArgsConstructor;
  */
 @Getter
 @NoArgsConstructor
-public class AnimalProtectSidoDto {
+public class AnimalProtectSiggDto {
 
     @JsonProperty(value = "orgCd")
     private String admCode;
 
     @JsonProperty(value = "orgdownNm")
     private String admName;
+
+    @JsonProperty(value = "uprCd")
+    private String parentAdmCode;
 }

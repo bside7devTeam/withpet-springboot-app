@@ -2,9 +2,7 @@ package org.gig.withpet.core.domain.Area;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.gig.withpet.core.data.animalProtect.AnimalProtectSidoDto;
-import org.gig.withpet.core.data.animalProtect.AnimalProtectSiggDto;
-import org.gig.withpet.core.domain.user.administrator.Administrator;
+import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectSiggDto;
 
 import javax.persistence.*;
 import java.util.ArrayList;

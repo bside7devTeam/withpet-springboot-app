@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.gig.withpet.core.data.animalProtect.AnimalProtectKindDto;
+import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectKindDto;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 
 import javax.persistence.*;

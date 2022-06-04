@@ -2,15 +2,12 @@ package org.gig.withpet.core.domain.Area;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.gig.withpet.core.data.animalProtect.AnimalProtectSidoDto;
+import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectSidoDto;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
-import org.gig.withpet.core.domain.user.administrator.AdministratorRole;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author : JAKE
