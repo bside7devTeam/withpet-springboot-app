@@ -5,12 +5,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.gig.withpet.core.domain.Area.SiggArea;
+import org.gig.withpet.core.domain.Area.SiggAreaRepository;
 import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimal;
 import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimalRepository;
 import org.gig.withpet.core.domain.adoptAnimal.AnimalKind;
 import org.gig.withpet.core.domain.adoptAnimal.AnimalKindRepository;
-import org.gig.withpet.core.domain.sidoArea.SidoArea;
-import org.gig.withpet.core.domain.sidoArea.SidoAreaRepository;
+import org.gig.withpet.core.domain.Area.SidoArea;
+import org.gig.withpet.core.domain.Area.SidoAreaRepository;
 import org.gig.withpet.core.utils.AnimalProtectProperties;
 import org.gig.withpet.core.utils.CommonUtils;
 import org.json.JSONArray;
@@ -29,6 +31,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author : JAKE
@@ -43,6 +46,7 @@ public class AnimalProtectApiService {
     private final AdoptAnimalRepository adoptAnimalRepository;
     private final AnimalKindRepository animalKindRepository;
     private final SidoAreaRepository sidoAreaRepository;
+    private final SiggAreaRepository siggAreaRepository;
 
     @Transactional
     public Map<String, Object> getAbandonmentPublicApi(AnimalProtectReqDto reqParam, String suffixUrl) throws IOException {
@@ -105,6 +109,8 @@ public class AnimalProtectApiService {
                     saveSido(sidoDtoList);
                     break;
                 case "/sigungu" :
+                    List<AnimalProtectSiggDto> siggDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSiggDto>>() {});
+                    saveSigg(siggDtoList);
                     break;
                 case "/shelter" :
                     break;
@@ -157,6 +163,26 @@ public class AnimalProtectApiService {
         for (AnimalProtectSidoDto dto : sidoList) {
             SidoArea sidoArea = SidoArea.insertPublicData(dto);
             sidoAreaRepository.save(sidoArea);
+        }
+
+    }
+
+    private void saveSigg(List<AnimalProtectSiggDto> siggList) {
+
+        if (CollectionUtils.isEmpty(siggList)) {
+            return;
+        }
+
+        for (AnimalProtectSiggDto dto : siggList) {
+            Optional<SidoArea> findSido = sidoAreaRepository.findSidoAreaByAdmCode(dto.getParentAdmCode());
+            if (findSido.isEmpty()) {
+                return;
+            }
+
+            SiggArea siggArea = SiggArea.insertPublicData(dto);
+            siggArea.addParent(findSido.get());
+            siggAreaRepository.save(siggArea);
+
         }
 
     }

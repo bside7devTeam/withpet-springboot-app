@@ -1,13 +1,10 @@
-package org.gig.withpet.core.domain.sidoArea;
+package org.gig.withpet.core.domain.Area;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.gig.withpet.core.data.animalProtect.AnimalProtectKindDto;
-import org.gig.withpet.core.data.animalProtect.AnimalProtectSidoDto;
-import org.gig.withpet.core.domain.adoptAnimal.AnimalKind;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 
 import javax.persistence.*;
@@ -21,11 +18,11 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class SidoArea extends BaseTimeEntity {
+public class EmdArea extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sido_area_id")
+    @Column(name = "emd_id")
     private Long id;
 
     private String admCode;
@@ -34,11 +31,7 @@ public class SidoArea extends BaseTimeEntity {
 
     private String version;
 
-    public static SidoArea insertPublicData(AnimalProtectSidoDto dto) {
-        return SidoArea.builder()
-                .admCode(dto.getAdmCode())
-                .admName(dto.getAdmName())
-                .build();
-    }
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sigg_id")
+    private SiggArea sigg;
 }

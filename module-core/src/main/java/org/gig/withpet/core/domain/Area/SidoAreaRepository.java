@@ -1,7 +1,9 @@
-package org.gig.withpet.core.domain.sidoArea;
+package org.gig.withpet.core.domain.Area;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 /**
  * @author : JAKE
@@ -9,4 +11,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface SidoAreaRepository extends JpaRepository<SidoArea, Long> {
+
+    Optional<SidoArea> findSidoAreaByAdmCode(String admCode);
+
 }
