@@ -3,6 +3,7 @@ package org.gig.withpet.core.data.animalProtect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.shaded.json.parser.JSONParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.gig.withpet.core.data.animalProtect.dto.*;
@@ -14,10 +15,13 @@ import org.gig.withpet.core.domain.adoptAnimal.AnimalKind;
 import org.gig.withpet.core.domain.adoptAnimal.AnimalKindRepository;
 import org.gig.withpet.core.domain.Area.SidoArea;
 import org.gig.withpet.core.domain.Area.SidoAreaRepository;
+import org.gig.withpet.core.domain.shelter.Shelter;
+import org.gig.withpet.core.domain.shelter.ShelterRepository;
 import org.gig.withpet.core.utils.AnimalProtectProperties;
 import org.gig.withpet.core.utils.CommonUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -48,6 +52,7 @@ public class AnimalProtectApiService {
     private final AnimalKindRepository animalKindRepository;
     private final SidoAreaRepository sidoAreaRepository;
     private final SiggAreaRepository siggAreaRepository;
+    private final ShelterRepository shelterRepository;
 
     @Transactional
     public Map<String, Object> getAbandonmentPublicApi(AnimalProtectReqDto reqParam, String suffixUrl) throws IOException {
@@ -86,6 +91,28 @@ public class AnimalProtectApiService {
         return convertResult.toMap();
     }
 
+    public void saveShelterInfoAll(AnimalProtectReqDto reqParam, String suffixUrl) throws IOException {
+
+        List<SidoArea> sidoAreas = sidoAreaRepository.findAll();
+
+        if (CollectionUtils.isEmpty(sidoAreas)) {
+            return;
+        }
+
+        for (SidoArea sidoArea : sidoAreas) {
+            List<SiggArea> siggAreas = siggAreaRepository.findAllBySido(sidoArea);
+            if (CollectionUtils.isEmpty(siggAreas)) {
+                continue;
+            }
+
+            for (SiggArea siggArea : siggAreas) {
+                reqParam.setUprCd(sidoArea.getAdmCode());
+                reqParam.setOrgCd(siggArea.getAdmCode());
+                getAbandonmentPublicApi(reqParam, suffixUrl);
+            }
+        }
+    }
+
     private void parseJsonData(String suffixUrl, JSONObject data, AnimalProtectReqDto reqParam) {
         JSONObject response = data.getJSONObject("response");
         JSONObject header = response.getJSONObject("header");
@@ -94,29 +121,54 @@ public class AnimalProtectApiService {
         }
 
         JSONObject body = response.getJSONObject("body");
+
+        Object itemsObject = body.get("items");
+        if (itemsObject instanceof String && !StringUtils.hasText(itemsObject.toString())) {
+            return;
+        }
+
         JSONObject items = body.getJSONObject("items");
-        JSONArray jsonArray = items.getJSONArray("item");
+
+        JSONArray jsonArray = new JSONArray();
+        Object itemObject = items.get("item");
+        if (itemObject instanceof JSONObject) {
+            jsonArray = new JSONArray();
+            jsonArray.put(itemObject);
+        } else if (itemObject instanceof JSONArray) {
+            jsonArray = items.getJSONArray("item");
+        } else {
+            return;
+        }
+
+
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
             switch (suffixUrl) {
-                case "/abandonmentPublic" :
-                    List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>(){});
+                case "/abandonmentPublic":
+                    List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>() {
+                    });
                     saveAdoptAnimal(animalProtectList);
                     break;
-                case "/sido" :
-                    List<AnimalProtectSidoDto> sidoDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSidoDto>>(){});
+                case "/sido":
+                    List<AnimalProtectSidoDto> sidoDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSidoDto>>() {
+                    });
                     saveSido(sidoDtoList);
                     break;
-                case "/sigungu" :
-                    List<AnimalProtectSiggDto> siggDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSiggDto>>() {});
+                case "/sigungu":
+                    List<AnimalProtectSiggDto> siggDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSiggDto>>() {
+                    });
                     saveSigg(siggDtoList);
                     break;
-                case "/shelter" :
+                case "/shelter":
+                    List<AnimalProtectShelterDto> shelterList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectShelterDto>>() {
+                    });
+                    saveShelter(shelterList, reqParam.getUprCd(), reqParam.getOrgCd());
                     break;
-                case "/kind" :
-                    List<AnimalProtectKindDto> animalKindList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectKindDto>>(){});
+                case "/kind":
+                    List<AnimalProtectKindDto> animalKindList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectKindDto>>() {
+                    });
                     saveAnimalKind(animalKindList, reqParam.getUpkind());
                     break;
                 default:
@@ -184,6 +236,19 @@ public class AnimalProtectApiService {
             siggArea.addParent(findSido.get());
             siggAreaRepository.save(siggArea);
 
+        }
+
+    }
+
+    private void saveShelter(List<AnimalProtectShelterDto> shelterList, String sidoCode, String siggCode) {
+
+        if (CollectionUtils.isEmpty(shelterList)) {
+            return;
+        }
+
+        for (AnimalProtectShelterDto dto : shelterList) {
+            Shelter shelter = Shelter.insertPublicData(dto, sidoCode, siggCode);
+            shelterRepository.save(shelter);
         }
 
     }

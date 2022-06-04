@@ -10,10 +10,7 @@ import org.gig.withpet.core.data.animalProtect.AnimalProtectApiService;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectReqDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -285,5 +282,20 @@ public class PublicDataRestController {
         return new ResponseEntity<>(ApiResponse.OK(resDto), HttpStatus.OK);
     }
 
+    @ApiOperation(
+            value = "입양 동물 보호소 정보 저장 API"
+    )
+    @PostMapping(value = "/shelter", produces="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> saveAllShelterInfo(
+    ) throws IOException {
+
+        AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
+                .saveYn("Y")
+                .build();
+
+        animalProtectApiService.saveShelterInfoAll(reqParam, "/shelter");
+
+        return new ResponseEntity<>(ApiResponse.OK("Success"), HttpStatus.OK);
+    }
 }
 
