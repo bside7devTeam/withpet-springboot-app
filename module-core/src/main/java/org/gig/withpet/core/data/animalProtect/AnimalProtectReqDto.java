@@ -20,6 +20,7 @@ public class AnimalProtectReqDto {
     private String neuterYn;
     private String uprCd;
     private String orgCd;
+    private String saveYn;
 
     @Builder.Default
     private Integer pageNo = 1;

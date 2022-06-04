@@ -8,12 +8,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimal;
 import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimalRepository;
+import org.gig.withpet.core.domain.adoptAnimal.AnimalKind;
+import org.gig.withpet.core.domain.adoptAnimal.AnimalKindRepository;
 import org.gig.withpet.core.utils.AnimalProtectProperties;
 import org.gig.withpet.core.utils.CommonUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,6 +41,7 @@ public class AnimalProtectApiService {
 
     private final AnimalProtectProperties properties;
     private final AdoptAnimalRepository adoptAnimalRepository;
+    private final AnimalKindRepository animalKindRepository;
 
     @Transactional
     public Map<String, Object> getAbandonmentPublicApi(AnimalProtectReqDto reqParam, String suffixUrl) throws IOException {
@@ -68,11 +73,14 @@ public class AnimalProtectApiService {
 
         JSONObject convertResult = CommonUtils.convertXmlToJson(sb.toString());
 
-        saveAbandonmentInfo(convertResult);
+        if (StringUtils.hasText(reqParam.getSaveYn()) && reqParam.getSaveYn().equals("Y")) {
+            parseJsonData(suffixUrl, convertResult, reqParam);
+        }
+
         return convertResult.toMap();
     }
 
-    private void saveAbandonmentInfo(JSONObject data) {
+    private void parseJsonData(String suffixUrl, JSONObject data, AnimalProtectReqDto reqParam) {
         JSONObject response = data.getJSONObject("response");
         JSONObject header = response.getJSONObject("header");
         if (!header.getString("resultCode").equals("00")) {
@@ -85,18 +93,54 @@ public class AnimalProtectApiService {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>(){});
-            saveAdoptAnimal(animalProtectList);
+
+            switch (suffixUrl) {
+                case "/abandonmentPublic" :
+                    List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>(){});
+                    saveAdoptAnimal(animalProtectList);
+                    break;
+                case "/sido" :
+                    break;
+                case "/sigungu" :
+                    break;
+                case "/shelter" :
+                    break;
+                case "/kind" :
+                    List<AnimalKindDto> animalKindList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalKindDto>>(){});
+                    saveAnimalKind(animalKindList, reqParam.getUpkind());
+                    break;
+                default:
+                    break;
+            }
+
+
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
 
-    private void saveAdoptAnimal(List<AnimalProtectDto> animalProtectDtoList) throws JsonProcessingException {
+    private void saveAdoptAnimal(List<AnimalProtectDto> animalProtectDtoList) {
+
+        if (CollectionUtils.isEmpty(animalProtectDtoList)) {
+            return;
+        }
 
         for (AnimalProtectDto dto : animalProtectDtoList) {
             AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(dto);
             adoptAnimalRepository.save(adoptAnimal);
+        }
+
+    }
+
+    private void saveAnimalKind(List<AnimalKindDto> animalKindList, String upKindCd) {
+
+        if (CollectionUtils.isEmpty(animalKindList)) {
+            return;
+        }
+
+        for (AnimalKindDto dto : animalKindList) {
+            AnimalKind animalKind = AnimalKind.insertPublicData(dto, upKindCd);
+            animalKindRepository.save(animalKind);
         }
 
     }
