@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.utils.ApiResponse;
-import org.gig.withpet.core.data.animalProtect.AnimalProtectReqDto;
 import org.gig.withpet.core.data.kakaoMap.KakaoMapApiService;
 import org.gig.withpet.core.data.kakaoMap.KakaoMapReqDto;
 import org.springframework.http.HttpStatus;
