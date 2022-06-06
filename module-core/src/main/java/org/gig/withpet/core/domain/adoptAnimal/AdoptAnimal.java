@@ -26,39 +26,43 @@ public class AdoptAnimal extends BaseTimeEntity {
     @Column(name = "adopt_animal_id")
     private Long id;
 
-    private String sexCd;
-
-    private String kindCd;
-
-    private String noticeNo;
-
-    private String careAddr;
-
     private String processState;
-
-    private String noticeSdt;
-
-    private String weight;
-
-    private String chargeNm;
-
-    private String careNm;
 
     private String desertionNo;
 
-    private String careTel;
+    private String noticeNo;
 
-    private String happenPlace;
+    private String noticeSdt;
+
+    private String noticeEdt;
+
+    private String noticeComment;
+
+    private String careNm;
+
+    private String careAddr;
+
+    private String chargeNm;
+
+    private String careTel;
 
     private String officeTel;
 
     private String orgNm;
 
+    private String sexCd;
+
+    private String kindCd;
+
+    private String weight;
+
+    private String happenDt;
+
+    private String happenPlace;
+
     private String filename;
 
     private String popfile;
-
-    private String noticeEdt;
 
     private String neuterYn;
 
@@ -66,11 +70,7 @@ public class AdoptAnimal extends BaseTimeEntity {
 
     private String colorCd;
 
-    private String happenDt;
-
     private String age;
-
-    private String noticeComment;
 
     public static AdoptAnimal insertPublicData(AnimalProtectDto dto) {
         return AdoptAnimal.builder()
