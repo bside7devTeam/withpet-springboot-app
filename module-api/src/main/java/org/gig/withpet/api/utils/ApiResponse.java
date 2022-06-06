@@ -25,6 +25,10 @@ public class ApiResponse {
         this.data = data;
     }
 
+    public static ApiResponse OK() {
+        return new ApiResponse(HttpStatus.OK, null);
+    }
+
     public static ApiResponse OK(Object data) {
         return new ApiResponse(HttpStatus.OK, data);
     }

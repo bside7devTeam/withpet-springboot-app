@@ -18,6 +18,7 @@ public class Member extends DefaultEntity {
     private String nickName;
 
     @Builder.Default
+    @Enumerated(EnumType.STRING)
     private RoleType roleType = RoleType.USER;
 
     @Enumerated(EnumType.STRING)

@@ -10,12 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    @Transactional
     public SignInResponse signIn(SignInRequest signInRequest) {
         Optional<Member> member = memberRepository.findByUid(signInRequest.uid);
         return member.map(SignInResponse::new)
@@ -33,13 +33,11 @@ public class MemberService {
         return new SignInResponse(memberRepository.save(member));
     }
 
-    @Transactional
     public void updateRefreshToken(String uid, String refreshToken) {
         Member member = getMemberByUid(uid);
         member.updateRefreshToken(refreshToken);
     }
 
-    @Transactional
     public void logout(String uid) {
         Member member = getMemberByUid(uid);
         member.deleteRefreshToken();
@@ -53,6 +51,7 @@ public class MemberService {
         return new SignInResponse(member);
     }
 
+    @Transactional(readOnly = true)
     public Member getMemberByUid(String uid) {
         return memberRepository.findByUid(uid)
                 .orElseThrow(() -> new RuntimeException());

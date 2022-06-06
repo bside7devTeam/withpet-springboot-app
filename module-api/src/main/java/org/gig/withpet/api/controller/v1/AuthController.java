@@ -7,10 +7,7 @@ import org.gig.withpet.core.domain.user.member.dto.SignInRequest;
 import org.gig.withpet.core.domain.user.member.dto.SignInResponse;
 import org.gig.withpet.core.domain.user.member.dto.TokenResponse;
 import org.gig.withpet.core.domain.user.member.service.MemberService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -46,5 +43,11 @@ public class AuthController {
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRole());
         return ApiResponse.OK(new TokenResponse(accessToken, null));
+    }
+
+    @GetMapping("/member")
+    public ApiResponse completed(String uid) {
+        memberService.getMemberByUid(uid);
+        return ApiResponse.OK();
     }
 }
