@@ -1,6 +1,7 @@
 package org.gig.withpet.admin.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.gig.withpet.core.domain.utils.InitUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,9 +14,16 @@ import org.springframework.web.servlet.ModelAndView;
 @RequiredArgsConstructor
 public class MainController {
 
+    private final InitUtils initUtils;
+
     @GetMapping("/")
     public ModelAndView index() {
         return new ModelAndView("index");
     }
 
+    @GetMapping("init-data")
+    public String initData() {
+        initUtils.initData();
+        return "redirect:/login";
+    }
 }

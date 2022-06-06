@@ -1,10 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="~{layout}">
 <body>
-
+<div layout:fragment="content">
+    <div class="content">
+        <div class="container-fluid">
+            <!--      <button id="btnCity" class="btn btn-default">Zone</button>-->
+        </div>
+    </div>
+</div>
+<section layout:fragment="script">
+</section>
 </body>
 </html>

@@ -1,4 +1,4 @@
-package org.gig.withpet.core.data.animalProtect;
+package org.gig.withpet.core.data.animalProtect.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +20,7 @@ public class AnimalProtectReqDto {
     private String neuterYn;
     private String uprCd;
     private String orgCd;
+    private String saveYn;
 
     @Builder.Default
     private Integer pageNo = 1;

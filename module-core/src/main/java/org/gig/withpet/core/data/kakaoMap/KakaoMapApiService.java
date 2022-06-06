@@ -36,12 +36,7 @@ public class KakaoMapApiService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Authorization", properties.getRestApiKey());
 
-        UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(apiPath)
-                .queryParam("query", reqParam.getQuery())
-                .queryParam("analyze_type", reqParam.getAnalyzeType())
-                .queryParam("page", reqParam.getPage())
-                .queryParam("size", reqParam.getSize())
-                .build(false);  // 인코딩 하지않음
+        UriComponents uriComponents = setKakaoApiParam(reqParam, apiPath, suffixUrl); // 인코딩 하지않음
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setConnectTimeout(5000); // api 호출 타임아웃
         factory.setReadTimeout(5000);   // api 읽기 타임아웃
@@ -52,6 +47,36 @@ public class KakaoMapApiService {
         if (response.getStatusCodeValue() == 200) {
             JSONObject jsonObject = new JSONObject(response.getBody());
             return jsonObject.toMap();
+        }
+
+        return null;
+    }
+
+    private UriComponents setKakaoApiParam(KakaoMapReqDto reqParam, String apiPath, String suffixUrl) {
+
+        switch (suffixUrl) {
+            case "/v2/local/search/address.json":
+                return UriComponentsBuilder.fromHttpUrl(apiPath)
+                        .queryParam("query", reqParam.getQuery())
+                        .queryParam("analyze_type", reqParam.getAnalyzeType())
+                        .queryParam("page", reqParam.getPage())
+                        .queryParam("size", reqParam.getSize())
+                        .build(false);
+            case "/v2/local/geo/coord2regioncode.json" :
+                return UriComponentsBuilder.fromHttpUrl(apiPath)
+                        .queryParam("x", reqParam.getX())
+                        .queryParam("y", reqParam.getY())
+                        .queryParam("input_coord", reqParam.getInputCoord())
+                        .queryParam("output_coord", reqParam.getOutputCoord())
+                        .build(false);
+            case "/v2/local/geo/coord2address.json" :
+                return UriComponentsBuilder.fromHttpUrl(apiPath)
+                        .queryParam("x", reqParam.getX())
+                        .queryParam("y", reqParam.getY())
+                        .queryParam("input_coord", reqParam.getInputCoord())
+                        .build(false);
+            default:
+                break;
         }
 
         return null;

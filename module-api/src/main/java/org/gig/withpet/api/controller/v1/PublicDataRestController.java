@@ -7,13 +7,10 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.utils.ApiResponse;
 import org.gig.withpet.core.data.animalProtect.AnimalProtectApiService;
-import org.gig.withpet.core.data.animalProtect.AnimalProtectReqDto;
+import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectReqDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -24,7 +21,7 @@ import java.util.Map;
  */
 @RestController
 @Api(value = "PublicDataRestController V1")
-@RequestMapping("/api/v1/publicData/abandonmentPublicSrvc")
+@RequestMapping("/api/v1/public-data/abandonment-public-srvc")
 @RequiredArgsConstructor
 public class PublicDataRestController {
 
@@ -38,7 +35,7 @@ public class PublicDataRestController {
                     @ApiImplicitParam(
                             name = "bgnde"
                             , value = "유기날짜 시작일"
-                            , required = false
+                            , required = true
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "20220101"
@@ -46,7 +43,7 @@ public class PublicDataRestController {
                     @ApiImplicitParam(
                             name = "endde"
                             , value = "유기날짜 종료일"
-                            , required = false
+                            , required = true
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "20220630"
@@ -54,7 +51,7 @@ public class PublicDataRestController {
                     @ApiImplicitParam(
                             name = "upkind"
                             , value = "축종코드"
-                            , required = true
+                            , required = false
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "417000"
@@ -63,7 +60,7 @@ public class PublicDataRestController {
                     @ApiImplicitParam(
                             name = "state"
                             , value = "상태"
-                            , required = true
+                            , required = false
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "notice"
@@ -91,6 +88,14 @@ public class PublicDataRestController {
                             , dataType = "int"
                             , paramType = "query"
                             , defaultValue = "10"
+                    ),
+                    @ApiImplicitParam(
+                            name = "saveYn"
+                            , value = "공공 데이터 저장여부"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "N"
                     )
             }
     )
@@ -102,7 +107,8 @@ public class PublicDataRestController {
             @RequestParam(value = "upkind", required = false) String upkind,
             @RequestParam(value = "state", required = false) String state,
             @RequestParam(value = "pageNo", required = false) Integer pageNo,
-            @RequestParam(value = "numOfRows", required = false) Integer numOfRows
+            @RequestParam(value = "numOfRows", required = false) Integer numOfRows,
+            @RequestParam(value = "saveYn", required = true) String saveYn
     ) throws IOException {
 
         AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
@@ -113,6 +119,7 @@ public class PublicDataRestController {
                 .state(state)
                 .pageNo(pageNo)
                 .numOfRows(numOfRows)
+                .saveYn(saveYn)
                 .build();
 
         Map<String, Object> resDto = animalProtectApiService.getAbandonmentPublicApi(reqParam, "/abandonmentPublic");
@@ -123,10 +130,24 @@ public class PublicDataRestController {
     @ApiOperation(
             value = "입양 동물 시도 정보 조회 API"
     )
+    @ApiImplicitParams(
+            {
+                    @ApiImplicitParam(
+                            name = "saveYn"
+                            , value = "공공 데이터 저장여부"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "N"
+                    ),
+            }
+    )
     @GetMapping(value = "/sido", produces="application/json;charset=UTF-8")
-    public ResponseEntity<ApiResponse> getCityInfo() throws IOException {
+    public ResponseEntity<ApiResponse> getCityInfo(
+            @RequestParam(value = "saveYn", required = true) String saveYn) throws IOException {
 
         AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
+                .saveYn(saveYn)
                 .build();
 
         Map<String, Object> resDto = animalProtectApiService.getAbandonmentPublicApi(reqParam, "/sido");
@@ -147,15 +168,25 @@ public class PublicDataRestController {
                             , paramType = "query"
                             , defaultValue = "6110000"
                     ),
+                    @ApiImplicitParam(
+                            name = "saveYn"
+                            , value = "공공 데이터 저장여부"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "N"
+                    )
             }
     )
     @GetMapping(value = "/sigungu", produces="application/json;charset=UTF-8")
     public ResponseEntity<ApiResponse> getTownInfo(
-            @RequestParam(value = "upr_cd", required = false) String uprCd
+            @RequestParam(value = "upr_cd", required = false) String uprCd,
+            @RequestParam(value = "saveYn", required = true) String saveYn
     ) throws IOException {
 
         AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
                 .uprCd(uprCd)
+                .saveYn(saveYn)
                 .build();
 
         Map<String, Object> resDto = animalProtectApiService.getAbandonmentPublicApi(reqParam, "/sigungu");
@@ -184,17 +215,27 @@ public class PublicDataRestController {
                             , paramType = "query"
                             , defaultValue = "3220000"
                     ),
+                    @ApiImplicitParam(
+                            name = "saveYn"
+                            , value = "공공 데이터 저장여부"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "N"
+                    ),
             }
     )
     @GetMapping(value = "/shelter", produces="application/json;charset=UTF-8")
     public ResponseEntity<ApiResponse> getShelterInfo(
             @RequestParam(value = "upr_cd", required = false) String uprCd,
-            @RequestParam(value = "org_cd", required = false) String orgCd
+            @RequestParam(value = "org_cd", required = false) String orgCd,
+            @RequestParam(value = "saveYn", required = true) String saveYn
     ) throws IOException {
 
         AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
                 .uprCd(uprCd)
                 .orgCd(orgCd)
+                .saveYn(saveYn)
                 .build();
 
         Map<String, Object> resDto = animalProtectApiService.getAbandonmentPublicApi(reqParam, "/shelter");
@@ -215,15 +256,25 @@ public class PublicDataRestController {
                             , paramType = "query"
                             , defaultValue = "417000"
                     ),
+                    @ApiImplicitParam(
+                            name = "saveYn"
+                            , value = "공공 데이터 저장여부"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "N"
+                    ),
             }
     )
     @GetMapping(value = "/kind", produces="application/json;charset=UTF-8")
     public ResponseEntity<ApiResponse> getKindInfo(
-            @RequestParam(value = "up_kind_cd", required = false) String upkind
+            @RequestParam(value = "up_kind_cd", required = false) String upkind,
+            @RequestParam(value = "saveYn", required = true) String saveYn
     ) throws IOException {
 
         AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
                 .upkind(upkind)
+                .saveYn(saveYn)
                 .build();
 
         Map<String, Object> resDto = animalProtectApiService.getAbandonmentPublicApi(reqParam, "/kind");
@@ -231,5 +282,20 @@ public class PublicDataRestController {
         return new ResponseEntity<>(ApiResponse.OK(resDto), HttpStatus.OK);
     }
 
+    @ApiOperation(
+            value = "입양 동물 보호소 정보 저장 API"
+    )
+    @PostMapping(value = "/shelter", produces="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> saveAllShelterInfo(
+    ) throws IOException {
+
+        AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
+                .saveYn("Y")
+                .build();
+
+        animalProtectApiService.saveShelterInfoAll(reqParam, "/shelter");
+
+        return new ResponseEntity<>(ApiResponse.OK("Success"), HttpStatus.OK);
+    }
 }
 
