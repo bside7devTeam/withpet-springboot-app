@@ -39,6 +39,10 @@ public class JwtTokenProvider {
     public String resolve(HttpServletRequest request) {
         String token = request.getHeader(AUTHORIZATION);
 
+        return tokenParsing(token);
+    }
+
+    public String tokenParsing(String token) {
         return token.replace(BEARER + " ", "");
     }
 

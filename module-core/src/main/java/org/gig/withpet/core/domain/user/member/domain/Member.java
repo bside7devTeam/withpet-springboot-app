@@ -28,4 +28,12 @@ public class Member extends DefaultEntity {
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+
+    public void deleteRefreshToken() {
+        this.refreshToken = null;
+    }
+
+    public boolean compareToken(String token) {
+        return this.refreshToken.equals(token);
+    }
 }

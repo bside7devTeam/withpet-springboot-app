@@ -39,6 +39,20 @@ public class MemberService {
         member.updateRefreshToken(refreshToken);
     }
 
+    @Transactional
+    public void logout(String uid) {
+        Member member = getMemberByUid(uid);
+        member.deleteRefreshToken();
+    }
+
+    public SignInResponse compareToken(String uid, String token) {
+        Member member = getMemberByUid(uid);
+        if (!member.compareToken(token))
+            throw new RuntimeException();
+
+        return new SignInResponse(member);
+    }
+
     public Member getMemberByUid(String uid) {
         return memberRepository.findByUid(uid)
                 .orElseThrow(() -> new RuntimeException());

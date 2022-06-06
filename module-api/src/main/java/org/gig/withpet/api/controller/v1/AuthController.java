@@ -9,7 +9,10 @@ import org.gig.withpet.core.domain.user.member.dto.TokenResponse;
 import org.gig.withpet.core.domain.user.member.service.MemberService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.security.Principal;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,12 +32,19 @@ public class AuthController {
     }
 
     @PostMapping("/member/logout")
-    public ApiResponse logout() {
+    public ApiResponse logout(Principal principal) {
+        memberService.logout(principal.getName());
         return ApiResponse.OK("logout");
     }
 
     @PostMapping("/token-refresh")
-    public ApiResponse accessTokenRefresh() {
-        return ApiResponse.OK("token-refresh");
+    public ApiResponse accessTokenRefresh(
+            Principal principal,
+            @RequestHeader(value="Authorization") String token) {
+        SignInResponse member =
+                memberService.compareToken(principal.getName(), jwtTokenProvider.tokenParsing(token));
+
+        String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRole());
+        return ApiResponse.OK(new TokenResponse(accessToken, null));
     }
 }
