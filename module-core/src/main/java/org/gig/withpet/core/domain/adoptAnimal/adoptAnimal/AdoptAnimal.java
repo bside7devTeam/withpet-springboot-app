@@ -6,6 +6,7 @@ import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
+import org.gig.withpet.core.domain.common.types.YnType;
 
 import javax.persistence.*;
 
@@ -32,6 +33,11 @@ public class AdoptAnimal extends BaseTimeEntity {
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
     private TerminalStatus terminalState;
+
+    @Builder.Default
+    @Column(columnDefinition = "varchar(2) default 'N'", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private YnType deleteYn = YnType.N;
 
     private String processState;
 

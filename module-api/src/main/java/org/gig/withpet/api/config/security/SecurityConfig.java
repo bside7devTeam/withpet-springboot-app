@@ -25,7 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/api/v1/public-data/**", "/api/v1/kakao/**")
+                .antMatchers("/api/v1/public-data/**", "/api/v1/kakao/**", "/api/v1/adopt-animal/**")
                 .permitAll()
                 .anyRequest().authenticated();
 

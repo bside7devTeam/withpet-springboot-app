@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.utils.ApiResponse;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimalService;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalListDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalSearchDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
@@ -43,6 +44,8 @@ public class AdoptAnimalRestController {
                 .terminalStatus(terminalStatus)
                 .build();
 
-        return new ResponseEntity<>(ApiResponse.OK(""), HttpStatus.OK);
+        Page<AdoptAnimalListDto> pages =  adoptAnimalService.getAdoptAnimalPageDto(reqParam);
+
+        return new ResponseEntity<>(ApiResponse.OK(pages), HttpStatus.OK);
     }
 }
