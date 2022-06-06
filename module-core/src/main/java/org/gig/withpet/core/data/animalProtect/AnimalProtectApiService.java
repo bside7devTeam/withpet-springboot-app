@@ -3,6 +3,7 @@ package org.gig.withpet.core.data.animalProtect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.gig.withpet.core.data.animalProtect.dto.*;
@@ -14,6 +15,7 @@ import org.gig.withpet.core.domain.adoptAnimal.animalKind.AnimalKind;
 import org.gig.withpet.core.domain.adoptAnimal.animalKind.AnimalKindRepository;
 import org.gig.withpet.core.domain.Area.sidoArea.SidoArea;
 import org.gig.withpet.core.domain.Area.sidoArea.SidoAreaRepository;
+import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.shelter.Shelter;
 import org.gig.withpet.core.domain.shelter.ShelterRepository;
 import org.gig.withpet.core.utils.AnimalProtectProperties;
@@ -32,6 +34,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -138,8 +143,6 @@ public class AnimalProtectApiService {
             return;
         }
 
-
-
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
@@ -174,22 +177,58 @@ public class AnimalProtectApiService {
             }
 
 
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | NotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    private void saveAdoptAnimal(List<AnimalProtectDto> animalProtectDtoList) {
+    private void saveAdoptAnimal(List<AnimalProtectDto> animalProtectDtoList) throws NotFoundException {
 
         if (CollectionUtils.isEmpty(animalProtectDtoList)) {
             return;
         }
 
         for (AnimalProtectDto dto : animalProtectDtoList) {
-            AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(dto);
+
+            Optional<AdoptAnimal> findAdoptAnimal = adoptAnimalRepository.findAdoptAnimalByNoticeNoAndDeleteYn(dto.getNoticeNo(), YnType.N);
+            if (findAdoptAnimal.isPresent() && isNotNeedUpdateAdoptAnimalInfo(dto, findAdoptAnimal.get())) {
+                continue;
+            }
+            AdoptAnimal adoptAnimal = getAdoptAnimalEntity(dto, findAdoptAnimal);
+            LocalDate noticeEdt = LocalDate.parse(dto.getNoticeEdt(), DateTimeFormatter.ofPattern("yyyyMMdd"));
+            adoptAnimal.setProcessAndTerminalStatus(dto, noticeEdt);
             adoptAnimalRepository.save(adoptAnimal);
         }
 
+    }
+
+    private boolean isNotNeedUpdateAdoptAnimalInfo(AnimalProtectDto dto, AdoptAnimal adoptAnimal) {
+
+        if (!StringUtils.hasText(dto.getNoticeNo())) {
+            return true;
+        }
+
+        return dto.getNoticeSdt().equals(adoptAnimal.getNoticeSdt())
+                && dto.getNoticeEdt().equals(adoptAnimal.getNoticeEdt())
+                && dto.getProcessState().equals(adoptAnimal.getProcessState())
+                && dto.getCareAddr().equals(adoptAnimal.getCareAddr())
+                && dto.getCareNm().equals(adoptAnimal.getCareNm())
+                && dto.getCareTel().equals(adoptAnimal.getCareTel())
+                && dto.getOfficetel().equals(adoptAnimal.getOfficeTel())
+                && dto.getSpecialMark().equals(adoptAnimal.getSpecialMark());
+    }
+
+    private AdoptAnimal getAdoptAnimalEntity(AnimalProtectDto dto, Optional<AdoptAnimal> findAdoptAnimal) throws NotFoundException {
+
+        if (!StringUtils.hasText(dto.getNoticeNo())) {
+            throw new NotFoundException("adopt animal notice no");
+        }
+
+        if (findAdoptAnimal.isEmpty()) {
+            return AdoptAnimal.insertPublicData(dto, null);
+        }
+
+        return AdoptAnimal.insertPublicData(dto, findAdoptAnimal.get().getId());
     }
 
     private void saveAnimalKind(List<AnimalProtectKindDto> animalKindList, String upKindCd) {

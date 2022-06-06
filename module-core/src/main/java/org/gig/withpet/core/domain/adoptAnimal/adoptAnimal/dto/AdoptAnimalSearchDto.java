@@ -8,6 +8,8 @@ import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
 import org.gig.withpet.core.domain.common.BasePageDto;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.LocalDate;
+
 /**
  * @author : JAKE
  * @date : 2022/06/06
@@ -15,7 +17,7 @@ import org.springframework.data.domain.PageRequest;
 @Getter
 @Setter
 @Builder
-public class AdoptAnimalSearchDto extends BasePageDto {
+public class AdoptAnimalSearchDto {
 
     private String noticeSdt;
 
@@ -25,8 +27,13 @@ public class AdoptAnimalSearchDto extends BasePageDto {
 
     private TerminalStatus terminalStatus;
 
-    @Override
+    @Builder.Default
+    private int page = 1;
+
+    @Builder.Default
+    private int size = 3;
+
     public PageRequest getPageRequest() {
-        return PageRequest.of(getPage(), 3);
+        return PageRequest.of(this.page, this.size);
     }
 }

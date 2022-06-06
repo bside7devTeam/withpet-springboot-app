@@ -42,6 +42,8 @@ public class AdoptAnimalDto {
 
     private String colorCd;
 
+    private String kindCd;
+
     public AdoptAnimalDto(AdoptAnimal a) {
         this.adoptAnimalId = a.getId();
         this.desertionNo = a.getDesertionNo();
@@ -55,6 +57,7 @@ public class AdoptAnimalDto {
         this.specialMark = a.getSpecialMark();
         this.age = a.getAge();
         this.colorCd = a.getColorCd();
+        this.kindCd = a.getKindCd();
     }
 
 }

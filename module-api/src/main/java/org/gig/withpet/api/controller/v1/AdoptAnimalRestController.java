@@ -34,7 +34,9 @@ public class AdoptAnimalRestController {
             @RequestParam(value = "noticeSdt", required = true) String noticeSdt,
             @RequestParam(value = "noticeEdt", required = true) String noticeEdt,
             @RequestParam(value = "processStatus", required = true) ProcessStatus processStatus,
-            @RequestParam(value = "terminalStatus", required = false) TerminalStatus terminalStatus
+            @RequestParam(value = "terminalStatus", required = false) TerminalStatus terminalStatus,
+            @RequestParam(value = "page", required = true) int page,
+            @RequestParam(value = "size", required = true) int size
     ) {
 
         AdoptAnimalSearchDto reqParam = AdoptAnimalSearchDto.builder()
@@ -42,6 +44,8 @@ public class AdoptAnimalRestController {
                 .noticeEdt(noticeEdt)
                 .processStatus(processStatus)
                 .terminalStatus(terminalStatus)
+                .page(page)
+                .size(size)
                 .build();
 
         Page<AdoptAnimalListDto> pages =  adoptAnimalService.getAdoptAnimalPageDto(reqParam);

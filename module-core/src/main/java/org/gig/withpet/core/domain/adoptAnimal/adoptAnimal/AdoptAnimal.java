@@ -9,6 +9,7 @@ import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.common.types.YnType;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 /**
  * @author : JAKE
@@ -85,8 +86,9 @@ public class AdoptAnimal extends BaseTimeEntity {
 
     private String age;
 
-    public static AdoptAnimal insertPublicData(AnimalProtectDto dto) {
+    public static AdoptAnimal insertPublicData(AnimalProtectDto dto, Long id) {
         return AdoptAnimal.builder()
+                .id(id)
                 .sexCd(dto.getSexCd()).kindCd(dto.getKindCd()).noticeNo(dto.getNoticeNo())
                 .careAddr(dto.getCareAddr()).processState(dto.getProcessState()).noticeSdt(dto.getNoticeSdt())
                 .noticeEdt(dto.getNoticeEdt()).weight(dto.getWeight()).chargeNm(dto.getChargeNm())
@@ -96,5 +98,52 @@ public class AdoptAnimal extends BaseTimeEntity {
                 .specialMark(dto.getSpecialMark()).colorCd(dto.getColorCd()).happenDt(dto.getHappenDt()).age(dto.getAge())
                 .noticeComment(dto.getNoticeComment())
                 .build();
+    }
+
+    public void setProcessAndTerminalStatus(AnimalProtectDto dto, LocalDate noticeEdt) {
+        if (dto.getProcessState().equals("보호중")) {
+            if (LocalDate.now().isAfter(noticeEdt)) {
+                this.processStatus = ProcessStatus.PROTECT;
+            } else {
+                this.processStatus = ProcessStatus.NOTICE;
+            }
+        }
+
+        if (dto.getProcessState().contains("종료")) {
+            this.processStatus = ProcessStatus.TERMINAL;
+
+            if (checkContainsYn("입양", dto.getProcessState())) {
+                this.terminalState = TerminalStatus.ADOPT;
+            }
+
+            if (checkContainsYn("안락사", dto.getProcessState())) {
+                this.terminalState = TerminalStatus.ENDOWMENT;
+            }
+
+            if (checkContainsYn("자연사", dto.getProcessState())) {
+                this.terminalState = TerminalStatus.NATURAL_DEATH;
+            }
+
+            if (checkContainsYn("반환", dto.getProcessState())) {
+                this.terminalState = TerminalStatus.RETURN;
+            }
+
+            if (checkContainsYn("방사", dto.getProcessState())) {
+                this.terminalState = TerminalStatus.RADIATION;
+            }
+
+            if (checkContainsYn("기증", dto.getProcessState())) {
+                this.terminalState = TerminalStatus.ENDOWMENT;
+            }
+
+            if (checkContainsYn("기타", dto.getProcessState())) {
+                this.terminalState = TerminalStatus.ETC;
+            }
+        }
+
+    }
+
+    private boolean checkContainsYn(String str, String target) {
+        return target.contains(str);
     }
 }
