@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.adoptAnimal.types;
+package org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public enum ProcessStatus {
+
+    NOTICE("notice", "공고중"),
 
     PROTECT("protect", "보호중"),
 

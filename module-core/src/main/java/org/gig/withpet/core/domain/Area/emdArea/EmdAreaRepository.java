@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.Area;
+package org.gig.withpet.core.domain.Area.emdArea;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

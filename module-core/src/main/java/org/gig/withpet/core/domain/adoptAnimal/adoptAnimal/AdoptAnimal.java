@@ -1,12 +1,11 @@
-package org.gig.withpet.core.domain.adoptAnimal;
+package org.gig.withpet.core.domain.adoptAnimal.adoptAnimal;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectDto;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 
 import javax.persistence.*;
 
@@ -25,6 +24,14 @@ public class AdoptAnimal extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "adopt_animal_id")
     private Long id;
+
+    @Column(length = 20)
+    @Enumerated(EnumType.STRING)
+    private ProcessStatus processStatus;
+
+    @Column(length = 20)
+    @Enumerated(EnumType.STRING)
+    private TerminalStatus terminalState;
 
     private String processState;
 

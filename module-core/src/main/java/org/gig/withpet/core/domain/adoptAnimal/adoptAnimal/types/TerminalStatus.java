@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.adoptAnimal.types;
+package org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public enum TerminalState {
+public enum TerminalStatus {
 
     ADOPT("adopt", "입양"),
 

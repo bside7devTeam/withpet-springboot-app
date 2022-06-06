@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.adoptAnimal;
+package org.gig.withpet.core.domain.adoptAnimal.animalKind;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
