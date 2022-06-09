@@ -3,10 +3,12 @@ package org.gig.withpet.core.domain.adoptAnimal.adoptAnimal;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectDto;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.common.types.YnType;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -27,6 +29,20 @@ public class AdoptAnimal extends BaseTimeEntity {
     @Column(name = "adopt_animal_id")
     private Long id;
 
+    @Builder.Default
+    @Column(columnDefinition = "varchar(2) default 'N'", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private YnType deleteYn = YnType.N;
+
+    @Builder.Default
+    @Column(columnDefinition = "varchar(2) default 'N'", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private YnType neuterYn = YnType.N;
+
+    private String noticeNo;
+
+    private String desertionNo;
+
     @Column(length = 20)
     @Enumerated(EnumType.STRING)
     private ProcessStatus processStatus;
@@ -35,20 +51,13 @@ public class AdoptAnimal extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private TerminalStatus terminalState;
 
-    @Builder.Default
-    @Column(columnDefinition = "varchar(2) default 'N'", nullable = false)
+    @Column(length = 20)
     @Enumerated(EnumType.STRING)
-    private YnType deleteYn = YnType.N;
+    private AnimalKindType animalKindType;
 
-    private String processState;
+    private LocalDate noticeStartDate;
 
-    private String desertionNo;
-
-    private String noticeNo;
-
-    private String noticeSdt;
-
-    private String noticeEdt;
+    private LocalDate noticeEndDate;
 
     private String noticeComment;
 
@@ -64,45 +73,69 @@ public class AdoptAnimal extends BaseTimeEntity {
 
     private String orgNm;
 
-    private String sexCd;
+    private String sex;
 
-    private String kindCd;
+    private String color;
 
-    private String weight;
-
-    private String happenDt;
-
-    private String happenPlace;
+    private String age;
 
     private String filename;
 
     private String popfile;
 
-    private String neuterYn;
+    private String kind;
+
+    private String weight;
 
     private String specialMark;
 
-    private String colorCd;
+    private LocalDate happenDate;
 
-    private String age;
+    private String happenPlace;
 
-    public static AdoptAnimal insertPublicData(AnimalProtectDto dto, Long id) {
-        return AdoptAnimal.builder()
+    public static AdoptAnimal insertPublicData(AnimalProtectDto dto, Long id, String upKindCd) {
+
+        AdoptAnimal adoptAnimal = AdoptAnimal.builder()
                 .id(id)
-                .sexCd(dto.getSexCd()).kindCd(dto.getKindCd()).noticeNo(dto.getNoticeNo())
-                .careAddr(dto.getCareAddr()).processState(dto.getProcessState()).noticeSdt(dto.getNoticeSdt())
-                .noticeEdt(dto.getNoticeEdt()).weight(dto.getWeight()).chargeNm(dto.getChargeNm())
-                .careNm(dto.getCareNm()).desertionNo(dto.getDesertionNo()).careTel(dto.getCareTel())
-                .happenPlace(dto.getHappenPlace()).officeTel(dto.getOfficetel()).orgNm(dto.getOrgNm())
-                .filename(dto.getFilename()).popfile(dto.getPopfile()).neuterYn(dto.getNeuterYn())
-                .specialMark(dto.getSpecialMark()).colorCd(dto.getColorCd()).happenDt(dto.getHappenDt()).age(dto.getAge())
-                .noticeComment(dto.getNoticeComment())
+                .sex(dto.getSexCd()).kind(dto.getKindCd())
+                .desertionNo(dto.getDesertionNo())
+                .noticeNo(dto.getNoticeNo()).noticeComment(dto.getNoticeComment())
+                .noticeStartDate(dto.getNoticeStartDate()).noticeEndDate(dto.getNoticeEndDate())
+                .careAddr(dto.getCareAddr()).weight(dto.getWeight()).chargeNm(dto.getChargeNm())
+                .careNm(dto.getCareNm()).careTel(dto.getCareTel())
+                .happenPlace(dto.getHappenPlace()).happenDate(dto.getHappenDate())
+                .officeTel(dto.getOfficetel()).orgNm(dto.getOrgNm())
+                .filename(dto.getFilename()).popfile(dto.getPopfile())
+                .neuterYn(dto.getNeuterYn().equals("Y") ? YnType.Y : YnType.N)
+                .specialMark(dto.getSpecialMark()).color(dto.getColorCd()).age(dto.getAge())
                 .build();
+
+        adoptAnimal.setProcessStatus(dto);
+        adoptAnimal.setTerminalStatus(dto);
+        adoptAnimal.setAnimalKindType(upKindCd);
+
+        return adoptAnimal;
     }
 
-    public void setProcessAndTerminalStatus(AnimalProtectDto dto, LocalDate noticeEdt) {
+    public boolean isNotNeedUpdate(AnimalProtectDto dto, ProcessStatus processStatus) {
+
+        if (!StringUtils.hasText(dto.getNoticeNo())) {
+            return true;
+        }
+
+        return dto.getNoticeStartDate().equals(this.noticeStartDate)
+                && dto.getNoticeEndDate().equals(this.noticeEndDate)
+                && processStatus != null && processStatus == this.processStatus
+                && dto.getCareAddr().equals(this.careAddr)
+                && dto.getCareNm().equals(this.careNm)
+                && dto.getCareTel().equals(this.careTel)
+                && dto.getOfficetel().equals(this.officeTel)
+                && dto.getSpecialMark().equals(this.specialMark);
+    }
+
+    private void setProcessStatus(AnimalProtectDto dto) {
         if (dto.getProcessState().equals("보호중")) {
-            if (LocalDate.now().isAfter(noticeEdt)) {
+            if (LocalDate.now().isAfter(dto.getNoticeEndDate())) {
                 this.processStatus = ProcessStatus.PROTECT;
             } else {
                 this.processStatus = ProcessStatus.NOTICE;
@@ -111,7 +144,29 @@ public class AdoptAnimal extends BaseTimeEntity {
 
         if (dto.getProcessState().contains("종료")) {
             this.processStatus = ProcessStatus.TERMINAL;
+        }
 
+    }
+
+    public ProcessStatus convertProcessStatus(AnimalProtectDto dto) {
+        if (dto.getProcessState().equals("보호중")) {
+            if (LocalDate.now().isAfter(dto.getNoticeEndDate())) {
+                return ProcessStatus.PROTECT;
+            } else {
+                return ProcessStatus.NOTICE;
+            }
+        }
+
+        if (dto.getProcessState().contains("종료")) {
+            return ProcessStatus.TERMINAL;
+        }
+
+        return null;
+    }
+
+    private void setTerminalStatus(AnimalProtectDto dto) {
+
+        if (dto.getProcessState().contains("종료")) {
             if (checkContainsYn("입양", dto.getProcessState())) {
                 this.terminalState = TerminalStatus.ADOPT;
             }
@@ -141,6 +196,27 @@ public class AdoptAnimal extends BaseTimeEntity {
             }
         }
 
+    }
+
+    private void setAnimalKindType(String upKindCd) {
+
+        if (!StringUtils.hasText(upKindCd)) {
+            return;
+        }
+
+        switch (upKindCd) {
+            case "417000" :
+                this.animalKindType = AnimalKindType.PUPPY;
+                break;
+            case "422400" :
+                this.animalKindType = AnimalKindType.CAT;
+                break;
+            case "429900" :
+                this.animalKindType = AnimalKindType.ETC;
+                break;
+            default:
+                this.animalKindType = null;
+        }
     }
 
     private boolean checkContainsYn(String str, String target) {

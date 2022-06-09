@@ -3,6 +3,7 @@ package org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
 import org.gig.withpet.core.domain.common.BasePageDto;
@@ -17,15 +18,17 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-public class AdoptAnimalSearchDto {
+public class AdoptAnimalSearchDto extends BasePageDto {
 
-    private String noticeSdt;
+    private LocalDate noticeStartDate;
 
-    private String noticeEdt;
+    private LocalDate noticeEndDate;
 
     private ProcessStatus processStatus;
 
     private TerminalStatus terminalStatus;
+
+    private AnimalKindType animalKindType;
 
     @Builder.Default
     private int page = 1;
@@ -33,6 +36,7 @@ public class AdoptAnimalSearchDto {
     @Builder.Default
     private int size = 3;
 
+    @Override
     public PageRequest getPageRequest() {
         return PageRequest.of(this.page, this.size);
     }

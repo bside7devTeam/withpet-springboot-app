@@ -11,6 +11,9 @@ import org.gig.withpet.core.domain.Area.siggArea.SiggArea;
 import org.gig.withpet.core.domain.Area.siggArea.SiggAreaRepository;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimal;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimalRepository;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
+import org.gig.withpet.core.data.animalProtect.adoptAnimalData.AdoptAnimalData;
+import org.gig.withpet.core.data.animalProtect.adoptAnimalData.AdoptAnimalDataRepository;
 import org.gig.withpet.core.domain.adoptAnimal.animalKind.AnimalKind;
 import org.gig.withpet.core.domain.adoptAnimal.animalKind.AnimalKindRepository;
 import org.gig.withpet.core.domain.Area.sidoArea.SidoArea;
@@ -34,9 +37,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,6 +52,7 @@ public class AnimalProtectApiService {
 
     private final AnimalProtectProperties properties;
     private final AdoptAnimalRepository adoptAnimalRepository;
+    private final AdoptAnimalDataRepository adoptAnimalDataRepository;
     private final AnimalKindRepository animalKindRepository;
     private final SidoAreaRepository sidoAreaRepository;
     private final SiggAreaRepository siggAreaRepository;
@@ -150,7 +151,7 @@ public class AnimalProtectApiService {
                 case "/abandonmentPublic":
                     List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>() {
                     });
-                    saveAdoptAnimal(animalProtectList);
+                    saveAdoptAnimalData(animalProtectList, reqParam.getUpkind());
                     break;
                 case "/sido":
                     List<AnimalProtectSidoDto> sidoDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSidoDto>>() {
@@ -182,7 +183,7 @@ public class AnimalProtectApiService {
         }
     }
 
-    private void saveAdoptAnimal(List<AnimalProtectDto> animalProtectDtoList) throws NotFoundException {
+    private void saveAdoptAnimalData(List<AnimalProtectDto> animalProtectDtoList, String upKindCd) throws NotFoundException {
 
         if (CollectionUtils.isEmpty(animalProtectDtoList)) {
             return;
@@ -190,45 +191,32 @@ public class AnimalProtectApiService {
 
         for (AnimalProtectDto dto : animalProtectDtoList) {
 
-            Optional<AdoptAnimal> findAdoptAnimal = adoptAnimalRepository.findAdoptAnimalByNoticeNoAndDeleteYn(dto.getNoticeNo(), YnType.N);
-            if (findAdoptAnimal.isPresent() && isNotNeedUpdateAdoptAnimalInfo(dto, findAdoptAnimal.get())) {
+            Optional<AdoptAnimalData> findAdoptAnimalData = adoptAnimalDataRepository.findAdoptAnimalDataByNoticeNoAndDeleteYn(dto.getNoticeNo(), YnType.N);
+            if (findAdoptAnimalData.isPresent() && findAdoptAnimalData.get().isNotNeedUpdate(dto)) {
                 continue;
             }
-            AdoptAnimal adoptAnimal = getAdoptAnimalEntity(dto, findAdoptAnimal);
-            LocalDate noticeEdt = LocalDate.parse(dto.getNoticeEdt(), DateTimeFormatter.ofPattern("yyyyMMdd"));
-            adoptAnimal.setProcessAndTerminalStatus(dto, noticeEdt);
+
+            Long adoptAnimalDataId = findAdoptAnimalData.map(AdoptAnimalData::getId).orElse(null);
+            AdoptAnimalData adoptAnimalData = AdoptAnimalData.insertPublicData(dto, adoptAnimalDataId);
+            adoptAnimalDataRepository.save(adoptAnimalData);
+
+            Optional<AdoptAnimal> findAdoptAnimal = adoptAnimalRepository.findAdoptAnimalByNoticeNoAndDeleteYn(dto.getNoticeNo(), YnType.N);
+            if (findAdoptAnimal.isPresent()) {
+                ProcessStatus processStatus = findAdoptAnimal.get().convertProcessStatus(dto);
+                if (findAdoptAnimal.get().isNotNeedUpdate(dto, processStatus)) {
+                    continue;
+                }
+            }
+
+            dto.setNoticeStartDate(CommonUtils.convertStringToLocalDate(dto.getNoticeSdt()));
+            dto.setNoticeEndDate(CommonUtils.convertStringToLocalDate(dto.getNoticeEdt()));
+            dto.setHappenDate(CommonUtils.convertStringToLocalDate(dto.getHappenDt()));
+
+            Long adoptAnimalId = findAdoptAnimal.map(AdoptAnimal::getId).orElse(null);
+            AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(dto, adoptAnimalId, upKindCd);
             adoptAnimalRepository.save(adoptAnimal);
         }
 
-    }
-
-    private boolean isNotNeedUpdateAdoptAnimalInfo(AnimalProtectDto dto, AdoptAnimal adoptAnimal) {
-
-        if (!StringUtils.hasText(dto.getNoticeNo())) {
-            return true;
-        }
-
-        return dto.getNoticeSdt().equals(adoptAnimal.getNoticeSdt())
-                && dto.getNoticeEdt().equals(adoptAnimal.getNoticeEdt())
-                && dto.getProcessState().equals(adoptAnimal.getProcessState())
-                && dto.getCareAddr().equals(adoptAnimal.getCareAddr())
-                && dto.getCareNm().equals(adoptAnimal.getCareNm())
-                && dto.getCareTel().equals(adoptAnimal.getCareTel())
-                && dto.getOfficetel().equals(adoptAnimal.getOfficeTel())
-                && dto.getSpecialMark().equals(adoptAnimal.getSpecialMark());
-    }
-
-    private AdoptAnimal getAdoptAnimalEntity(AnimalProtectDto dto, Optional<AdoptAnimal> findAdoptAnimal) throws NotFoundException {
-
-        if (!StringUtils.hasText(dto.getNoticeNo())) {
-            throw new NotFoundException("adopt animal notice no");
-        }
-
-        if (findAdoptAnimal.isEmpty()) {
-            return AdoptAnimal.insertPublicData(dto, null);
-        }
-
-        return AdoptAnimal.insertPublicData(dto, findAdoptAnimal.get().getId());
     }
 
     private void saveAnimalKind(List<AnimalProtectKindDto> animalKindList, String upKindCd) {

@@ -1,7 +1,7 @@
 package org.gig.withpet.admin.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.utils.InitUtils;
+import org.gig.withpet.core.utils.InitUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;

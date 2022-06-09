@@ -8,6 +8,9 @@ import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimal;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 /**
  * @author : JAKE
  * @date : 2022/06/06
@@ -24,9 +27,9 @@ public class AdoptAnimalDto {
 
     private String noticeNo;
 
-    private String noticeSdt;
+    private LocalDate noticeStartDate;
 
-    private String noticeEdt;
+    private LocalDate noticeEndDate;
 
     private ProcessStatus processStatus;
 
@@ -40,24 +43,24 @@ public class AdoptAnimalDto {
 
     private String age;
 
-    private String colorCd;
+    private String color;
 
-    private String kindCd;
+    private String kind;
 
     public AdoptAnimalDto(AdoptAnimal a) {
         this.adoptAnimalId = a.getId();
         this.desertionNo = a.getDesertionNo();
         this.noticeNo = a.getNoticeNo();
-        this.noticeSdt = a.getNoticeSdt();
-        this.noticeEdt = a.getNoticeEdt();
+        this.noticeStartDate = a.getNoticeStartDate();
+        this.noticeEndDate = a.getNoticeEndDate();
         this.processStatus = a.getProcessStatus();
         this.terminalStatus = a.getTerminalState();
         this.orgNm = a.getOrgNm();
         this.popfile = a.getPopfile();
         this.specialMark = a.getSpecialMark();
         this.age = a.getAge();
-        this.colorCd = a.getColorCd();
-        this.kindCd = a.getKindCd();
+        this.color = a.getColor();
+        this.kind = a.getKind();
     }
 
 }

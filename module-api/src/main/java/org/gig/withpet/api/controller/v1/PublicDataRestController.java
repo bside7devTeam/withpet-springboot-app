@@ -51,7 +51,7 @@ public class PublicDataRestController {
                     @ApiImplicitParam(
                             name = "upkind"
                             , value = "축종코드"
-                            , required = false
+                            , required = true
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "417000"
@@ -104,7 +104,7 @@ public class PublicDataRestController {
             @RequestParam(value = "bgnde", required = false) String bgnde,
             @RequestParam(value = "endde", required = false) String endde,
             @RequestParam(value = "neuter_yn", required = false) String neuterYn,
-            @RequestParam(value = "upkind", required = false) String upkind,
+            @RequestParam(value = "upkind", required = true) String upkind,
             @RequestParam(value = "state", required = false) String state,
             @RequestParam(value = "pageNo", required = false) Integer pageNo,
             @RequestParam(value = "numOfRows", required = false) Integer numOfRows,
