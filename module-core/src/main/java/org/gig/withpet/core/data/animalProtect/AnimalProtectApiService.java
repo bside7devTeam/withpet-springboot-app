@@ -3,25 +3,28 @@ package org.gig.withpet.core.data.animalProtect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.shaded.json.parser.JSONParser;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.gig.withpet.core.data.animalProtect.dto.*;
-import org.gig.withpet.core.domain.Area.SiggArea;
-import org.gig.withpet.core.domain.Area.SiggAreaRepository;
-import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimal;
-import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimalRepository;
-import org.gig.withpet.core.domain.adoptAnimal.AnimalKind;
-import org.gig.withpet.core.domain.adoptAnimal.AnimalKindRepository;
-import org.gig.withpet.core.domain.Area.SidoArea;
-import org.gig.withpet.core.domain.Area.SidoAreaRepository;
+import org.gig.withpet.core.domain.Area.siggArea.SiggArea;
+import org.gig.withpet.core.domain.Area.siggArea.SiggAreaRepository;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimal;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimalRepository;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
+import org.gig.withpet.core.data.animalProtect.adoptAnimalData.AdoptAnimalData;
+import org.gig.withpet.core.data.animalProtect.adoptAnimalData.AdoptAnimalDataRepository;
+import org.gig.withpet.core.domain.adoptAnimal.animalKind.AnimalKind;
+import org.gig.withpet.core.domain.adoptAnimal.animalKind.AnimalKindRepository;
+import org.gig.withpet.core.domain.Area.sidoArea.SidoArea;
+import org.gig.withpet.core.domain.Area.sidoArea.SidoAreaRepository;
+import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.shelter.Shelter;
 import org.gig.withpet.core.domain.shelter.ShelterRepository;
 import org.gig.withpet.core.utils.AnimalProtectProperties;
 import org.gig.withpet.core.utils.CommonUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -49,6 +52,7 @@ public class AnimalProtectApiService {
 
     private final AnimalProtectProperties properties;
     private final AdoptAnimalRepository adoptAnimalRepository;
+    private final AdoptAnimalDataRepository adoptAnimalDataRepository;
     private final AnimalKindRepository animalKindRepository;
     private final SidoAreaRepository sidoAreaRepository;
     private final SiggAreaRepository siggAreaRepository;
@@ -140,8 +144,6 @@ public class AnimalProtectApiService {
             return;
         }
 
-
-
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
@@ -149,7 +151,7 @@ public class AnimalProtectApiService {
                 case "/abandonmentPublic":
                     List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>() {
                     });
-                    saveAdoptAnimal(animalProtectList);
+                    saveAdoptAnimalData(animalProtectList, reqParam.getUpkind());
                     break;
                 case "/sido":
                     List<AnimalProtectSidoDto> sidoDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSidoDto>>() {
@@ -176,19 +178,42 @@ public class AnimalProtectApiService {
             }
 
 
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | NotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    private void saveAdoptAnimal(List<AnimalProtectDto> animalProtectDtoList) {
+    private void saveAdoptAnimalData(List<AnimalProtectDto> animalProtectDtoList, String upKindCd) throws NotFoundException {
 
         if (CollectionUtils.isEmpty(animalProtectDtoList)) {
             return;
         }
 
         for (AnimalProtectDto dto : animalProtectDtoList) {
-            AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(dto);
+
+            Optional<AdoptAnimalData> findAdoptAnimalData = adoptAnimalDataRepository.findAdoptAnimalDataByNoticeNoAndDeleteYn(dto.getNoticeNo(), YnType.N);
+            if (findAdoptAnimalData.isPresent() && findAdoptAnimalData.get().isNotNeedUpdate(dto)) {
+                continue;
+            }
+
+            Long adoptAnimalDataId = findAdoptAnimalData.map(AdoptAnimalData::getId).orElse(null);
+            AdoptAnimalData adoptAnimalData = AdoptAnimalData.insertPublicData(dto, adoptAnimalDataId);
+            adoptAnimalDataRepository.save(adoptAnimalData);
+
+            Optional<AdoptAnimal> findAdoptAnimal = adoptAnimalRepository.findAdoptAnimalByNoticeNoAndDeleteYn(dto.getNoticeNo(), YnType.N);
+            if (findAdoptAnimal.isPresent()) {
+                ProcessStatus processStatus = findAdoptAnimal.get().convertProcessStatus(dto);
+                if (findAdoptAnimal.get().isNotNeedUpdate(dto, processStatus)) {
+                    continue;
+                }
+            }
+
+            dto.setNoticeStartDate(CommonUtils.convertStringToLocalDate(dto.getNoticeSdt()));
+            dto.setNoticeEndDate(CommonUtils.convertStringToLocalDate(dto.getNoticeEdt()));
+            dto.setHappenDate(CommonUtils.convertStringToLocalDate(dto.getHappenDt()));
+
+            Long adoptAnimalId = findAdoptAnimal.map(AdoptAnimal::getId).orElse(null);
+            AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(dto, adoptAnimalId, upKindCd);
             adoptAnimalRepository.save(adoptAnimal);
         }
 

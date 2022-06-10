@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.adoptAnimal;
+package org.gig.withpet.core.domain.adoptAnimal.animalKind;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

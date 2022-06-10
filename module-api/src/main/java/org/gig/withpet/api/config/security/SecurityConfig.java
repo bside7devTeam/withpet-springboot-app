@@ -33,6 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/public-data/**",
                         "/api/v1/kakao/**",
                         "/api/member/login",
+                        "/api/v1/adopt-animal/**",
                         "/api/member",
                         "/api/health-check")
                 .permitAll()

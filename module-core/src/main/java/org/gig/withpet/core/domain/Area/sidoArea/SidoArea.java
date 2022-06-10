@@ -1,8 +1,9 @@
-package org.gig.withpet.core.domain.Area;
+package org.gig.withpet.core.domain.Area.sidoArea;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectSidoDto;
+import org.gig.withpet.core.domain.Area.siggArea.SiggArea;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 
 import javax.persistence.*;
