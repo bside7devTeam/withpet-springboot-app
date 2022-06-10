@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.utils;
+package org.gig.withpet.core.utils;
 
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.exception.AlreadyEntity;
