@@ -6,12 +6,16 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.utils.ApiResponse;
-import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimalService;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalListDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalSearchDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
+import org.gig.withpet.core.domain.shelter.Shelter;
+import org.gig.withpet.core.domain.shelter.ShelterRepository;
+import org.gig.withpet.core.domain.shelter.ShelterService;
+import org.gig.withpet.core.domain.shelter.dto.ShelterListDto;
+import org.gig.withpet.core.domain.shelter.dto.ShelterSearchDto;
 import org.gig.withpet.core.utils.CommonUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -23,60 +27,36 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author : JAKE
- * @date : 2022/06/06
+ * @date : 2022/06/11
  */
 @RestController
-@Api(value = "AdoptAnimalRestController V1")
-@RequestMapping("/v1/adopt-animal")
+@Api(value = "ShelterRestcontroller V1")
+@RequestMapping("/v1/shelter")
 @RequiredArgsConstructor
-public class AdoptAnimalRestController {
+public class ShelterController {
 
-    private final AdoptAnimalService adoptAnimalService;
+    private final ShelterService shelterService;
 
     @ApiOperation(
-            value = "입양동물공고 목록 조회 API"
+            value = "보호소 목록 조회 API"
     )
     @ApiImplicitParams(
             {
                     @ApiImplicitParam(
-                            name = "animalKindType"
-                            , value = "축종"
+                            name = "sidoCode"
+                            , value = "시도 코드"
                             , required = false
                             , dataType = "string"
                             , paramType = "query"
-                            , defaultValue = ""
+                            , defaultValue = "6110000"
                     ),
                     @ApiImplicitParam(
-                            name = "noticeSdt"
-                            , value = "공고시작날짜"
+                            name = "siggCode"
+                            , value = "시군구 코드"
                             , required = false
                             , dataType = "string"
                             , paramType = "query"
-                            , defaultValue = "20220601"
-                    ),
-                    @ApiImplicitParam(
-                            name = "noticeEdt"
-                            , value = "공고종료날짜"
-                            , required = true
-                            , dataType = "string"
-                            , paramType = "query"
-                            , defaultValue = "20220630"
-                    ),
-                    @ApiImplicitParam(
-                            name = "processStatus"
-                            , value = "공고진행상태"
-                            , required = true
-                            , dataType = "string"
-                            , paramType = "query"
-                            , defaultValue = "NOTICE"
-                    ),
-                    @ApiImplicitParam(
-                            name = "terminalStatus"
-                            , value = "종료상태"
-                            , required = false
-                            , dataType = "string"
-                            , paramType = "query"
-                            , defaultValue = ""
+                            , defaultValue = "3220000"
                     ),
                     @ApiImplicitParam(
                             name = "page"
@@ -98,26 +78,20 @@ public class AdoptAnimalRestController {
     )
     @GetMapping(value = "", produces ="application/json;charset=UTF-8")
     public ResponseEntity<ApiResponse> getAdoptAnimalPage(
-            @RequestParam(value = "animalKindType", required = true) AnimalKindType animalKindType,
-            @RequestParam(value = "noticeSdt", required = true) String noticeSdt,
-            @RequestParam(value = "noticeEdt", required = true) String noticeEdt,
-            @RequestParam(value = "processStatus", required = true) ProcessStatus processStatus,
-            @RequestParam(value = "terminalStatus", required = false) TerminalStatus terminalStatus,
+            @RequestParam(value = "sidoCode", required = false) String sidoCode,
+            @RequestParam(value = "siggCode", required = false) String siggCode,
             @RequestParam(value = "page", required = true) int page,
             @RequestParam(value = "size", required = true) int size
     ) {
 
-        AdoptAnimalSearchDto reqParam = AdoptAnimalSearchDto.builder()
-                .animalKindType(animalKindType)
-                .noticeStartDate(CommonUtils.convertStringToLocalDate(noticeSdt))
-                .noticeEndDate(CommonUtils.convertStringToLocalDate(noticeEdt))
-                .processStatus(processStatus)
-                .terminalStatus(terminalStatus)
+        ShelterSearchDto reqParam = ShelterSearchDto.builder()
+                .sidoCode(sidoCode)
+                .siggCode(siggCode)
                 .page(page)
                 .size(size)
                 .build();
 
-        Page<AdoptAnimalListDto> pages =  adoptAnimalService.getAdoptAnimalPageDto(reqParam);
+        Page<ShelterListDto> pages =  shelterService.getShelterPageDto(reqParam);
 
         return new ResponseEntity<>(ApiResponse.OK(pages), HttpStatus.OK);
     }

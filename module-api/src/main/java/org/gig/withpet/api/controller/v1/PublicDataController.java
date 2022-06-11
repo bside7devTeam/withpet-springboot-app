@@ -23,7 +23,7 @@ import java.util.Map;
 @Api(value = "PublicDataRestController V1")
 @RequestMapping("/v1/public-data/abandonment-public-srvc")
 @RequiredArgsConstructor
-public class PublicDataRestController {
+public class PublicDataController {
 
     private final AnimalProtectApiService animalProtectApiService;
 

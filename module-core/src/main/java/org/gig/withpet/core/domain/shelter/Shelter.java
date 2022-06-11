@@ -1,12 +1,10 @@
 package org.gig.withpet.core.domain.shelter;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectShelterDto;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
+import org.gig.withpet.core.domain.common.types.YnType;
 
 import javax.persistence.*;
 
@@ -25,6 +23,11 @@ public class Shelter extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "shelter_id")
     private Long id;
+
+    @Builder.Default
+    @Column(columnDefinition = "varchar(2) default 'N'", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private YnType deleteYn = YnType.N;
 
     private String name;
 
