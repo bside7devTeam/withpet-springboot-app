@@ -3,6 +3,7 @@ package org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.StringUtils;
 
 /**
  * @author : JAKE
@@ -17,9 +18,33 @@ public enum AnimalKindType {
 
     CAT("422400", "고양이"),
 
-    ETC("429900", "기타");
+    ETC("429900", "기타"),
+
+    UNKNOWN("unknown", "unknown");
 
     private String key;
 
     private String description;
+
+    public static AnimalKindType findByUpKindCd(String upKindCd) {
+        try {
+            if (!StringUtils.hasText(upKindCd)) {
+                return AnimalKindType.UNKNOWN;
+            }
+
+            switch (upKindCd) {
+                case "417000" :
+                    return AnimalKindType.PUPPY;
+                case "422400" :
+                    return AnimalKindType.CAT;
+                case "429900" :
+                    return AnimalKindType.ETC;
+                default:
+                    return AnimalKindType.UNKNOWN;
+            }
+
+        } catch (IllegalArgumentException e) {
+            return AnimalKindType.UNKNOWN;
+        }
+    }
 }

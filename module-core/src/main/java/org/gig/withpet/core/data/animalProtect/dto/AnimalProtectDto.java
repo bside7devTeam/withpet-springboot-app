@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author : JAKE
@@ -62,9 +63,15 @@ public class AnimalProtectDto {
 
     private String noticeComment;
 
-    private LocalDate noticeStartDate;
+    public LocalDate getNoticeEndDate() {
+        return LocalDate.parse(this.noticeEdt, DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
 
-    private LocalDate noticeEndDate;
+    public LocalDate getNoticeStartDate() {
+        return LocalDate.parse(this.noticeEdt, DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
 
-    private LocalDate happenDate;
+    public LocalDate getHappenDate() {
+        return LocalDate.parse(this.happenDt, DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
 }

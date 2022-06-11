@@ -3,6 +3,7 @@ package org.gig.withpet.core.data.animalProtect.adoptAnimalData;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectDto;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.vo.AdoptAnimalVo;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.springframework.util.StringUtils;
