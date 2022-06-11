@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @RestController
 @Api(value = "PublicDataRestController V1")
-@RequestMapping("/api/v1/public-data/abandonment-public-srvc")
+@RequestMapping("/v1/public-data/abandonment-public-srvc")
 @RequiredArgsConstructor
 public class PublicDataRestController {
 

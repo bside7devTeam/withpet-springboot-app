@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(value = "AdoptAnimalRestController V1")
-@RequestMapping("/api/v1/adopt-animal")
+@RequestMapping("/v1/adopt-animal")
 @RequiredArgsConstructor
 public class AdoptAnimalRestController {
 

@@ -14,6 +14,7 @@ import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimalRepository
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.data.animalProtect.adoptAnimalData.AdoptAnimalData;
 import org.gig.withpet.core.data.animalProtect.adoptAnimalData.AdoptAnimalDataRepository;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.vo.AdoptAnimalVo;
 import org.gig.withpet.core.domain.adoptAnimal.animalKind.AnimalKind;
 import org.gig.withpet.core.domain.adoptAnimal.animalKind.AnimalKindRepository;
 import org.gig.withpet.core.domain.Area.sidoArea.SidoArea;
@@ -37,6 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -200,16 +202,17 @@ public class AnimalProtectApiService {
             AdoptAnimalData adoptAnimalData = AdoptAnimalData.insertPublicData(dto, adoptAnimalDataId);
             adoptAnimalDataRepository.save(adoptAnimalData);
 
-            Optional<AdoptAnimal> findAdoptAnimal = adoptAnimalRepository.findAdoptAnimalByNoticeNoAndDeleteYn(dto.getNoticeNo(), YnType.N);
+            AdoptAnimalVo vo = new AdoptAnimalVo(dto, upKindCd);
+
+            Optional<AdoptAnimal> findAdoptAnimal = adoptAnimalRepository.findAdoptAnimalByNoticeNoAndDeleteYn(vo.getNoticeNo(), YnType.N);
             if (findAdoptAnimal.isPresent()) {
-                ProcessStatus processStatus = findAdoptAnimal.get().convertProcessStatus(dto);
-                if (findAdoptAnimal.get().isNotNeedUpdate(dto, processStatus)) {
+                if (findAdoptAnimal.get().isNotNeedUpdate(vo)) {
                     continue;
                 }
             }
 
             Long adoptAnimalId = findAdoptAnimal.map(AdoptAnimal::getId).orElse(null);
-            AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(dto, adoptAnimalId, upKindCd);
+            AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(vo, adoptAnimalId);
             adoptAnimalRepository.save(adoptAnimal);
         }
 
