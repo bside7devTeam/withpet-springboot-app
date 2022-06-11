@@ -5,6 +5,7 @@ import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.vo.AdoptAnimalVo;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.common.types.YnType;
@@ -35,7 +36,7 @@ public class AdoptAnimal extends BaseTimeEntity {
     private YnType deleteYn = YnType.N;
 
     @Builder.Default
-    @Column(columnDefinition = "varchar(2) default 'N'", nullable = false)
+    @Column(columnDefinition = "varchar(2) default 'N'")
     @Enumerated(EnumType.STRING)
     private YnType neuterYn = YnType.N;
 
@@ -93,133 +94,38 @@ public class AdoptAnimal extends BaseTimeEntity {
 
     private String happenPlace;
 
-    public static AdoptAnimal insertPublicData(AnimalProtectDto dto, Long id, String upKindCd) {
+    public static AdoptAnimal insertPublicData(AdoptAnimalVo vo, Long id) {
 
-        AdoptAnimal adoptAnimal = AdoptAnimal.builder()
+        return AdoptAnimal.builder()
                 .id(id)
-                .sex(dto.getSexCd()).kind(dto.getKindCd())
-                .desertionNo(dto.getDesertionNo())
-                .noticeNo(dto.getNoticeNo()).noticeComment(dto.getNoticeComment())
-                .noticeStartDate(dto.getNoticeStartDate()).noticeEndDate(dto.getNoticeEndDate())
-                .careAddr(dto.getCareAddr()).weight(dto.getWeight()).chargeNm(dto.getChargeNm())
-                .careNm(dto.getCareNm()).careTel(dto.getCareTel())
-                .happenPlace(dto.getHappenPlace()).happenDate(dto.getHappenDate())
-                .officeTel(dto.getOfficetel()).orgNm(dto.getOrgNm())
-                .filename(dto.getFilename()).popfile(dto.getPopfile())
-                .neuterYn(dto.getNeuterYn().equals("Y") ? YnType.Y : YnType.N)
-                .specialMark(dto.getSpecialMark()).color(dto.getColorCd()).age(dto.getAge())
+                .sex(vo.getSex()).kind(vo.getKind())
+                .desertionNo(vo.getDesertionNo())
+                .noticeNo(vo.getNoticeNo()).noticeComment(vo.getNoticeComment())
+                .noticeStartDate(vo.getNoticeStartDate()).noticeEndDate(vo.getNoticeEndDate())
+                .careAddr(vo.getCareAddr()).weight(vo.getWeight()).chargeNm(vo.getChargeNm())
+                .careNm(vo.getCareNm()).careTel(vo.getCareTel())
+                .happenPlace(vo.getHappenPlace()).happenDate(vo.getHappenDate())
+                .officeTel(vo.getOfficeTel()).orgNm(vo.getOrgNm())
+                .filename(vo.getFilename()).popfile(vo.getPopfile())
+                .neuterYn(vo.getNeuterYn())
+                .specialMark(vo.getSpecialMark()).color(vo.getColor()).age(vo.getAge())
+                .processStatus(vo.getProcessStatus()).terminalState(vo.getTerminalState()).animalKindType(vo.getAnimalKindType())
                 .build();
-
-        adoptAnimal.setProcessStatus(dto);
-        adoptAnimal.setTerminalStatus(dto);
-        adoptAnimal.setAnimalKindType(upKindCd);
-
-        return adoptAnimal;
     }
 
-    public boolean isNotNeedUpdate(AnimalProtectDto dto, ProcessStatus processStatus) {
+    public boolean isNotNeedUpdate(AdoptAnimalVo vo) {
 
-        if (!StringUtils.hasText(dto.getNoticeNo())) {
+        if (!StringUtils.hasText(vo.getNoticeNo())) {
             return true;
         }
 
-        return dto.getNoticeStartDate().equals(this.noticeStartDate)
-                && dto.getNoticeEndDate().equals(this.noticeEndDate)
-                && processStatus != null && processStatus == this.processStatus
-                && dto.getCareAddr().equals(this.careAddr)
-                && dto.getCareNm().equals(this.careNm)
-                && dto.getCareTel().equals(this.careTel)
-                && dto.getOfficetel().equals(this.officeTel)
-                && dto.getSpecialMark().equals(this.specialMark);
-    }
-
-    private void setProcessStatus(AnimalProtectDto dto) {
-        if (dto.getProcessState().equals("보호중")) {
-            if (LocalDate.now().isAfter(dto.getNoticeEndDate())) {
-                this.processStatus = ProcessStatus.PROTECT;
-            } else {
-                this.processStatus = ProcessStatus.NOTICE;
-            }
-        }
-
-        if (dto.getProcessState().contains("종료")) {
-            this.processStatus = ProcessStatus.TERMINAL;
-        }
-
-    }
-
-    public ProcessStatus convertProcessStatus(AnimalProtectDto dto) {
-        if (dto.getProcessState().equals("보호중")) {
-            if (LocalDate.now().isAfter(dto.getNoticeEndDate())) {
-                return ProcessStatus.PROTECT;
-            } else {
-                return ProcessStatus.NOTICE;
-            }
-        }
-
-        if (dto.getProcessState().contains("종료")) {
-            return ProcessStatus.TERMINAL;
-        }
-
-        return null;
-    }
-
-    private void setTerminalStatus(AnimalProtectDto dto) {
-
-        if (dto.getProcessState().contains("종료")) {
-            if (checkContainsYn("입양", dto.getProcessState())) {
-                this.terminalState = TerminalStatus.ADOPT;
-            }
-
-            if (checkContainsYn("안락사", dto.getProcessState())) {
-                this.terminalState = TerminalStatus.ENDOWMENT;
-            }
-
-            if (checkContainsYn("자연사", dto.getProcessState())) {
-                this.terminalState = TerminalStatus.NATURAL_DEATH;
-            }
-
-            if (checkContainsYn("반환", dto.getProcessState())) {
-                this.terminalState = TerminalStatus.RETURN;
-            }
-
-            if (checkContainsYn("방사", dto.getProcessState())) {
-                this.terminalState = TerminalStatus.RADIATION;
-            }
-
-            if (checkContainsYn("기증", dto.getProcessState())) {
-                this.terminalState = TerminalStatus.ENDOWMENT;
-            }
-
-            if (checkContainsYn("기타", dto.getProcessState())) {
-                this.terminalState = TerminalStatus.ETC;
-            }
-        }
-
-    }
-
-    private void setAnimalKindType(String upKindCd) {
-
-        if (!StringUtils.hasText(upKindCd)) {
-            return;
-        }
-
-        switch (upKindCd) {
-            case "417000" :
-                this.animalKindType = AnimalKindType.PUPPY;
-                break;
-            case "422400" :
-                this.animalKindType = AnimalKindType.CAT;
-                break;
-            case "429900" :
-                this.animalKindType = AnimalKindType.ETC;
-                break;
-            default:
-                this.animalKindType = null;
-        }
-    }
-
-    private boolean checkContainsYn(String str, String target) {
-        return target.contains(str);
+        return vo.getNoticeStartDate().equals(this.noticeStartDate)
+                && vo.getNoticeEndDate().equals(this.noticeEndDate)
+                && vo.getProcessStatus() == this.processStatus
+                && vo.getCareAddr().equals(this.careAddr)
+                && vo.getCareNm().equals(this.careNm)
+                && vo.getCareTel().equals(this.careTel)
+                && vo.getOfficeTel().equals(this.officeTel)
+                && vo.getSpecialMark().equals(this.specialMark);
     }
 }
