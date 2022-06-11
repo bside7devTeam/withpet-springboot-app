@@ -208,10 +208,6 @@ public class AnimalProtectApiService {
                 }
             }
 
-            dto.setNoticeStartDate(CommonUtils.convertStringToLocalDate(dto.getNoticeSdt()));
-            dto.setNoticeEndDate(CommonUtils.convertStringToLocalDate(dto.getNoticeEdt()));
-            dto.setHappenDate(CommonUtils.convertStringToLocalDate(dto.getHappenDt()));
-
             Long adoptAnimalId = findAdoptAnimal.map(AdoptAnimal::getId).orElse(null);
             AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(dto, adoptAnimalId, upKindCd);
             adoptAnimalRepository.save(adoptAnimal);
