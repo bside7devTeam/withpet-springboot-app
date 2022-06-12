@@ -26,7 +26,7 @@ import java.util.Map;
 @Api(value = "KakaoApiRestController V1")
 @RequestMapping("/v1/kakao/map")
 @RequiredArgsConstructor
-public class KakaoApiRestController {
+public class KakaoApiController {
 
     private final KakaoMapApiService kakaoMapApiService;
 

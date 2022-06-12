@@ -1,14 +1,15 @@
 package org.gig.withpet.core.domain.shelter;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectShelterDto;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimal;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
+import org.gig.withpet.core.domain.common.types.YnType;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author : JAKE
@@ -26,6 +27,11 @@ public class Shelter extends BaseTimeEntity {
     @Column(name = "shelter_id")
     private Long id;
 
+    @Builder.Default
+    @Column(columnDefinition = "varchar(2) default 'N'", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private YnType deleteYn = YnType.N;
+
     private String name;
 
     private String regNo;
@@ -33,6 +39,10 @@ public class Shelter extends BaseTimeEntity {
     private String sidoCode;
 
     private String siggCode;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "shelter", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<AdoptAnimal> adoptAnimals = new ArrayList<>();
 
     public static Shelter insertPublicData(AnimalProtectShelterDto dto, String sidoCode, String siggCode) {
         return Shelter.builder()

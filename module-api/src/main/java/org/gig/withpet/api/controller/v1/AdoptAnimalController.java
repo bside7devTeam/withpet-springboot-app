@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(value = "AdoptAnimalRestController V1")
 @RequestMapping("/v1/adopt-animal")
 @RequiredArgsConstructor
-public class AdoptAnimalRestController {
+public class AdoptAnimalController {
 
     private final AdoptAnimalService adoptAnimalService;
 
@@ -44,7 +44,7 @@ public class AdoptAnimalRestController {
                             , required = false
                             , dataType = "string"
                             , paramType = "query"
-                            , defaultValue = ""
+                            , defaultValue = "PUPPY"
                     ),
                     @ApiImplicitParam(
                             name = "noticeSdt"

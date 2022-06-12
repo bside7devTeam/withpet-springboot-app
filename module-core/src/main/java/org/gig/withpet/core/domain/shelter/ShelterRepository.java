@@ -1,7 +1,11 @@
 package org.gig.withpet.core.domain.shelter;
 
+import org.gig.withpet.core.domain.common.types.YnType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author : JAKE
@@ -9,4 +13,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ShelterRepository extends JpaRepository<Shelter, Long> {
+
+    Optional<Shelter> findByRegNoAndDeleteYn(String regNo, YnType deleteYn);
+
+    List<Shelter> findAllByDeleteYn(YnType deleteYn);
+
 }

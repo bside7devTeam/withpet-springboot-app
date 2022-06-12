@@ -23,7 +23,7 @@ import java.util.Map;
 @Api(value = "PublicDataRestController V1")
 @RequestMapping("/v1/public-data/abandonment-public-srvc")
 @RequiredArgsConstructor
-public class PublicDataRestController {
+public class PublicDataController {
 
     private final AnimalProtectApiService animalProtectApiService;
 
@@ -55,8 +55,7 @@ public class PublicDataRestController {
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "417000"
-                    )
-                    ,
+                    ),
                     @ApiImplicitParam(
                             name = "state"
                             , value = "상태"
@@ -72,6 +71,14 @@ public class PublicDataRestController {
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "Y"
+                    ),
+                    @ApiImplicitParam(
+                            name = "care_reg_no"
+                            , value = "보호소번호"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "311322200900001"
                     ),
                     @ApiImplicitParam(
                             name = "pageNo"
@@ -106,6 +113,7 @@ public class PublicDataRestController {
             @RequestParam(value = "neuter_yn", required = false) String neuterYn,
             @RequestParam(value = "upkind", required = true) String upkind,
             @RequestParam(value = "state", required = false) String state,
+            @RequestParam(value = "care_reg_no", required = false) String careRegNo,
             @RequestParam(value = "pageNo", required = false) Integer pageNo,
             @RequestParam(value = "numOfRows", required = false) Integer numOfRows,
             @RequestParam(value = "saveYn", required = true) String saveYn
@@ -117,6 +125,7 @@ public class PublicDataRestController {
                 .neuterYn(neuterYn)
                 .upkind(upkind)
                 .state(state)
+                .careRegNo(careRegNo)
                 .pageNo(pageNo)
                 .numOfRows(numOfRows)
                 .saveYn(saveYn)
@@ -294,6 +303,76 @@ public class PublicDataRestController {
                 .build();
 
         animalProtectApiService.saveShelterInfoAll(reqParam, "/shelter");
+
+        return new ResponseEntity<>(ApiResponse.OK("Success"), HttpStatus.OK);
+    }
+
+    @ApiOperation(
+            value = "입양 동물, 보호 매핑 API"
+    )
+    @ApiImplicitParams(
+            {
+                    @ApiImplicitParam(
+                            name = "bgnde"
+                            , value = "유기날짜 시작일"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "20220601"
+                    ),
+                    @ApiImplicitParam(
+                            name = "endde"
+                            , value = "유기날짜 종료일"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "20220610"
+                    ),
+                    @ApiImplicitParam(
+                            name = "upkind"
+                            , value = "축종코드"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "417000"
+                    ),
+                    @ApiImplicitParam(
+                            name = "pageNo"
+                            , value = "페이지 번호"
+                            , required = true
+                            , dataType = "int"
+                            , paramType = "query"
+                            , defaultValue = "1"
+                    ),
+                    @ApiImplicitParam(
+                            name = "numOfRows"
+                            , value = "페이지 사이즈"
+                            , required = true
+                            , dataType = "int"
+                            , paramType = "query"
+                            , defaultValue = "1000"
+                    ),
+            }
+    )
+    @PostMapping(value = "/shelter/adopt-animal", produces="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> saveShelterAdoptAnimalInfo(
+            @RequestParam(value = "bgnde", required = false) String bgnde,
+            @RequestParam(value = "endde", required = false) String endde,
+            @RequestParam(value = "upkind", required = true) String upkind,
+            @RequestParam(value = "pageNo", required = false) int pageNo,
+            @RequestParam(value = "numOfRows", required = false) int numOfRows
+    ) throws IOException {
+
+        AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
+                .bgnde(bgnde)
+                .endde(endde)
+                .upkind(upkind)
+                .saveYn("Y")
+                .pageNo(pageNo)
+                .numOfRows(numOfRows)
+                .build();
+
+        animalProtectApiService.saveShelterAdoptAnimalInfo(reqParam, "/abandonmentPublic");
 
         return new ResponseEntity<>(ApiResponse.OK("Success"), HttpStatus.OK);
     }
