@@ -74,6 +74,14 @@ public class PublicDataController {
                             , defaultValue = "Y"
                     ),
                     @ApiImplicitParam(
+                            name = "care_reg_no"
+                            , value = "보호소번호"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "311322200900001"
+                    ),
+                    @ApiImplicitParam(
                             name = "pageNo"
                             , value = "페이지 번호"
                             , required = true
@@ -106,6 +114,7 @@ public class PublicDataController {
             @RequestParam(value = "neuter_yn", required = false) String neuterYn,
             @RequestParam(value = "upkind", required = true) String upkind,
             @RequestParam(value = "state", required = false) String state,
+            @RequestParam(value = "care_reg_no", required = false) String careRegNo,
             @RequestParam(value = "pageNo", required = false) Integer pageNo,
             @RequestParam(value = "numOfRows", required = false) Integer numOfRows,
             @RequestParam(value = "saveYn", required = true) String saveYn
@@ -117,6 +126,7 @@ public class PublicDataController {
                 .neuterYn(neuterYn)
                 .upkind(upkind)
                 .state(state)
+                .careRegNo(careRegNo)
                 .pageNo(pageNo)
                 .numOfRows(numOfRows)
                 .saveYn(saveYn)

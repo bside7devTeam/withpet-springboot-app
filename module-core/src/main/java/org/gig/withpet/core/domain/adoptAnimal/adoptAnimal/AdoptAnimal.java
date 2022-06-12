@@ -9,6 +9,7 @@ import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.vo.AdoptAnimalVo;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.common.types.YnType;
+import org.gig.withpet.core.domain.shelter.Shelter;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
@@ -94,6 +95,10 @@ public class AdoptAnimal extends BaseTimeEntity {
 
     private String happenPlace;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shelter_id")
+    private Shelter shelter;
+
     public static AdoptAnimal insertPublicData(AdoptAnimalVo vo, Long id) {
 
         return AdoptAnimal.builder()
@@ -127,5 +132,10 @@ public class AdoptAnimal extends BaseTimeEntity {
                 && vo.getCareTel().equals(this.careTel)
                 && vo.getOfficeTel().equals(this.officeTel)
                 && vo.getSpecialMark().equals(this.specialMark);
+    }
+
+    public void setShelter(Shelter shelter) {
+        this.shelter = shelter;
+        shelter.getAdoptAnimals().add(this);
     }
 }

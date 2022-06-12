@@ -18,6 +18,7 @@ public class AnimalProtectReqDto {
     private String bgnde;
     private String endde;
     private String neuterYn;
+    private String careRegNo;
     private String uprCd;
     private String orgCd;
     private String saveYn;

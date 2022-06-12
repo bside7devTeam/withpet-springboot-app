@@ -214,6 +214,10 @@ public class AnimalProtectApiService {
             Long adoptAnimalId = findAdoptAnimal.map(AdoptAnimal::getId).orElse(null);
             AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(vo, adoptAnimalId);
             adoptAnimalRepository.save(adoptAnimal);
+
+//            Optional<Shelter> findShelter = shelterRepository.findByNameAndDeleteYn(adoptAnimal.getCareNm(), YnType.N);
+//            findShelter.ifPresent(adoptAnimal::setShelter);
+
         }
 
     }
