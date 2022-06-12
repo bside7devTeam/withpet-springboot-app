@@ -44,7 +44,7 @@ public class AdoptAnimalController {
                             , required = false
                             , dataType = "string"
                             , paramType = "query"
-                            , defaultValue = ""
+                            , defaultValue = "PUPPY"
                     ),
                     @ApiImplicitParam(
                             name = "noticeSdt"

@@ -136,6 +136,5 @@ public class AdoptAnimal extends BaseTimeEntity {
 
     public void setShelter(Shelter shelter) {
         this.shelter = shelter;
-        shelter.getAdoptAnimals().add(this);
     }
 }

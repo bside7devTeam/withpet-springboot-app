@@ -119,6 +119,20 @@ public class AnimalProtectApiService {
         }
     }
 
+    public void saveShelterAdoptAnimalInfo(AnimalProtectReqDto reqParam, String suffixUrl) throws IOException {
+
+        List<Shelter> shelters = shelterRepository.findAllByDeleteYn(YnType.N);
+
+        if (CollectionUtils.isEmpty(shelters)) {
+            return;
+        }
+
+        for (Shelter shelter : shelters) {
+            reqParam.setCareRegNo(shelter.getRegNo());
+            getAbandonmentPublicApi(reqParam, suffixUrl);
+        }
+    }
+
     private void parseJsonData(String suffixUrl, JSONObject data, AnimalProtectReqDto reqParam) {
         JSONObject response = data.getJSONObject("response");
         JSONObject header = response.getJSONObject("header");
@@ -153,7 +167,7 @@ public class AnimalProtectApiService {
                 case "/abandonmentPublic":
                     List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>() {
                     });
-                    saveAdoptAnimalData(animalProtectList, reqParam.getUpkind());
+                    saveAdoptAnimalData(animalProtectList, reqParam.getUpkind(), reqParam.getCareRegNo());
                     break;
                 case "/sido":
                     List<AnimalProtectSidoDto> sidoDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSidoDto>>() {
@@ -185,7 +199,7 @@ public class AnimalProtectApiService {
         }
     }
 
-    private void saveAdoptAnimalData(List<AnimalProtectDto> animalProtectDtoList, String upKindCd) throws NotFoundException {
+    private void saveAdoptAnimalData(List<AnimalProtectDto> animalProtectDtoList, String upKindCd, String careRegNo) throws NotFoundException {
 
         if (CollectionUtils.isEmpty(animalProtectDtoList)) {
             return;
@@ -215,9 +229,10 @@ public class AnimalProtectApiService {
             AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(vo, adoptAnimalId);
             adoptAnimalRepository.save(adoptAnimal);
 
-//            Optional<Shelter> findShelter = shelterRepository.findByNameAndDeleteYn(adoptAnimal.getCareNm(), YnType.N);
-//            findShelter.ifPresent(adoptAnimal::setShelter);
-
+            if (StringUtils.hasText(careRegNo)) {
+                Optional<Shelter> findShelter = shelterRepository.findByRegNoAndDeleteYn(careRegNo, YnType.N);
+                findShelter.ifPresent(adoptAnimal::setShelter);
+            }
         }
 
     }
