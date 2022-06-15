@@ -21,9 +21,9 @@ import java.util.Map;
  */
 @RestController
 @Api(value = "PublicDataRestController V1")
-@RequestMapping("/v1/public-data/abandonment-public-srvc")
+@RequestMapping("/public-data/abandonment-public-srvc")
 @RequiredArgsConstructor
-public class PublicDataController {
+public class PDAdoptAnimalController {
 
     private final AnimalProtectApiService animalProtectApiService;
 
@@ -156,6 +156,8 @@ public class PublicDataController {
             @RequestParam(value = "saveYn", required = true) String saveYn) throws IOException {
 
         AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
+                .pageNo(1)
+                .numOfRows(500)
                 .saveYn(saveYn)
                 .build();
 
@@ -195,6 +197,8 @@ public class PublicDataController {
 
         AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
                 .uprCd(uprCd)
+                .pageNo(1)
+                .numOfRows(500)
                 .saveYn(saveYn)
                 .build();
 
