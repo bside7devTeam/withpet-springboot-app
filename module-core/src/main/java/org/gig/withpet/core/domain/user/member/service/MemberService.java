@@ -2,8 +2,8 @@ package org.gig.withpet.core.domain.user.member.service;
 
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.user.member.domain.Member;
-import org.gig.withpet.core.domain.user.member.dto.SignInRequest;
-import org.gig.withpet.core.domain.user.member.dto.SignInResponse;
+import org.gig.withpet.core.domain.user.member.dto.SignInRequestDto;
+import org.gig.withpet.core.domain.user.member.dto.SignInResponseDto;
 import org.gig.withpet.core.domain.user.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,21 +16,21 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
 
-    public SignInResponse signIn(SignInRequest signInRequest) {
-        Optional<Member> member = memberRepository.findByUid(signInRequest.uid);
-        return member.map(SignInResponse::new)
-                .orElseGet(() -> signUp(signInRequest));
+    public SignInResponseDto signIn(SignInRequestDto signInRequestDto) {
+        Optional<Member> member = memberRepository.findByUid(signInRequestDto.uid);
+        return member.map(SignInResponseDto::new)
+                .orElseGet(() -> signUp(signInRequestDto));
 
     }
 
-    private SignInResponse signUp(SignInRequest signInRequest) {
+    private SignInResponseDto signUp(SignInRequestDto signInRequestDto) {
         Member member = Member.builder()
-                .uid(signInRequest.uid)
-                .email(signInRequest.email)
-                .snsType(signInRequest.snsType)
+                .uid(signInRequestDto.uid)
+                .email(signInRequestDto.email)
+                .snsType(signInRequestDto.snsType)
                 .build();
 
-        return new SignInResponse(memberRepository.save(member));
+        return new SignInResponseDto(memberRepository.save(member));
     }
 
     public void updateRefreshToken(String uid, String refreshToken) {
@@ -43,12 +43,12 @@ public class MemberService {
         member.deleteRefreshToken();
     }
 
-    public SignInResponse compareToken(String uid, String token) {
+    public SignInResponseDto compareToken(String uid, String token) {
         Member member = getMemberByUid(uid);
         if (!member.compareToken(token))
             throw new RuntimeException();
 
-        return new SignInResponse(member);
+        return new SignInResponseDto(member);
     }
 
     @Transactional(readOnly = true)

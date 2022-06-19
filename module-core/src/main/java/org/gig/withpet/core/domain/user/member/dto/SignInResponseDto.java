@@ -4,11 +4,11 @@ import lombok.Data;
 import org.gig.withpet.core.domain.user.member.domain.Member;
 
 @Data
-public class SignInResponse {
+public class SignInResponseDto {
     private String uid;
     private String role;
 
-    public SignInResponse(Member member) {
+    public SignInResponseDto(Member member) {
         uid = member.getUid();
         role = member.getRoleType().toString();
     }
