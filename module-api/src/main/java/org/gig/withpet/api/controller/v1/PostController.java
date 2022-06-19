@@ -24,17 +24,17 @@ public class PostController {
     @ApiOperation(value = "게시판 생성")
     @PostMapping("/post/create")
     public ApiResponse postCreate(PostCreateDto postCreateDto, Principal principal) {
-        Long postId = postFacade.create(principal.getName(), postCreateDto);
+        PostDto post = postFacade.create(principal.getName(), postCreateDto);
 
-        return ApiResponse.OK(postId);
+        return ApiResponse.OK(post);
     }
 
     @ApiOperation(value = "게시판 수정")
     @PutMapping("/post/update")
     public ApiResponse postUpdate(PostUpdateDto postUpdateDto, Principal principal) {
-        Long postId = postFacade.update(principal.getName(), postUpdateDto);
+        PostDto post = postFacade.update(principal.getName(), postUpdateDto);
 
-        return ApiResponse.OK(postId);
+        return ApiResponse.OK(post);
     }
 
     @ApiOperation(value = "게시판 삭제")

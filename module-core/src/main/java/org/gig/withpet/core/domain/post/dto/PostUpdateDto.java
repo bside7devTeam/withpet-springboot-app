@@ -7,6 +7,7 @@ import java.util.List;
 
 @Data
 public class PostUpdateDto {
+    private Long postId;
     private String title;
     private String content;
     private List<ImageModel> images;
