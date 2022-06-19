@@ -15,6 +15,14 @@ public class AnimalShelterReqDto {
 
     private String type;
 
+    private String animalCnterNm;
+
+    private String institutionNm;
+
+    private String rdnmadr;
+
+    private String lnmadr;
+
     private String saveYn;
 
     @Builder.Default

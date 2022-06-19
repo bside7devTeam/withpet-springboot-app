@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(value = "ShelterRestcontroller V1")
-@RequestMapping("/v1/shelter")
+@RequestMapping("/shelter")
 @RequiredArgsConstructor
 public class ShelterController {
 

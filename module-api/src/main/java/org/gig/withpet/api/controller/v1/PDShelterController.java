@@ -44,6 +44,38 @@ public class PDShelterController {
                             , defaultValue = "json"
                     ),
                     @ApiImplicitParam(
+                            name = "animalCnterNm"
+                            , value = "동물보호센터명"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = ""
+                    ),
+                    @ApiImplicitParam(
+                            name = "institutionNm"
+                            , value = "관리기관명"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = ""
+                    ),
+                    @ApiImplicitParam(
+                            name = "rdnmadr"
+                            , value = "소재지도로명주소"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = ""
+                    ),
+                    @ApiImplicitParam(
+                            name = "lnmadr"
+                            , value = "소재지지번주소"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = ""
+                    ),
+                    @ApiImplicitParam(
                             name = "pageNo"
                             , value = "페이지번호"
                             , required = false
@@ -72,6 +104,10 @@ public class PDShelterController {
     @GetMapping(produces="application/json;charset=UTF-8")
     public ResponseEntity<ApiResponse> getShelterInfo(
             @RequestParam(value = "type", required = true) String type,
+            @RequestParam(value = "animalCnterNm", required = false) String animalCnterNm,
+            @RequestParam(value = "institutionNm", required = false) String institutionNm,
+            @RequestParam(value = "rdnmadr", required = false) String rdnmar,
+            @RequestParam(value = "lnmadr", required = false) String lnmadr,
             @RequestParam(value = "pageNo", required = true) int pageNo,
             @RequestParam(value = "numOfRows", required = true) int numOfRows,
             @RequestParam(value = "saveYn", required = true) String saveYn
@@ -80,6 +116,10 @@ public class PDShelterController {
         AnimalShelterReqDto reqParam = AnimalShelterReqDto
                 .builder()
                 .type(type)
+                .animalCnterNm(animalCnterNm)
+                .institutionNm(institutionNm)
+                .rdnmadr(rdnmar)
+                .lnmadr(lnmadr)
                 .pageNo(pageNo)
                 .numOfRows(numOfRows)
                 .saveYn(saveYn)

@@ -7,6 +7,7 @@ import org.gig.withpet.core.utils.AnimalShelterProperties;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +36,19 @@ public class AnimalShelterApiService {
         urlBuilder.append("&type=" + reqParam.getType());
         urlBuilder.append("&pageNo=" + reqParam.getPageNo());
         urlBuilder.append("&numOfRows=" + reqParam.getNumOfRows());
+
+        if (StringUtils.hasText(reqParam.getAnimalCnterNm())) {
+            urlBuilder.append("&animalCnterNm=" + URLEncoder.encode(reqParam.getAnimalCnterNm(), "UTF-8"));
+        }
+        if (StringUtils.hasText(reqParam.getInstitutionNm())) {
+            urlBuilder.append("&institutionNm=" + URLEncoder.encode(reqParam.getInstitutionNm(), "UTF-8"));
+        }
+        if (StringUtils.hasText(reqParam.getRdnmadr())) {
+            urlBuilder.append("&rdnmadr=" + reqParam.getRdnmadr());
+        }
+        if (StringUtils.hasText(reqParam.getLnmadr())) {
+            urlBuilder.append("&lnmadr=" + reqParam.getLnmadr());
+        }
 
         String urlStr = urlBuilder.toString();
         URL url = new URL(urlStr);
