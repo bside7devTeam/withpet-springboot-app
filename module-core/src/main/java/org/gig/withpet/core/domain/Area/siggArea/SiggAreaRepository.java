@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author : JAKE
@@ -14,4 +15,6 @@ import java.util.List;
 public interface SiggAreaRepository extends JpaRepository<SiggArea, Long> {
 
     List<SiggArea> findAllBySido(SidoArea sido);
+
+    Optional<SiggArea> findSiggAreaByAdmName(String admName);
 }

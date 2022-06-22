@@ -8,11 +8,16 @@ import lombok.extern.java.Log;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectDto;
 import org.gig.withpet.core.data.vWorldAddress.dto.AddressResDto;
 import org.gig.withpet.core.data.vWorldAddress.dto.VWorldAddressReqDto;
+import org.gig.withpet.core.domain.Area.emdArea.EmdArea;
+import org.gig.withpet.core.domain.Area.emdArea.EmdAreaRepository;
+import org.gig.withpet.core.domain.Area.siggArea.SiggArea;
+import org.gig.withpet.core.domain.Area.siggArea.SiggAreaRepository;
 import org.gig.withpet.core.utils.VWorldAddressProperties;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
@@ -25,6 +30,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author : JAKE
@@ -36,6 +42,10 @@ import java.util.Map;
 public class VWorldApiService {
 
     private final VWorldAddressProperties properties;
+
+    private final SiggAreaRepository siggAreaRepository;
+
+    private final EmdAreaRepository emdAreaRepository;
 
     @Transactional
     public Map<String, Object> getAddressVWorldApi(VWorldAddressReqDto reqParam) throws IOException {
@@ -98,15 +108,41 @@ public class VWorldApiService {
         List<AddressResDto> addressDataList = objectMapper.readValue(items.toString(), new TypeReference<List<AddressResDto>>() {
         });
 
-        log.info("ddd");
+        if (CollectionUtils.isEmpty(addressDataList)) {
+            return;
+        }
+
+        for (AddressResDto address : addressDataList) {
+            String[] strArray = address.getTitle().split(" ");
+
+            Optional<SiggArea> findSiggArea = siggAreaRepository.findSiggAreaByAdmName(strArray[1]);
+
+            if (findSiggArea.isEmpty()) {
+                log.info("sigg error " + strArray[1]);
+                continue;
+            }
+
+            EmdArea emdArea = EmdArea.insertPublicData(address, strArray[2]);
+            emdArea.addParent(findSiggArea.get());
+            emdAreaRepository.save(emdArea);
+
+        }
 
     }
 
-    public Map<String, Object> saveAddressVWorldApi() {
+    public Map<String, Object> saveAddressVWorldApi() throws IOException {
 
+        List<SiggArea> siggAreas = siggAreaRepository.findAll();
 
+        for (SiggArea siggArea : siggAreas) {
+            VWorldAddressReqDto reqParam = VWorldAddressReqDto
+                    .builder()
+                    .address(siggArea.getSido().getAdmName() + " " + siggArea.getAdmName())
+                    .saveYn("Y")
+                    .build();
 
-
+            getAddressVWorldApi(reqParam);
+        }
 
         return null;
     }
