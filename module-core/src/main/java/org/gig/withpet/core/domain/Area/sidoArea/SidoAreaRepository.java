@@ -15,4 +15,6 @@ public interface SidoAreaRepository extends JpaRepository<SidoArea, Long> {
 
     Optional<SidoArea> findSidoAreaByAdmCode(String admCode);
 
+    Optional<SidoArea> findSidoAreaByAdmName(String admName);
+
 }

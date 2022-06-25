@@ -17,4 +17,6 @@ public class VWorldAddressReqDto {
     private String address;
 
     private String saveYn;
+
+    private String category;
 }

@@ -33,6 +33,13 @@ public class EmdArea extends BaseTimeEntity {
 
     private String version;
 
+    @Column(length = 1000)
+    private String geometry;
+
+    private String coordinateX;
+
+    private String coordinateY;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sigg_id")
     private SiggArea sigg;
@@ -41,12 +48,14 @@ public class EmdArea extends BaseTimeEntity {
         return EmdArea
                 .builder()
                 .admCode(address.getId())
-                .admCode(admName)
+                .admName(admName)
+                .geometry(address.getGeometry())
+                .coordinateX(address.getPoint().getX())
+                .coordinateY(address.getPoint().getY())
                 .build();
     }
 
     public void addParent(SiggArea siggArea) {
         this.sigg = siggArea;
-        siggArea.getEmdAreas().add(this);
     }
 }

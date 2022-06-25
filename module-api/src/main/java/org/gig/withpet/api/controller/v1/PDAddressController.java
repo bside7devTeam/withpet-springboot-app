@@ -41,6 +41,14 @@ public class PDAddressController {
                             , defaultValue = "서울"
                     ),
                     @ApiImplicitParam(
+                            name = "category"
+                            , value = "카테고리"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "L4"
+                    ),
+                    @ApiImplicitParam(
                             name = "saveYn"
                             , value = "데이터 저장여부"
                             , required = true
@@ -52,12 +60,14 @@ public class PDAddressController {
     )
     @GetMapping(produces="application/json;charset=UTF-8")
     public ResponseEntity<ApiResponse> getAddressInfo(
-            @RequestParam(value = "query", required = false) String address,
+            @RequestParam(value = "category", required = true) String category,
+            @RequestParam(value = "query", required = true) String address,
             @RequestParam(value = "saveYn", required = true) String saveYn
     ) throws IOException {
 
         VWorldAddressReqDto reqParam = VWorldAddressReqDto
                 .builder()
+                .category(category)
                 .address(address)
                 .saveYn(saveYn)
                 .build();
@@ -68,12 +78,34 @@ public class PDAddressController {
     }
 
     @ApiOperation(
-            value = "행정구역 정보 저장 API"
+            value = "행정구역 정보 시도 데이터 저장 API"
     )
-    @PostMapping()
-    public ResponseEntity<ApiResponse> saveAddressInfo() throws IOException {
+    @PostMapping("/sido")
+    public ResponseEntity<ApiResponse> saveAddressSidoInfo() throws IOException {
 
-        Map<String, Object> resDto = vWorldApiService.saveAddressVWorldApi();
+        Map<String, Object> resDto = vWorldApiService.saveSidoAddressVWorldApi();
+
+        return new ResponseEntity<>(ApiResponse.OK(resDto), HttpStatus.OK);
+    }
+
+    @ApiOperation(
+            value = "행정구역 정보 시군구 데이터 저장 API"
+    )
+    @PostMapping("/sigg")
+    public ResponseEntity<ApiResponse> saveAddressSiggInfo() throws IOException {
+
+        Map<String, Object> resDto = vWorldApiService.saveSiggAddressVWorldApi();
+
+        return new ResponseEntity<>(ApiResponse.OK(resDto), HttpStatus.OK);
+    }
+
+    @ApiOperation(
+            value = "행정구역 정보 동데이터 API"
+    )
+    @PostMapping("/emd")
+    public ResponseEntity<ApiResponse> saveAddressEmdInfo() throws IOException {
+
+        Map<String, Object> resDto = vWorldApiService.saveEmdAddressVWorldApi();
 
         return new ResponseEntity<>(ApiResponse.OK(resDto), HttpStatus.OK);
     }

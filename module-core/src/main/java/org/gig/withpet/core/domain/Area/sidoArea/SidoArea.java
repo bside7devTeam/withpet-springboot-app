@@ -3,6 +3,7 @@ package org.gig.withpet.core.domain.Area.sidoArea;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectSidoDto;
+import org.gig.withpet.core.data.vWorldAddress.dto.AddressResDto;
 import org.gig.withpet.core.domain.Area.siggArea.SiggArea;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 
@@ -32,6 +33,13 @@ public class SidoArea extends BaseTimeEntity {
 
     private String version;
 
+    @Column(length = 1000)
+    private String geometry;
+
+    private String coordinateX;
+
+    private String coordinateY;
+
     @Builder.Default
     @OneToMany(mappedBy = "sido", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<SiggArea> siggAreas = new ArrayList<>();
@@ -40,6 +48,16 @@ public class SidoArea extends BaseTimeEntity {
         return SidoArea.builder()
                 .admCode(dto.getAdmCode())
                 .admName(dto.getAdmName())
+                .build();
+    }
+
+    public static SidoArea insertVWorldData(AddressResDto dto) {
+        return SidoArea.builder()
+                .admCode(dto.getId())
+                .admName(dto.getTitle())
+                .geometry(dto.getGeometry())
+                .coordinateX(dto.getPoint().getX())
+                .coordinateY(dto.getPoint().getY())
                 .build();
     }
 
