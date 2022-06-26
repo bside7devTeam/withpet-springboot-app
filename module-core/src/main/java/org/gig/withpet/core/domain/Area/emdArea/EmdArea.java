@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.gig.withpet.core.data.vWorldAddress.dto.AddressResDto;
 import org.gig.withpet.core.domain.Area.siggArea.SiggArea;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 
@@ -32,7 +33,29 @@ public class EmdArea extends BaseTimeEntity {
 
     private String version;
 
+    @Column(length = 1000)
+    private String geometry;
+
+    private String coordinateX;
+
+    private String coordinateY;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sigg_id")
     private SiggArea sigg;
+
+    public static EmdArea insertPublicData(AddressResDto address, String admName) {
+        return EmdArea
+                .builder()
+                .admCode(address.getId())
+                .admName(admName)
+                .geometry(address.getGeometry())
+                .coordinateX(address.getPoint().getX())
+                .coordinateY(address.getPoint().getY())
+                .build();
+    }
+
+    public void addParent(SiggArea siggArea) {
+        this.sigg = siggArea;
+    }
 }

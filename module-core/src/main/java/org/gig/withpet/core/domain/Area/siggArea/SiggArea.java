@@ -3,6 +3,7 @@ package org.gig.withpet.core.domain.Area.siggArea;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectSiggDto;
+import org.gig.withpet.core.data.vWorldAddress.dto.AddressResDto;
 import org.gig.withpet.core.domain.Area.emdArea.EmdArea;
 import org.gig.withpet.core.domain.Area.sidoArea.SidoArea;
 
@@ -32,6 +33,15 @@ public class SiggArea {
 
     private String version;
 
+    private String adoptAnimalAdmCode;
+
+    @Column(length = 1000)
+    private String geometry;
+
+    private String coordinateX;
+
+    private String coordinateY;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sido_id")
     private SidoArea sido;
@@ -47,8 +57,22 @@ public class SiggArea {
                 .build();
     }
 
+    public static SiggArea insertVWorldData(AddressResDto dto, String admName) {
+        return SiggArea.builder()
+                .admCode(dto.getId())
+                .admName(admName)
+                .geometry(dto.getGeometry())
+                .coordinateX(dto.getPoint().getX())
+                .coordinateY(dto.getPoint().getY())
+                .build();
+    }
+
     public void addParent(SidoArea sidoArea) {
         this.sido = sidoArea;
-        sidoArea.getSiggAreas().add(this);
     }
+
+    public void setAdoptAnimalAdmCode(String admCode) {
+        this.adoptAnimalAdmCode = admCode;
+    }
+
 }
