@@ -33,6 +33,8 @@ public class SidoArea extends BaseTimeEntity {
 
     private String version;
 
+    private String adoptAnimalAdmCode;
+
     @Column(length = 1000)
     private String geometry;
 
@@ -59,6 +61,10 @@ public class SidoArea extends BaseTimeEntity {
                 .coordinateX(dto.getPoint().getX())
                 .coordinateY(dto.getPoint().getY())
                 .build();
+    }
+
+    public void setAdoptAnimalAdmCode(String admCode) {
+        this.adoptAnimalAdmCode = admCode;
     }
 
 }

@@ -149,16 +149,26 @@ public class PDAdoptAnimalController {
                             , paramType = "query"
                             , defaultValue = "N"
                     ),
+                    @ApiImplicitParam(
+                            name = "mappingYn"
+                            , value = "행정구역 데이터 매핑여부"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "N"
+                    )
             }
     )
     @GetMapping(value = "/sido", produces="application/json;charset=UTF-8")
     public ResponseEntity<ApiResponse> getCityInfo(
-            @RequestParam(value = "saveYn", required = true) String saveYn) throws IOException {
+            @RequestParam(value = "saveYn", required = true) String saveYn,
+            @RequestParam(value = "mappingYn", required = true) String mappingYn) throws IOException {
 
         AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
                 .pageNo(1)
                 .numOfRows(500)
                 .saveYn(saveYn)
+                .mappingYn(mappingYn)
                 .build();
 
         Map<String, Object> resDto = animalProtectApiService.getAbandonmentPublicApi(reqParam, "/sido");
@@ -186,13 +196,22 @@ public class PDAdoptAnimalController {
                             , dataType = "string"
                             , paramType = "query"
                             , defaultValue = "N"
+                    ),
+                    @ApiImplicitParam(
+                            name = "mappingYn"
+                            , value = "행정구역 데이터 매핑여부"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "N"
                     )
             }
     )
     @GetMapping(value = "/sigungu", produces="application/json;charset=UTF-8")
     public ResponseEntity<ApiResponse> getTownInfo(
             @RequestParam(value = "upr_cd", required = false) String uprCd,
-            @RequestParam(value = "saveYn", required = true) String saveYn
+            @RequestParam(value = "saveYn", required = true) String saveYn,
+            @RequestParam(value = "mappingYn", required = true) String mappingYn
     ) throws IOException {
 
         AnimalProtectReqDto reqParam = AnimalProtectReqDto.builder()
@@ -200,6 +219,7 @@ public class PDAdoptAnimalController {
                 .pageNo(1)
                 .numOfRows(500)
                 .saveYn(saveYn)
+                .mappingYn(mappingYn)
                 .build();
 
         Map<String, Object> resDto = animalProtectApiService.getAbandonmentPublicApi(reqParam, "/sigungu");

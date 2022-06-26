@@ -40,12 +40,24 @@ public class SiggAreaQueryRepository {
         return contentQuery.fetch();
     }
 
-    public List<SiggArea> getSiggAreaByAdmNameAndSido(String sidoName, String siggName) {
+    public List<SiggArea> getSiggAreaListByAdmNameAndSido(String sidoName, String siggName) {
 
         List<SiggArea> fetch = queryFactory.selectFrom(siggArea)
                 .innerJoin(siggArea.sido, sidoArea)
                 .where(eqAdmName(siggName))
                 .where(eqSidoName(sidoName))
+                .fetch();
+
+        return fetch;
+    }
+
+    public List<SiggArea> getSiggAreaByAdmNameAndSidoParentCode(String siggName, String sidoAdoptAnimalAdmCode) {
+
+        List<SiggArea> fetch = queryFactory.selectFrom(siggArea)
+                .innerJoin(sidoArea)
+                .on(siggArea.sido.eq(sidoArea).and(sidoArea.adoptAnimalAdmCode.eq(sidoAdoptAnimalAdmCode)))
+                .fetchJoin()
+                .where(eqAdmName(siggName))
                 .fetch();
 
         return fetch;

@@ -247,7 +247,7 @@ public class VWorldApiService {
                 }
             }
 
-            List<SiggArea> findSiggArea = siggAreaQueryRepository.getSiggAreaByAdmNameAndSido(strArray[0], admName.toString());
+            List<SiggArea> findSiggArea = siggAreaQueryRepository.getSiggAreaListByAdmNameAndSido(strArray[0], admName.toString());
 
             if (findSiggArea.isEmpty()) {
                 log.info( MessageFormat.format("sigg Error {0} {1} {2}", strArray[0], strArray[1], strArray[2]));

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.gig.withpet.core.data.animalProtect.dto.*;
 import org.gig.withpet.core.domain.Area.siggArea.SiggArea;
+import org.gig.withpet.core.domain.Area.siggArea.SiggAreaQueryRepository;
 import org.gig.withpet.core.domain.Area.siggArea.SiggAreaRepository;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimal;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimalRepository;
@@ -38,6 +39,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +60,7 @@ public class AnimalProtectApiService {
     private final AnimalKindRepository animalKindRepository;
     private final SidoAreaRepository sidoAreaRepository;
     private final SiggAreaRepository siggAreaRepository;
+    private final SiggAreaQueryRepository siggAreaQueryRepository;
     private final ShelterRepository shelterRepository;
 
     @Transactional
@@ -90,11 +93,139 @@ public class AnimalProtectApiService {
 
         JSONObject convertResult = CommonUtils.convertXmlToJson(sb.toString());
 
-        if (StringUtils.hasText(reqParam.getSaveYn()) && reqParam.getSaveYn().equals("Y")) {
-            parseJsonData(suffixUrl, convertResult, reqParam);
+        if (StringUtils.hasText(reqParam.getSaveYn()) && reqParam.getSaveYn().equals("Y")
+        || StringUtils.hasText(reqParam.getMappingYn()) && reqParam.getMappingYn().equals("Y")) {
+            parseJsonData(suffixUrl, convertResult, reqParam, reqParam.getSaveYn(), reqParam.getMappingYn());
         }
 
         return convertResult.toMap();
+    }
+
+    private void parseJsonData(String suffixUrl, JSONObject data, AnimalProtectReqDto reqParam, String saveYn, String mappingYn) {
+        JSONObject response = data.getJSONObject("response");
+        JSONObject header = response.getJSONObject("header");
+        if (!header.getString("resultCode").equals("00")) {
+            return;
+        }
+
+        JSONObject body = response.getJSONObject("body");
+
+        Object itemsObject = body.get("items");
+        if (itemsObject instanceof String && !StringUtils.hasText(itemsObject.toString())) {
+            return;
+        }
+
+        JSONObject items = body.getJSONObject("items");
+
+        JSONArray jsonArray = new JSONArray();
+        Object itemObject = items.get("item");
+        if (itemObject instanceof JSONObject) {
+            jsonArray = new JSONArray();
+            jsonArray.put(itemObject);
+        } else if (itemObject instanceof JSONArray) {
+            jsonArray = items.getJSONArray("item");
+        } else {
+            return;
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+
+            switch (suffixUrl) {
+                case "/abandonmentPublic":
+                    List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>() {
+                    });
+                    if (saveYn.equals("Y")) {
+                        saveAdoptAnimalData(animalProtectList, reqParam.getUpkind(), reqParam.getCareRegNo());
+                    }
+                    break;
+                case "/sido":
+                    List<AnimalProtectSidoDto> sidoDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSidoDto>>() {
+                    });
+                    if (saveYn.equals("Y")) {
+                        saveSido(sidoDtoList);
+                    }
+                    if (mappingYn.equals("Y")) {
+                        mappingSido(sidoDtoList);
+                    }
+                    break;
+                case "/sigungu":
+                    List<AnimalProtectSiggDto> siggDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSiggDto>>() {
+                    });
+                    if (saveYn.equals("Y")) {
+                        saveSigg(siggDtoList);
+                    }
+                    if (mappingYn.equals("Y")) {
+                        mappingSigg(siggDtoList);
+                    }
+                    break;
+                case "/shelter":
+                    List<AnimalProtectShelterDto> shelterList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectShelterDto>>() {
+                    });
+                    if (saveYn.equals("Y")) {
+                        saveShelter(shelterList, reqParam.getUprCd(), reqParam.getOrgCd());
+                    }
+
+                    break;
+                case "/kind":
+                    List<AnimalProtectKindDto> animalKindList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectKindDto>>() {
+                    });
+                    if (saveYn.equals("Y")) {
+                        saveAnimalKind(animalKindList, reqParam.getUpkind());
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+
+
+        } catch (JsonProcessingException | NotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void mappingSido(List<AnimalProtectSidoDto> sidoDtoList) {
+
+        if (CollectionUtils.isEmpty(sidoDtoList)) {
+            return;
+        }
+
+        for (AnimalProtectSidoDto dto : sidoDtoList) {
+            Optional<SidoArea> findSido = sidoAreaRepository.findSidoAreaByAdmName(dto.getAdmName());
+            if (findSido.isEmpty()) {
+                log.info(MessageFormat.format("sido area {0}", dto.getAdmName()));
+                continue;
+            }
+
+            SidoArea sidoArea = findSido.get();
+            sidoArea.setAdoptAnimalAdmCode(dto.getAdmCode());
+            sidoAreaRepository.save(sidoArea);
+        }
+    }
+
+    private void mappingSigg(List<AnimalProtectSiggDto> siggDtoList) {
+
+        if (CollectionUtils.isEmpty(siggDtoList)) {
+            return;
+        }
+
+        for (AnimalProtectSiggDto dto : siggDtoList) {
+            List<SiggArea> findSigg = siggAreaQueryRepository.getSiggAreaByAdmNameAndSidoParentCode(dto.getAdmName(), dto.getParentAdmCode());
+            if (findSigg.isEmpty()) {
+                log.info(MessageFormat.format("empty sigg Area {0} {1} {2}", dto.getAdmCode(), dto.getAdmName(), dto.getParentAdmCode()));
+                continue;
+            }
+
+            if (findSigg.size() > 1) {
+                log.info(MessageFormat.format("size 1 bigger sigg Area {0} {1} {2}", dto.getAdmCode(), dto.getAdmName(), dto.getParentAdmCode()));
+            }
+
+            for (SiggArea siggArea : findSigg) {
+                siggArea.setAdoptAnimalAdmCode(dto.getAdmCode());
+                siggAreaRepository.save(siggArea);
+            }
+        }
     }
 
     public void saveShelterInfoAll(AnimalProtectReqDto reqParam, String suffixUrl) throws IOException {
@@ -130,72 +261,6 @@ public class AnimalProtectApiService {
         for (Shelter shelter : shelters) {
             reqParam.setCareRegNo(shelter.getRegNo());
             getAbandonmentPublicApi(reqParam, suffixUrl);
-        }
-    }
-
-    private void parseJsonData(String suffixUrl, JSONObject data, AnimalProtectReqDto reqParam) {
-        JSONObject response = data.getJSONObject("response");
-        JSONObject header = response.getJSONObject("header");
-        if (!header.getString("resultCode").equals("00")) {
-            return;
-        }
-
-        JSONObject body = response.getJSONObject("body");
-
-        Object itemsObject = body.get("items");
-        if (itemsObject instanceof String && !StringUtils.hasText(itemsObject.toString())) {
-            return;
-        }
-
-        JSONObject items = body.getJSONObject("items");
-
-        JSONArray jsonArray = new JSONArray();
-        Object itemObject = items.get("item");
-        if (itemObject instanceof JSONObject) {
-            jsonArray = new JSONArray();
-            jsonArray.put(itemObject);
-        } else if (itemObject instanceof JSONArray) {
-            jsonArray = items.getJSONArray("item");
-        } else {
-            return;
-        }
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-
-            switch (suffixUrl) {
-                case "/abandonmentPublic":
-                    List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>() {
-                    });
-                    saveAdoptAnimalData(animalProtectList, reqParam.getUpkind(), reqParam.getCareRegNo());
-                    break;
-                case "/sido":
-                    List<AnimalProtectSidoDto> sidoDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSidoDto>>() {
-                    });
-                    saveSido(sidoDtoList);
-                    break;
-                case "/sigungu":
-                    List<AnimalProtectSiggDto> siggDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSiggDto>>() {
-                    });
-                    saveSigg(siggDtoList);
-                    break;
-                case "/shelter":
-                    List<AnimalProtectShelterDto> shelterList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectShelterDto>>() {
-                    });
-                    saveShelter(shelterList, reqParam.getUprCd(), reqParam.getOrgCd());
-                    break;
-                case "/kind":
-                    List<AnimalProtectKindDto> animalKindList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectKindDto>>() {
-                    });
-                    saveAnimalKind(animalKindList, reqParam.getUpkind());
-                    break;
-                default:
-                    break;
-            }
-
-
-        } catch (JsonProcessingException | NotFoundException e) {
-            e.printStackTrace();
         }
     }
 

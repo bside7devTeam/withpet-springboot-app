@@ -33,6 +33,8 @@ public class SiggArea {
 
     private String version;
 
+    private String adoptAnimalAdmCode;
+
     @Column(length = 1000)
     private String geometry;
 
@@ -68,4 +70,9 @@ public class SiggArea {
     public void addParent(SidoArea sidoArea) {
         this.sido = sidoArea;
     }
+
+    public void setAdoptAnimalAdmCode(String admCode) {
+        this.adoptAnimalAdmCode = admCode;
+    }
+
 }
