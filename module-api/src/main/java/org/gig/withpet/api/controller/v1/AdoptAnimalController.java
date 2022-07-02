@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.utils.ApiResponse;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimalService;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalDetailDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalListDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalSearchDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
@@ -16,10 +17,7 @@ import org.gig.withpet.core.utils.CommonUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author : JAKE
@@ -27,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @Api(value = "AdoptAnimalRestController V1")
-@RequestMapping("/v1/adopt-animal")
+@RequestMapping("/adopt-animal")
 @RequiredArgsConstructor
 public class AdoptAnimalController {
 
@@ -120,5 +118,30 @@ public class AdoptAnimalController {
         Page<AdoptAnimalListDto> pages =  adoptAnimalService.getAdoptAnimalPageDto(reqParam);
 
         return new ResponseEntity<>(ApiResponse.OK(pages), HttpStatus.OK);
+    }
+
+    @ApiOperation(
+            value = "입양동물공고 목록 조회 API"
+    )
+    @ApiImplicitParams(
+            {
+                    @ApiImplicitParam(
+                            name = "id"
+                            , value = "아이디"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "path"
+                            , defaultValue = "1"
+                    )
+            }
+    )
+    @GetMapping(value = "{id}", produces ="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> getAdoptAnimalDetail(
+            @PathVariable("id") Long adoptAnimalId
+    ) {
+
+        AdoptAnimalDetailDto dto =  adoptAnimalService.getDetail(adoptAnimalId);
+
+        return new ResponseEntity<>(ApiResponse.OK(dto), HttpStatus.OK);
     }
 }
