@@ -4,7 +4,7 @@ import lombok.Data;
 import org.gig.withpet.core.domain.user.member.domain.SnsType;
 
 @Data
-public class SignInRequest {
+public class SignInRequestDto {
     public String uid;
     public String email;
     public SnsType snsType;
