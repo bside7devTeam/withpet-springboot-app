@@ -18,7 +18,29 @@ public class ShelterDto {
 
     private String name;
 
-    private String regNo;
+    private String tel;
+
+    private String landAddress;
+
+    private String roadAddress;
+
+    private String rescueAnimal;
+
+    private String beginTime;
+
+    private String endTime;
+
+    private String holiday;
+
+    private String institutionName;
+
+    private String institutionCode;
+
+    private String adoptAnimalRegNo;
+
+    private String coordinateX;
+
+    private String coordinateY;
 
     private String sidoCode;
 
@@ -27,7 +49,18 @@ public class ShelterDto {
     public ShelterDto(Shelter s) {
         this.shelterId = s.getId();
         this.name = s.getName();
-        this.regNo = s.getRegNo();
+        this.tel = s.getTel();
+        this.landAddress = s.getLandAddress();
+        this.roadAddress = s.getRoadAddress();
+        this.rescueAnimal = s.getRescueAnimal();
+        this.beginTime = s.getBeginTime();
+        this.endTime = s.getEndTime();
+        this.holiday = s.getHoliday();
+        this.institutionCode = s.getInstitutionCode();
+        this.institutionName = s.getInstitutionName();
+        this.coordinateX = s.getCoordinateX();
+        this.coordinateY = s.getCoordinateY();
+        this.adoptAnimalRegNo = s.getAdoptAnimalRegNo();
         this.sidoCode = s.getSidoCode();
         this.siggCode = s.getSiggCode();
     }

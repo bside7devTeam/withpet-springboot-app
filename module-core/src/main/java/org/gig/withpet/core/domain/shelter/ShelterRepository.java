@@ -14,8 +14,10 @@ import java.util.Optional;
 @Repository
 public interface ShelterRepository extends JpaRepository<Shelter, Long> {
 
-    Optional<Shelter> findByRegNoAndDeleteYn(String regNo, YnType deleteYn);
+    Optional<Shelter> findByAdoptAnimalRegNoAndDeleteYn(String regNo, YnType deleteYn);
 
     List<Shelter> findAllByDeleteYn(YnType deleteYn);
+
+    Optional<Shelter> findByInstitutionCodeAndDeleteYn(String institutionCode, YnType deleteYn);
 
 }

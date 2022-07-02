@@ -17,6 +17,10 @@ public class ShelterListDto extends ShelterDto {
 
     private String siggName;
 
+    public ShelterListDto(Shelter s) {
+        super(s);
+    }
+
     public ShelterListDto(Shelter s, String sidoName, String siggName) {
         super(s);
         this.sidoName = sidoName;

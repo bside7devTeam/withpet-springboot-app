@@ -1,12 +1,22 @@
 package org.gig.withpet.core.data.animalShelter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.gig.withpet.core.data.animalShelter.dto.AnimalShelterReqDto;
+import org.gig.withpet.core.data.vWorldAddress.dto.AddressResDto;
+import org.gig.withpet.core.domain.common.types.YnType;
+import org.gig.withpet.core.domain.shelter.Shelter;
+import org.gig.withpet.core.domain.shelter.ShelterRepository;
+import org.gig.withpet.core.domain.shelter.dto.ShelterResDto;
 import org.gig.withpet.core.utils.AnimalShelterProperties;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
@@ -14,7 +24,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.*;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author : JAKE
@@ -26,6 +38,8 @@ import java.util.Map;
 public class AnimalShelterApiService {
 
     private final AnimalShelterProperties properties;
+
+    private final ShelterRepository shelterRepository;
 
     @Transactional
     public Map<String, Object> getAnimalShelterPublicApi(AnimalShelterReqDto reqParam) throws IOException {
@@ -72,6 +86,48 @@ public class AnimalShelterApiService {
 
         JSONObject convertResult = new JSONObject(sb.toString());
 
+        if (StringUtils.hasText(reqParam.getSaveYn()) && reqParam.getSaveYn().equals("Y")) {
+            parseJsonData(convertResult, reqParam);
+        }
+
         return convertResult.toMap();
+    }
+
+    private void parseJsonData(JSONObject data, AnimalShelterReqDto reqParam) throws JsonProcessingException {
+
+        JSONObject response = data.getJSONObject("response");
+        JSONObject header = response.getJSONObject("header");
+
+        if (!header.getString("resultCode").equals("00")) {
+            return;
+        }
+
+        JSONObject body = response.getJSONObject("body");
+        JSONArray items = body.getJSONArray("items");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<ShelterResDto> shelterDataList = objectMapper.readValue(items.toString(), new TypeReference<List<ShelterResDto>>() {
+        });
+
+        if (CollectionUtils.isEmpty(shelterDataList)) {
+            return;
+        }
+
+        saveShelter(shelterDataList);
+    }
+
+    private void saveShelter(List<ShelterResDto> shelterDataList) {
+
+
+        for (ShelterResDto dto : shelterDataList) {
+
+            Optional<Shelter> findShelter = shelterRepository.findByAdoptAnimalRegNoAndDeleteYn(dto.getInsttCode(), YnType.N);
+            if (findShelter.isPresent()) {
+                continue;
+            }
+
+            Shelter shelter = Shelter.insertShelterApi(dto);
+            shelterRepository.save(shelter);
+        }
     }
 }
