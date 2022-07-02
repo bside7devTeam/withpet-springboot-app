@@ -259,7 +259,7 @@ public class AnimalProtectApiService {
         }
 
         for (Shelter shelter : shelters) {
-            reqParam.setCareRegNo(shelter.getRegNo());
+            reqParam.setCareRegNo(shelter.getAdoptAnimalRegNo());
             getAbandonmentPublicApi(reqParam, suffixUrl);
         }
     }
@@ -295,7 +295,7 @@ public class AnimalProtectApiService {
             adoptAnimalRepository.save(adoptAnimal);
 
             if (StringUtils.hasText(careRegNo)) {
-                Optional<Shelter> findShelter = shelterRepository.findByRegNoAndDeleteYn(careRegNo, YnType.N);
+                Optional<Shelter> findShelter = shelterRepository.findByAdoptAnimalRegNoAndDeleteYn(careRegNo, YnType.N);
                 findShelter.ifPresent(adoptAnimal::setShelter);
             }
         }

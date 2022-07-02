@@ -41,14 +41,12 @@ public class ShelterQueryRepository {
 
         JPAQuery<ShelterListDto> contentQuery = this.queryFactory
                 .select(Projections.constructor(ShelterListDto.class,
-                        shelter, sidoArea.admName, siggArea.admName))
+                        shelter))
                 .from(shelter)
-                .innerJoin(sidoArea).on(sidoArea.admCode.eq(shelter.sidoCode)).fetchJoin()
-                .innerJoin(siggArea).on(siggArea.admCode.eq(shelter.siggCode)).fetchJoin()
                 .where(where)
                 .orderBy(shelter.createdAt.desc())
                 .limit(searchDto.getPageRequest().getPageSize())
-                .offset(searchDto.getPageRequest().getOffset());
+                .offset(searchDto.getPageRequest().getPageNumber());
 
         JPAQuery<Long> countQuery = this.queryFactory.select(shelter.id)
                 .from(shelter)
