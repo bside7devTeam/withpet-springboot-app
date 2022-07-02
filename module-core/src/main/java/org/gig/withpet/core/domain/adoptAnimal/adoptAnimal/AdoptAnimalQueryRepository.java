@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalDetailDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalListDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalSearchDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
@@ -17,11 +18,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.QAdoptAnimal.adoptAnimal;
+import static org.gig.withpet.core.domain.shelter.QShelter.shelter;
 
 
 /**
@@ -64,6 +68,19 @@ public class AdoptAnimalQueryRepository {
         return new PageImpl<>(content, searchDto.getPageRequest(), total);
     }
 
+    public Optional<AdoptAnimalDetailDto> getDetail(Long adoptAnimalId) {
+
+        Optional<AdoptAnimalDetailDto> fetch = Optional.ofNullable(this.queryFactory
+                .select(Projections.constructor(AdoptAnimalDetailDto.class,
+                        adoptAnimal))
+                .from(adoptAnimal)
+                .where(eqAdoptAnimalId(adoptAnimalId))
+                .limit(1)
+                .fetchFirst());
+
+        return fetch;
+    }
+
     private BooleanExpression defaultCondition() {
         return adoptAnimal.deleteYn.eq(YnType.N);
     }
@@ -102,4 +119,13 @@ public class AdoptAnimalQueryRepository {
 
         return adoptAnimal.animalKindType.eq(animalKindType);
     }
+
+    private BooleanExpression eqAdoptAnimalId(Long adoptAnimalId) {
+        if (adoptAnimalId == null) {
+            return null;
+        }
+
+        return adoptAnimal.id.eq(adoptAnimalId);
+    }
+
 }
