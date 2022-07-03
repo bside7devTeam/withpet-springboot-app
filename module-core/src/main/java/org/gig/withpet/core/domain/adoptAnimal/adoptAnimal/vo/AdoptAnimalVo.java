@@ -32,6 +32,8 @@ public class AdoptAnimalVo {
 
     private LocalDate noticeEndDate;
 
+    private LocalDate adoptSuccessDate;
+
     private ProcessStatus processStatus;
 
     private TerminalStatus terminalState;
@@ -78,6 +80,7 @@ public class AdoptAnimalVo {
         this.desertionNo = dto.getDesertionNo();
         this.noticeStartDate = dto.getNoticeStartDate();
         this.noticeEndDate = dto.getNoticeEndDate();
+        this.adoptSuccessDate = TerminalStatus.getAdoptSuccessDate(dto.getProcessState());
         this.neuterYn = YnType.findByCode(dto.getNeuterYn());
 
         this.careNm = dto.getCareNm();

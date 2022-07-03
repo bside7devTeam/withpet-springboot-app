@@ -61,6 +61,7 @@ public class AdoptAnimalDto {
         this.age = a.getAge();
         this.color = a.getColor();
         this.kind = a.getKind();
+        this.popfile = a.getPopfile();
     }
 
 }
