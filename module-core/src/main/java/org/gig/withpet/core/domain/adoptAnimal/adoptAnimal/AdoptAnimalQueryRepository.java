@@ -68,6 +68,33 @@ public class AdoptAnimalQueryRepository {
         return new PageImpl<>(content, searchDto.getPageRequest(), total);
     }
 
+    public Page<AdoptAnimalListDto> getSuccessAdoptAnimalPageDto(AdoptAnimalSearchDto searchDto) {
+
+        BooleanBuilder where = new BooleanBuilder();
+        where.and(defaultCondition());
+        where.and(eqAnimalKindType(searchDto.getAnimalKindType()));
+        where.and(adoptAnimal.processStatus.eq(ProcessStatus.TERMINAL));
+        where.and(adoptAnimal.terminalState.eq(TerminalStatus.ADOPT));
+        where.and(adoptAnimal.adoptSuccessDate.isNotNull());
+        where.and(adoptAnimal.adoptSuccessDate.after(LocalDate.now().minusMonths(1)));
+
+        JPAQuery<AdoptAnimalListDto> contentQuery = this.queryFactory
+                .select(Projections.constructor(AdoptAnimalListDto.class,
+                        adoptAnimal))
+                .from(adoptAnimal)
+                .where(where)
+                .orderBy(adoptAnimal.adoptSuccessDate.desc());
+
+        JPAQuery<Long> countQuery = this.queryFactory.select(adoptAnimal.id)
+                .from(adoptAnimal)
+                .where(where);
+
+        long total = countQuery.fetchCount();
+        List<AdoptAnimalListDto> content = contentQuery.fetch();
+
+        return new PageImpl<>(content, searchDto.getPageRequest(), total);
+    }
+
     public Optional<AdoptAnimalDetailDto> getDetail(Long adoptAnimalId) {
 
         Optional<AdoptAnimalDetailDto> fetch = Optional.ofNullable(this.queryFactory
@@ -127,5 +154,4 @@ public class AdoptAnimalQueryRepository {
 
         return adoptAnimal.id.eq(adoptAnimalId);
     }
-
 }
