@@ -1,10 +1,8 @@
 package org.gig.withpet.core.domain.adoptAnimal.adoptAnimal;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalDetailDto;
@@ -18,14 +16,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import static org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.QAdoptAnimal.adoptAnimal;
-import static org.gig.withpet.core.domain.shelter.QShelter.shelter;
 
 
 /**
@@ -42,57 +37,47 @@ public class AdoptAnimalQueryRepository {
 
     public Page<AdoptAnimalListDto> getAdoptAnimalPageDto(AdoptAnimalSearchDto searchDto) {
 
-        BooleanBuilder where = new BooleanBuilder();
-        where.and(defaultCondition());
-        where.and(inNoticeDuration(searchDto.getNoticeStartDate(), searchDto.getNoticeEndDate()));
-        where.and(eqProcessStatus(searchDto.getProcessStatus()));
-        where.and(eqTerminalStatus(searchDto.getTerminalStatus()));
-        where.and(eqAnimalKindType(searchDto.getAnimalKindType()));
-
-        JPAQuery<AdoptAnimalListDto> contentQuery = this.queryFactory
+        QueryResults<AdoptAnimalListDto> result = this.queryFactory
                 .select(Projections.constructor(AdoptAnimalListDto.class,
                         adoptAnimal))
                 .from(adoptAnimal)
-                .where(where)
+                .where(
+                        notDeleted(),
+                        inNoticeDuration(searchDto.getNoticeStartDate(), searchDto.getNoticeEndDate()),
+                        eqProcessStatus(searchDto.getProcessStatus()),
+                        eqTerminalStatus(searchDto.getTerminalStatus()),
+                        eqAnimalKindType(searchDto.getAnimalKindType())
+                )
                 .orderBy(adoptAnimal.noticeEndDate.desc())
                 .limit(searchDto.getPageRequest().getPageSize())
-                .offset(searchDto.getPageRequest().getOffset());
+                .offset(searchDto.getPageRequest().getOffset())
+                .fetchResults();
 
-        JPAQuery<Long> countQuery = this.queryFactory.select(adoptAnimal.id)
-                .from(adoptAnimal)
-                .where(where);
-
-        long total = countQuery.fetchCount();
-        List<AdoptAnimalListDto> content = contentQuery.fetch();
-
-        return new PageImpl<>(content, searchDto.getPageRequest(), total);
+        return new PageImpl<>(result.getResults(), searchDto.getPageRequest(), result.getTotal());
     }
 
     public Page<AdoptAnimalListDto> getSuccessAdoptAnimalPageDto(AdoptAnimalSearchDto searchDto) {
 
-        BooleanBuilder where = new BooleanBuilder();
-        where.and(defaultCondition());
-        where.and(eqAnimalKindType(searchDto.getAnimalKindType()));
-        where.and(adoptAnimal.processStatus.eq(ProcessStatus.TERMINAL));
-        where.and(adoptAnimal.terminalState.eq(TerminalStatus.ADOPT));
-        where.and(adoptAnimal.adoptSuccessDate.isNotNull());
-        where.and(adoptAnimal.adoptSuccessDate.after(LocalDate.now().minusMonths(1)));
 
-        JPAQuery<AdoptAnimalListDto> contentQuery = this.queryFactory
+        QueryResults<AdoptAnimalListDto> result = this.queryFactory
                 .select(Projections.constructor(AdoptAnimalListDto.class,
                         adoptAnimal))
                 .from(adoptAnimal)
-                .where(where)
-                .orderBy(adoptAnimal.adoptSuccessDate.desc());
+                .where(
+                        notDeleted(),
+                        eqAnimalKindType(searchDto.getAnimalKindType()),
+                        adoptAnimal.processStatus.eq(ProcessStatus.TERMINAL),
+                        adoptAnimal.terminalState.eq(TerminalStatus.ADOPT),
+                        adoptAnimal.adoptSuccessDate.isNotNull(),
+                        adoptAnimal.adoptSuccessDate.after(LocalDate.now().minusMonths(1))
+                )
+                .orderBy(adoptAnimal.adoptSuccessDate.desc())
+                .offset(searchDto.getPageRequest().getOffset())
+                .limit(searchDto.getPageRequest().getPageSize())
+                .fetchResults()
+                ;
 
-        JPAQuery<Long> countQuery = this.queryFactory.select(adoptAnimal.id)
-                .from(adoptAnimal)
-                .where(where);
-
-        long total = countQuery.fetchCount();
-        List<AdoptAnimalListDto> content = contentQuery.fetch();
-
-        return new PageImpl<>(content, searchDto.getPageRequest(), total);
+        return new PageImpl<>(result.getResults(), searchDto.getPageRequest(), result.getTotal());
     }
 
     public Optional<AdoptAnimalDetailDto> getDetail(Long adoptAnimalId) {
@@ -108,7 +93,7 @@ public class AdoptAnimalQueryRepository {
         return fetch;
     }
 
-    private BooleanExpression defaultCondition() {
+    private BooleanExpression notDeleted() {
         return adoptAnimal.deleteYn.eq(YnType.N);
     }
 
