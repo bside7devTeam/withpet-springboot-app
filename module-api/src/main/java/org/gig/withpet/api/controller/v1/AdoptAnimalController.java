@@ -121,7 +121,56 @@ public class AdoptAnimalController {
     }
 
     @ApiOperation(
-            value = "입양동물공고 목록 조회 API"
+            value = "입양 성공한 동물 조회 API"
+    )
+    @ApiImplicitParams(
+            {
+                    @ApiImplicitParam(
+                            name = "animalKindType"
+                            , value = "축종"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "PUPPY"
+                    ),
+                    @ApiImplicitParam(
+                            name = "page"
+                            , value = "페이지 번호"
+                            , required = false
+                            , dataType = "int"
+                            , paramType = "query"
+                            , defaultValue = "1"
+                    ),
+                    @ApiImplicitParam(
+                            name = "size"
+                            , value = "페이지 사이즈"
+                            , required = true
+                            , dataType = "int"
+                            , paramType = "query"
+                            , defaultValue = "3"
+                    )
+            }
+    )
+    @GetMapping(value = "success", produces ="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> getAdoptSuccessPage(
+            @RequestParam(value = "animalKindType", required = true) AnimalKindType animalKindType,
+            @RequestParam(value = "page", required = true) int page,
+            @RequestParam(value = "size", required = true) int size
+    ) {
+
+        AdoptAnimalSearchDto reqParam = AdoptAnimalSearchDto.builder()
+                .animalKindType(animalKindType)
+                .page(page)
+                .size(size)
+                .build();
+
+        Page<AdoptAnimalListDto> pages =  adoptAnimalService.getSuccessAdoptAnimalPageDto(reqParam);
+
+        return new ResponseEntity<>(ApiResponse.OK(pages), HttpStatus.OK);
+    }
+
+    @ApiOperation(
+            value = "입양동물공고 상세 조회 API"
     )
     @ApiImplicitParams(
             {

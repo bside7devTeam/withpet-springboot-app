@@ -63,6 +63,8 @@ public class AdoptAnimal extends BaseTimeEntity {
 
     private String noticeComment;
 
+    private LocalDate adoptSuccessDate;
+
     private String careNm;
 
     private String careAddr;
@@ -106,6 +108,7 @@ public class AdoptAnimal extends BaseTimeEntity {
                 .sex(vo.getSex()).kind(vo.getKind())
                 .desertionNo(vo.getDesertionNo())
                 .noticeNo(vo.getNoticeNo()).noticeComment(vo.getNoticeComment())
+                .adoptSuccessDate(vo.getAdoptSuccessDate())
                 .noticeStartDate(vo.getNoticeStartDate()).noticeEndDate(vo.getNoticeEndDate())
                 .careAddr(vo.getCareAddr()).weight(vo.getWeight()).chargeNm(vo.getChargeNm())
                 .careNm(vo.getCareNm()).careTel(vo.getCareTel())

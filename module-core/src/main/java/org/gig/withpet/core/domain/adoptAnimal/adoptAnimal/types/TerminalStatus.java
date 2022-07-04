@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 /**
  * @author : JAKE
  * @date : 2022/06/06
@@ -60,6 +62,15 @@ public enum TerminalStatus {
             if (checkContainsYn("기타", code)) {
                 return TerminalStatus.ETC;
             }
+        }
+
+        return null;
+    }
+
+    public static LocalDate getAdoptSuccessDate(String code) {
+
+        if (code.contains("종료") && checkContainsYn("입양", code)) {
+            return LocalDate.now();
         }
 
         return null;

@@ -30,6 +30,11 @@ public class AdoptAnimalService {
     }
 
     @Transactional(readOnly = true)
+    public Page<AdoptAnimalListDto> getSuccessAdoptAnimalPageDto(AdoptAnimalSearchDto searchDto) {
+        return queryRepository.getSuccessAdoptAnimalPageDto(searchDto);
+    }
+
+    @Transactional(readOnly = true)
     public AdoptAnimalDetailDto getDetail(Long adoptAnimalId) {
         Optional<AdoptAnimalDetailDto> detailDto = queryRepository.getDetail(adoptAnimalId);
         return detailDto.orElse(AdoptAnimalDetailDto.emptyDto());
