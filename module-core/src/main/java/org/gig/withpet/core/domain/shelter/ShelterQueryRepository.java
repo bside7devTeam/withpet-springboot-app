@@ -1,6 +1,7 @@
 package org.gig.withpet.core.domain.shelter;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -34,31 +35,25 @@ public class ShelterQueryRepository {
 
     public Page<ShelterListDto> getShelterPageDto(ShelterSearchDto searchDto) {
 
-        BooleanBuilder where = new BooleanBuilder();
-        where.and(defaultCondition());
-        where.and(eqSidoCode(searchDto.getSidoCode()));
-        where.and(eqSiggCode(searchDto.getSiggCode()));
-
-        JPAQuery<ShelterListDto> contentQuery = this.queryFactory
+        QueryResults<ShelterListDto> result = this.queryFactory
                 .select(Projections.constructor(ShelterListDto.class,
                         shelter))
                 .from(shelter)
-                .where(where)
+                .where(
+                        notDeleted(),
+                        eqSidoCode(searchDto.getSidoCode()),
+                        eqSiggCode(searchDto.getSiggCode())
+                )
                 .orderBy(shelter.createdAt.desc())
+                .offset(searchDto.getPageRequest().getOffset())
                 .limit(searchDto.getPageRequest().getPageSize())
-                .offset(searchDto.getPageRequest().getPageNumber());
+                .fetchResults()
+                ;
 
-        JPAQuery<Long> countQuery = this.queryFactory.select(shelter.id)
-                .from(shelter)
-                .where(where);
-
-        long total = countQuery.fetchCount();
-        List<ShelterListDto> content = contentQuery.fetch();
-
-        return new PageImpl<>(content, searchDto.getPageRequest(), total);
+        return new PageImpl<>(result.getResults(), searchDto.getPageRequest(), result.getTotal());
     }
 
-    private BooleanExpression defaultCondition() {
+    private BooleanExpression notDeleted() {
         return shelter.deleteYn.eq(YnType.N);
     }
 

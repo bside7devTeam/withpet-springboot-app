@@ -8,6 +8,7 @@ import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
 import org.gig.withpet.core.domain.common.BasePageDto;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 
@@ -38,6 +39,6 @@ public class AdoptAnimalSearchDto extends BasePageDto {
 
     @Override
     public PageRequest getPageRequest() {
-        return PageRequest.of(this.page, this.size);
+        return PageRequest.of(this.page -1, this.size);
     }
 }

@@ -27,7 +27,7 @@ public class ShelterSearchDto extends BasePageDto {
 
     @Override
     public PageRequest getPageRequest() {
-        return PageRequest.of(this.page, this.size);
+        return PageRequest.of(this.page-1, this.size);
     }
 
 }
