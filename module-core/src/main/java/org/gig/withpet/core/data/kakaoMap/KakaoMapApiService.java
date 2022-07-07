@@ -2,10 +2,8 @@ package org.gig.withpet.core.data.kakaoMap;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
-import org.apache.tomcat.util.json.JSONParser;
-import org.gig.withpet.core.utils.KakaoApiProperties;
+import org.gig.withpet.core.utils.properties.KakaoApiProperties;
 import org.json.JSONObject;
-import org.springframework.boot.json.JsonParser;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;

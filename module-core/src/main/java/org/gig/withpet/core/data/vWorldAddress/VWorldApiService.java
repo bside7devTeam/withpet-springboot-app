@@ -15,7 +15,7 @@ import org.gig.withpet.core.domain.Area.siggArea.SiggArea;
 import org.gig.withpet.core.domain.Area.siggArea.SiggAreaQueryRepository;
 import org.gig.withpet.core.domain.Area.siggArea.SiggAreaRepository;
 import org.gig.withpet.core.utils.CommonUtils;
-import org.gig.withpet.core.utils.VWorldAddressProperties;
+import org.gig.withpet.core.utils.properties.VWorldAddressProperties;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import javax.swing.text.html.Option;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
