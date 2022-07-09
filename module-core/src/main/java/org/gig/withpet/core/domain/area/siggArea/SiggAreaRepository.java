@@ -1,6 +1,6 @@
-package org.gig.withpet.core.domain.Area.siggArea;
+package org.gig.withpet.core.domain.area.siggArea;
 
-import org.gig.withpet.core.domain.Area.sidoArea.SidoArea;
+import org.gig.withpet.core.domain.area.sidoArea.SidoArea;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

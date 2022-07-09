@@ -1,10 +1,8 @@
 package org.gig.withpet.core.domain.shelter;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.common.types.YnType;
@@ -16,10 +14,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
-
-import static org.gig.withpet.core.domain.Area.sidoArea.QSidoArea.sidoArea;
-import static org.gig.withpet.core.domain.Area.siggArea.QSiggArea.siggArea;
 import static org.gig.withpet.core.domain.shelter.QShelter.shelter;
 
 /**

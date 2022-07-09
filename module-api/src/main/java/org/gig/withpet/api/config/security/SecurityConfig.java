@@ -35,6 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/adopt-animal/**",
                         "/api/v1/shelter/**",
                         "/api/v1/v-world/**",
+                        "/api/v1/attachment/**",
                         "/api/member/login",
                         "/api/member",
                         "/api/health-check")

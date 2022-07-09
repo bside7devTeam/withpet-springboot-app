@@ -1,21 +1,22 @@
-package org.gig.withpet.core.utils;
+package org.gig.withpet.core.utils.properties;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.gig.withpet.core.utils.YamlPropertySourceFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 /**
  * @author : JAKE
- * @date : 2022/05/21
+ * @date : 2022/06/15
  */
 @Component
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "data.kakao")
+@ConfigurationProperties(prefix = "data.animal-shelter")
 @PropertySource(value="classpath:/application-credentials.yml", factory = YamlPropertySourceFactory.class)
-public class KakaoApiProperties {
+public class AnimalShelterProperties {
     String url;
-    String restApiKey;
+    String serviceKey;
 }
