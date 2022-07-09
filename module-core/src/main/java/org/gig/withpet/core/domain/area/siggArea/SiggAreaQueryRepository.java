@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.Area.siggArea;
+package org.gig.withpet.core.domain.area.siggArea;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -9,12 +9,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-import static org.gig.withpet.core.domain.Area.sidoArea.QSidoArea.sidoArea;
-import static org.gig.withpet.core.domain.Area.siggArea.QSiggArea.siggArea;
+import static org.gig.withpet.core.domain.area.sidoArea.QSidoArea.sidoArea;
+import static org.gig.withpet.core.domain.area.siggArea.QSiggArea.siggArea;
 
 /**
  * @author : JAKE

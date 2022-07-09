@@ -2,15 +2,22 @@ package org.gig.withpet.core.domain.attachment;
 
 import com.google.common.base.Strings;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 
 /**
  * @author : JAKE
  * @date : 2022/07/08
  */
-public class FileUtils {
+@Component
+public class FileManager {
 
     /* Not Allowed File Extension */
     public static final String FILE_PERMIT_EXTENSION = "hwp,pdf,xls,xlsx,doc,docx,ppt,pptx,zip,alz,jpg,jpeg,png,txt,log,gif";
@@ -49,6 +56,20 @@ public class FileUtils {
         }
 
         return fileType;
+    }
+
+    public Optional<File> convertMultipartFileToFile(MultipartFile file) throws Exception {
+        File convertFile = new File(file.getOriginalFilename());
+        if (convertFile.createNewFile()) {
+            try {
+                FileOutputStream fos = new FileOutputStream(convertFile);
+                fos.write(file.getBytes());
+            } catch (IOException ioe) {
+                throw new Exception(ioe);
+            }
+            return Optional.of(convertFile);
+        }
+        return Optional.empty();
     }
 
 }

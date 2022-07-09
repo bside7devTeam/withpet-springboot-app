@@ -1,11 +1,11 @@
-package org.gig.withpet.core.domain.Area.siggArea;
+package org.gig.withpet.core.domain.area.siggArea;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.animalProtect.dto.AnimalProtectSiggDto;
 import org.gig.withpet.core.data.vWorldAddress.dto.AddressResDto;
-import org.gig.withpet.core.domain.Area.emdArea.EmdArea;
-import org.gig.withpet.core.domain.Area.sidoArea.SidoArea;
+import org.gig.withpet.core.domain.area.emdArea.EmdArea;
+import org.gig.withpet.core.domain.area.sidoArea.SidoArea;
 
 import javax.persistence.*;
 import java.util.ArrayList;

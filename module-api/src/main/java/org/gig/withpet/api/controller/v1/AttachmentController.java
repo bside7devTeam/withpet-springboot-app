@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gig.withpet.core.domain.attachment.AttachmentService;
+import org.gig.withpet.core.domain.attachment.dto.UploadFileDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -26,13 +27,17 @@ public class AttachmentController {
 
     @PostMapping("upload")
     @ResponseBody
-    public ResponseEntity upload(
+    public ResponseEntity<UploadFileDto> upload(
             @RequestParam(value = "file") MultipartFile multipartFile) throws IOException {
 
-        String fileFullPath = attachmentService.upload(multipartFile);
-
+        UploadFileDto uploadFileDto = null;
+        try {
+            uploadFileDto = attachmentService.upload(multipartFile);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
         log.info("===== S3 multipartFileList Successfully Uploaded. =====");
 
-        return ResponseEntity.ok().body(fileFullPath);
+        return ResponseEntity.ok().body(uploadFileDto);
     }
 }
