@@ -8,7 +8,7 @@ import org.gig.withpet.api.utils.ApiResponse;
 import org.gig.withpet.core.domain.user.member.dto.SignInRequestDto;
 import org.gig.withpet.core.domain.user.member.dto.SignInResponseDto;
 import org.gig.withpet.core.domain.user.member.dto.TokenDto;
-import org.gig.withpet.core.domain.user.member.service.MemberService;
+import org.gig.withpet.core.domain.user.member.MemberService;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -26,7 +26,7 @@ public class AuthController {
         SignInResponseDto member = memberService.signIn(signInRequestDto);
         String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRole());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getUid(), member.getRole());
-        memberService.updateRefreshToken(member.getUid(), refreshToken);
+        memberService.logIn(member.getUid(), refreshToken);
 
         return ApiResponse.OK(new TokenDto(accessToken, refreshToken));
 

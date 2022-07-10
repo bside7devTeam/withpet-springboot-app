@@ -36,9 +36,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/shelter/**",
                         "/api/v1/v-world/**",
                         "/api/v1/attachment/**",
-                        "/api/member/login",
-                        "/api/member",
-                        "/api/health-check")
+                        "/api/v1/member/login",
+                        "/api/v1/member",
+                        "/api/v1/health-check")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()

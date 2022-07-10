@@ -1,9 +1,10 @@
 package org.gig.withpet.core.domain.user.member.dto;
 
 import lombok.Data;
-import org.gig.withpet.core.domain.user.member.domain.SnsType;
+import lombok.Getter;
+import org.gig.withpet.core.domain.user.member.SnsType;
 
-@Data
+@Getter
 public class SignInRequestDto {
     public String uid;
     public String email;

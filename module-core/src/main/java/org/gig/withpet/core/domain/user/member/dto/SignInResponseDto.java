@@ -1,7 +1,7 @@
 package org.gig.withpet.core.domain.user.member.dto;
 
 import lombok.Data;
-import org.gig.withpet.core.domain.user.member.domain.Member;
+import org.gig.withpet.core.domain.user.member.Member;
 
 @Data
 public class SignInResponseDto {
