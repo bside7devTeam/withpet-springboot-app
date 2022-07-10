@@ -39,7 +39,7 @@ public class ImageManagerService {
 
             String saveFilePath = uploadImage.upload(uploadFile, filePath, saveFileName);
 
-            return UploadFileDto.create(originalFilename, File.separator + saveFilePath);
+            return UploadFileDto.create(originalFilename, saveFilePath);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("파일을 업로드 하던 중 에러가 발생했습니다.");
