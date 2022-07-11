@@ -1,14 +1,16 @@
 package org.gig.withpet.core.domain.user.member;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.role.Role;
+import org.gig.withpet.core.domain.activityAreas.activityAreas.ActivityAreasService;
 import org.gig.withpet.core.domain.role.RoleService;
+import org.gig.withpet.core.domain.user.member.dto.AddInfoRequestDto;
 import org.gig.withpet.core.domain.user.member.dto.SignInRequestDto;
 import org.gig.withpet.core.domain.user.member.dto.SignInResponseDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Transactional
@@ -19,6 +21,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     private final RoleService roleService;
+    private final ActivityAreasService activityAreasService;
+
     private final PasswordEncoder passwordEncoder;
 
     public SignInResponseDto signIn(SignInRequestDto signInRequestDto) {
@@ -62,9 +66,25 @@ public class MemberService {
         return new SignInResponseDto(member);
     }
 
+    @Transactional
+    public Map<String, String> updateAddMemberInfo(AddInfoRequestDto addInfoRequestDto) throws Exception {
+        Member member = getMemberByUid(addInfoRequestDto.getUid());
+        member.updateAddInfo(addInfoRequestDto);
+        activityAreasService.saveActivityArea(
+                member,
+                addInfoRequestDto.getRegion1DepthName(),
+                addInfoRequestDto.getRegion2DepthName(),
+                addInfoRequestDto.getRegion3DepthName()
+        );
+
+        return null;
+    }
+
     @Transactional(readOnly = true)
     public Member getMemberByUid(String uid) {
         return memberRepository.findByUid(uid)
                 .orElseThrow(() -> new RuntimeException());
     }
+
+
 }

@@ -5,6 +5,7 @@ import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.user.AbstractUser;
 import org.gig.withpet.core.domain.user.UserStatus;
+import org.gig.withpet.core.domain.user.member.dto.AddInfoRequestDto;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,11 +13,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Entity
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Entity
 public class Member extends AbstractUser {
 
     @Id
@@ -40,6 +41,9 @@ public class Member extends AbstractUser {
     private SnsType snsType;
 
     private String refreshToken;
+
+    @Column(length = 1000)
+    private String profileImage;
 
     private LocalDateTime ageConfirmAt;
 
@@ -68,6 +72,11 @@ public class Member extends AbstractUser {
                 .ageConfirmAt(LocalDateTime.now())
                 .joinedAt(LocalDateTime.now())
                 .build();
+    }
+
+    public void updateAddInfo(AddInfoRequestDto addInfoRequestDto) {
+        this.nickName = addInfoRequestDto.getNickname();
+        this.profileImage = addInfoRequestDto.getProfileImage();
     }
 
     @Override
