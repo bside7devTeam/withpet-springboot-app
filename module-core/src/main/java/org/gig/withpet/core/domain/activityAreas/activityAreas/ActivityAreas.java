@@ -43,4 +43,9 @@ public class ActivityAreas extends BaseTimeEntity {
     @OneToMany(mappedBy = "activityAreas", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<ActivityEmdAreas> activityEmdAreas = new ArrayList<>();
 
+    public static ActivityAreas insertActivityAreas(Member member) {
+        return ActivityAreas.builder()
+                .member(member)
+                .build();
+    }
 }

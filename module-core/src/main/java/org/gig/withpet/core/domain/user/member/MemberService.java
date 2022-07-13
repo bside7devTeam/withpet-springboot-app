@@ -77,7 +77,7 @@ public class MemberService {
                 addInfoRequestDto.getRegion3DepthName()
         );
 
-        return null;
+        return Map.of("saveYn", "Y");
     }
 
     @Transactional(readOnly = true)

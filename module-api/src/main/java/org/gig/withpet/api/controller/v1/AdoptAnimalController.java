@@ -193,4 +193,13 @@ public class AdoptAnimalController {
 
         return new ResponseEntity<>(ApiResponse.OK(dto), HttpStatus.OK);
     }
+
+
+    @ApiOperation(
+            value = "입양동물 코드"
+    )
+    @GetMapping(value = "/kind/code", produces ="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> getAdoptAnimalKindCode() {
+        return new ResponseEntity<>(ApiResponse.OK(AnimalKindType.getEnumValues()), HttpStatus.OK);
+    }
 }

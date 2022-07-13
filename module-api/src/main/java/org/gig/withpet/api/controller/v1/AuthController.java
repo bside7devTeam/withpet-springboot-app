@@ -71,6 +71,8 @@ public class AuthController {
         return new ResponseEntity<>(ApiResponse.OK(result), HttpStatus.OK);
     }
 
+
+
     @ApiOperation(value = "회원가입 여부 API")
     @GetMapping("/member")
     public ResponseEntity<ApiResponse> completed(String uid) {

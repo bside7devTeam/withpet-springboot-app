@@ -11,5 +11,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ActivityEmdAreasService {
 
+    private final ActivityEmdAreasRepository activityEmdAreasRepository;
+
+    public void save(ActivityEmdAreas activityEmdAreas) {
+        activityEmdAreasRepository.save(activityEmdAreas);
+    }
 
 }

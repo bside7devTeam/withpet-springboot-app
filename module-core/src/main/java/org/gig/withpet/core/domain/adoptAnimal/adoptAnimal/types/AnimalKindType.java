@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 /**
  * @author : JAKE
  * @date : 2022/06/08
@@ -25,6 +27,10 @@ public enum AnimalKindType {
     private String key;
 
     private String description;
+
+    public static List<String> getEnumValues() {
+        return List.of(PUPPY.description, CAT.description, ETC.description);
+    }
 
     public static AnimalKindType findByUpKindCd(String upKindCd) {
         try {
