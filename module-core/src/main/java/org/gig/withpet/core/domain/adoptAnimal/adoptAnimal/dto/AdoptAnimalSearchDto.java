@@ -31,6 +31,8 @@ public class AdoptAnimalSearchDto extends BasePageDto {
 
     private AnimalKindType animalKindType;
 
+    private String kindName;
+
     @Builder.Default
     private int page = 1;
 

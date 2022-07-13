@@ -1,11 +1,9 @@
 package org.gig.withpet.core.domain.post.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.gig.withpet.core.domain.common.image.ImageModel;
 import org.gig.withpet.core.domain.post.domain.CategoryType;
 import org.gig.withpet.core.domain.post.domain.Post;
-import org.gig.withpet.core.domain.user.member.domain.Member;
+import org.gig.withpet.core.domain.user.member.Member;
 
 import java.time.LocalDateTime;
 import java.util.List;

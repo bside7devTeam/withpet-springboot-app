@@ -1,6 +1,6 @@
-package org.gig.withpet.core.domain.user.member.repository;
+package org.gig.withpet.core.domain.user.member;
 
-import org.gig.withpet.core.domain.user.member.domain.Member;
+import org.gig.withpet.core.domain.user.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

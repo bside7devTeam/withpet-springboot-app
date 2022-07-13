@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.user.member.domain;
+package org.gig.withpet.core.domain.user.member;
 
 public enum SnsType {
     KAKAO,

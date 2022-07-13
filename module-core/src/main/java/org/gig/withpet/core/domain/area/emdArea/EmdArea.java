@@ -1,15 +1,15 @@
 package org.gig.withpet.core.domain.area.emdArea;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.data.vWorldAddress.dto.AddressResDto;
 import org.gig.withpet.core.domain.area.siggArea.SiggArea;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
+import org.gig.withpet.core.domain.activityAreas.activityEmdAreaas.ActivityEmdAreas;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author : JAKE
@@ -43,6 +43,10 @@ public class EmdArea extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sigg_id")
     private SiggArea sigg;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "activityAreas", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<ActivityEmdAreas> activityEmdAreas = new ArrayList<>();
 
     public static EmdArea insertPublicData(AddressResDto address, String admName) {
         return EmdArea

@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author : JAKE
  * @date : 2022/06/08
@@ -25,6 +28,14 @@ public enum AnimalKindType {
     private String key;
 
     private String description;
+
+    public static List<Map<String, String>> getAnimalKindInfo() {
+        return List.of(
+                Map.of("code", "PUPPY", "name", PUPPY.description),
+                Map.of("code", "CAT", "name", CAT.description),
+                Map.of("code", "ETC", "name", ETC.description)
+        );
+    }
 
     public static AnimalKindType findByUpKindCd(String upKindCd) {
         try {

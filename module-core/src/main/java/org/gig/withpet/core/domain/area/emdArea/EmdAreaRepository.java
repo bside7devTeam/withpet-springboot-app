@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface EmdAreaRepository extends JpaRepository<EmdArea, Long> {
+
 }

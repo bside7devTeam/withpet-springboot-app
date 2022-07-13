@@ -22,4 +22,5 @@ public class S3Properties {
     String bucketName;
     String accessKey;
     String secretKey;
+    String prefixUrl;
 }

@@ -1,41 +1,56 @@
-package org.gig.withpet.core.domain.user.member.service;
+package org.gig.withpet.core.domain.user.member;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.user.member.domain.Member;
+import org.gig.withpet.core.domain.activityAreas.activityAreas.ActivityAreasService;
+import org.gig.withpet.core.domain.role.RoleService;
+import org.gig.withpet.core.domain.user.member.dto.AddInfoRequestDto;
 import org.gig.withpet.core.domain.user.member.dto.SignInRequestDto;
 import org.gig.withpet.core.domain.user.member.dto.SignInResponseDto;
-import org.gig.withpet.core.domain.user.member.repository.MemberRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Transactional
 @RequiredArgsConstructor
 @Service
 public class MemberService {
+
     private final MemberRepository memberRepository;
+
+    private final RoleService roleService;
+    private final ActivityAreasService activityAreasService;
+
+    private final PasswordEncoder passwordEncoder;
 
     public SignInResponseDto signIn(SignInRequestDto signInRequestDto) {
         Optional<Member> member = memberRepository.findByUid(signInRequestDto.uid);
         return member.map(SignInResponseDto::new)
                 .orElseGet(() -> signUp(signInRequestDto));
-
     }
 
     private SignInResponseDto signUp(SignInRequestDto signInRequestDto) {
-        Member member = Member.builder()
-                .uid(signInRequestDto.uid)
-                .email(signInRequestDto.email)
-                .snsType(signInRequestDto.snsType)
-                .build();
+
+        Member member = Member.signUp(
+                signInRequestDto.uid,
+                signInRequestDto.email,
+                passwordEncoder.encode(signInRequestDto.getUid()),
+                signInRequestDto.snsType
+        );
+
+        MemberRole memberRole = MemberRole.addMemberRole(member, roleService.findByRoleName("ROLE_USER"));
+        member.addRole(memberRole);
 
         return new SignInResponseDto(memberRepository.save(member));
     }
 
-    public void updateRefreshToken(String uid, String refreshToken) {
+    @Transactional
+    public void logIn(String uid, String refreshToken) {
         Member member = getMemberByUid(uid);
         member.updateRefreshToken(refreshToken);
+        member.loginSuccess();
     }
 
     public void logout(String uid) {
@@ -51,9 +66,25 @@ public class MemberService {
         return new SignInResponseDto(member);
     }
 
+    @Transactional
+    public Map<String, String> updateAddMemberInfo(AddInfoRequestDto addInfoRequestDto) throws Exception {
+        Member member = getMemberByUid(addInfoRequestDto.getUid());
+        member.updateAddInfo(addInfoRequestDto);
+        activityAreasService.saveActivityArea(
+                member,
+                addInfoRequestDto.getRegion1DepthName(),
+                addInfoRequestDto.getRegion2DepthName(),
+                addInfoRequestDto.getRegion3DepthName()
+        );
+
+        return Map.of("saveYn", "Y");
+    }
+
     @Transactional(readOnly = true)
     public Member getMemberByUid(String uid) {
         return memberRepository.findByUid(uid)
                 .orElseThrow(() -> new RuntimeException());
     }
+
+
 }

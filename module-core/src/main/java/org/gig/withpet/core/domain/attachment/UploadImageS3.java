@@ -32,7 +32,7 @@ public class UploadImageS3 {
         s3Client.putObject(new PutObjectRequest(s3Properties.getBucketName(), fileName, uploadFile)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
 
-        return fileName;
+        return s3Properties.getPrefixUrl() + s3Properties.getBucketName() + File.separator + fileName;
     }
 
     public void createBucketFolder(String folderName) {

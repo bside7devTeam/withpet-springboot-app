@@ -6,7 +6,7 @@ import org.gig.withpet.core.domain.post.domain.Post;
 import org.gig.withpet.core.domain.post.dto.PostCreateDto;
 import org.gig.withpet.core.domain.post.dto.PostUpdateDto;
 import org.gig.withpet.core.domain.post.repository.PostRepository;
-import org.gig.withpet.core.domain.user.member.domain.Member;
+import org.gig.withpet.core.domain.user.member.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
