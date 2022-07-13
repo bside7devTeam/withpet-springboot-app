@@ -10,6 +10,7 @@ import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimalService;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalDetailDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalListDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalSearchDto;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AnimalKindInfoResponse;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
@@ -18,6 +19,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author : JAKE
@@ -196,10 +199,49 @@ public class AdoptAnimalController {
 
 
     @ApiOperation(
-            value = "입양동물 코드"
+            value = "입양동물 축종코드"
+    )
+    @GetMapping(value = "/up-kind/code", produces ="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> getAdoptAnimalUpKindCode() {
+        return new ResponseEntity<>(ApiResponse.OK(AnimalKindType.getAnimalKindInfo()), HttpStatus.OK);
+    }
+
+    @ApiOperation(
+            value = "입양동물 종류 정보"
+    )
+    @ApiImplicitParams(
+            {
+                    @ApiImplicitParam(
+                            name = "animalKindType"
+                            , value = "축종코드"
+                            , required = true
+                            , dataType = "string"
+                            , paramType = "query"
+                            , defaultValue = "PUPPY"
+                    ),
+                    @ApiImplicitParam(
+                            name = "kindName"
+                            , value = "입양동물 종류명"
+                            , required = false
+                            , dataType = "string"
+                            , paramType = "path"
+                            , defaultValue = "골든"
+                    )
+            }
     )
     @GetMapping(value = "/kind/code", produces ="application/json;charset=UTF-8")
-    public ResponseEntity<ApiResponse> getAdoptAnimalKindCode() {
-        return new ResponseEntity<>(ApiResponse.OK(AnimalKindType.getEnumValues()), HttpStatus.OK);
+    public ResponseEntity<ApiResponse> getAdoptAnimalKindInfo(
+            @RequestParam(value = "animalKindType", required = true) AnimalKindType animalKindType,
+            @RequestParam(value = "kindName", required = false) String kindName
+    ) {
+
+        AdoptAnimalSearchDto reqParam = AdoptAnimalSearchDto.builder()
+                .animalKindType(animalKindType)
+                .kindName(kindName)
+                .build();
+
+        List<AnimalKindInfoResponse> data = adoptAnimalService.getAdoptAnimalKindInfo(reqParam);
+
+        return new ResponseEntity<>(ApiResponse.OK(data), HttpStatus.OK);
     }
 }

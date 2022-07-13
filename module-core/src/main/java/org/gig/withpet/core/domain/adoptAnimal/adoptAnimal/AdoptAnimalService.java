@@ -5,10 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalDetailDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalListDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalSearchDto;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AnimalKindInfoResponse;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,5 +41,10 @@ public class AdoptAnimalService {
     public AdoptAnimalDetailDto getDetail(Long adoptAnimalId) {
         Optional<AdoptAnimalDetailDto> detailDto = queryRepository.getDetail(adoptAnimalId);
         return detailDto.orElse(AdoptAnimalDetailDto.emptyDto());
+    }
+
+    @Transactional(readOnly = true)
+    public List<AnimalKindInfoResponse> getAdoptAnimalKindInfo(AdoptAnimalSearchDto searchDto) {
+        return queryRepository.getAdoptAnimalKindInfo(searchDto);
     }
 }
