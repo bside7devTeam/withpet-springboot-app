@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class PageDto<T> {
+public class PageResponseDto<T> {
     int page;
     int size;
     Long totalCount;

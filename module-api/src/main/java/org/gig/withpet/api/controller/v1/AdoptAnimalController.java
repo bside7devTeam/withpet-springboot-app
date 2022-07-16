@@ -10,10 +10,14 @@ import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimalService;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalDetailDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalListDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalSearchDto;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AdoptAnimalListResponse;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AdoptSuccessResponse;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AnimalKindInfoResponse;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
+import org.gig.withpet.core.domain.common.PageResponseDto;
+import org.gig.withpet.core.domain.common.PageRequestDto;
 import org.gig.withpet.core.utils.CommonUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -33,6 +37,25 @@ import java.util.List;
 public class AdoptAnimalController {
 
     private final AdoptAnimalService adoptAnimalService;
+
+    @ApiOperation(
+            value = "입양 성공한 동물 조회 API"
+    )
+    @GetMapping(value = "success", produces ="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> getAdoptSuccessPage(PageRequestDto pageRequestDto) {
+        PageResponseDto<AdoptSuccessResponse> pages =  adoptAnimalService.getSuccessAdoptAnimalPageDto(pageRequestDto);
+        return new ResponseEntity<>(ApiResponse.OK(pages), HttpStatus.OK);
+    }
+
+    @ApiOperation(
+            value = "급구 입양공고 목록 조회 API"
+    )
+    @GetMapping(value = "emergency", produces ="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> getAdoptAnimalEmergencyPage() {
+        List<AdoptAnimalListResponse> data =  adoptAnimalService.getAdoptAnimalEmergencyDto();
+        return new ResponseEntity<>(ApiResponse.OK(data), HttpStatus.OK);
+    }
+
 
     @ApiOperation(
             value = "입양동물공고 목록 조회 API"
@@ -119,55 +142,6 @@ public class AdoptAnimalController {
                 .build();
 
         Page<AdoptAnimalListDto> pages =  adoptAnimalService.getAdoptAnimalPageDto(reqParam);
-
-        return new ResponseEntity<>(ApiResponse.OK(pages), HttpStatus.OK);
-    }
-
-    @ApiOperation(
-            value = "입양 성공한 동물 조회 API"
-    )
-    @ApiImplicitParams(
-            {
-                    @ApiImplicitParam(
-                            name = "animalKindType"
-                            , value = "축종"
-                            , required = false
-                            , dataType = "string"
-                            , paramType = "query"
-                            , defaultValue = "PUPPY"
-                    ),
-                    @ApiImplicitParam(
-                            name = "page"
-                            , value = "페이지 번호"
-                            , required = false
-                            , dataType = "int"
-                            , paramType = "query"
-                            , defaultValue = "1"
-                    ),
-                    @ApiImplicitParam(
-                            name = "size"
-                            , value = "페이지 사이즈"
-                            , required = true
-                            , dataType = "int"
-                            , paramType = "query"
-                            , defaultValue = "3"
-                    )
-            }
-    )
-    @GetMapping(value = "success", produces ="application/json;charset=UTF-8")
-    public ResponseEntity<ApiResponse> getAdoptSuccessPage(
-            @RequestParam(value = "animalKindType", required = true) AnimalKindType animalKindType,
-            @RequestParam(value = "page", required = true) int page,
-            @RequestParam(value = "size", required = true) int size
-    ) {
-
-        AdoptAnimalSearchDto reqParam = AdoptAnimalSearchDto.builder()
-                .animalKindType(animalKindType)
-                .page(page)
-                .size(size)
-                .build();
-
-        Page<AdoptAnimalListDto> pages =  adoptAnimalService.getSuccessAdoptAnimalPageDto(reqParam);
 
         return new ResponseEntity<>(ApiResponse.OK(pages), HttpStatus.OK);
     }
