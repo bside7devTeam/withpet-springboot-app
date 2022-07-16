@@ -40,6 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/member",
                         "/api/v1/member/add-info",
                         "/api/v1/member/coord/address",
+                        "/api/v1/community/**",
                         "/api/v1/health-check")
                 .permitAll()
                 .anyRequest().authenticated()
