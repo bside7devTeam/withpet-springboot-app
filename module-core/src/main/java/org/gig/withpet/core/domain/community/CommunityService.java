@@ -1,11 +1,8 @@
-package org.gig.withpet.core.domain.post.service;
+package org.gig.withpet.core.domain.community;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.post.domain.CategoryType;
-import org.gig.withpet.core.domain.post.domain.Post;
-import org.gig.withpet.core.domain.post.dto.PostCreateDto;
-import org.gig.withpet.core.domain.post.dto.PostUpdateDto;
-import org.gig.withpet.core.domain.post.repository.PostRepository;
+import org.gig.withpet.core.domain.community.dto.CommunityCreateDto;
+import org.gig.withpet.core.domain.community.dto.CommunityUpdateDto;
 import org.gig.withpet.core.domain.user.member.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 @Service
-public class PostService {
-    private final PostRepository postRepository;
+public class CommunityService {
+    private final CommunityRepository postRepository;
 
-    public Post create(Member writer, PostCreateDto postCreateDto) {
-        Post post = Post.Of(
+    public Community create(Member writer, CommunityCreateDto postCreateDto) {
+        Community post = Community.Of(
                 postCreateDto.getCategoryType(),
                 writer,
                 postCreateDto.getTitle(),
@@ -28,25 +25,25 @@ public class PostService {
         return postRepository.save(post);
     }
 
-    public Post update(Member modifier, PostUpdateDto postUpdateDto) {
-        Post post = getPost(postUpdateDto.getPostId());
+    public Community update(Member modifier, CommunityUpdateDto postUpdateDto) {
+        Community post = getPost(postUpdateDto.getPostId());
         post.update(modifier.getUid(), postUpdateDto.getTitle(), postUpdateDto.getContent());
 
         return post;
     }
 
     public void delete(Member deleter, Long postId) {
-        Post post = getPost(postId);
+        Community post = getPost(postId);
         post.delete(deleter.getUid());
     }
 
     @Transactional(readOnly = true)
-    public Post getPost(Long postId) {
+    public Community getPost(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException());
     }
 
-    public Page<Post> getPostListByCategoryType(CategoryType categoryType, Pageable pageable) {
+    public Page<Community> getPostListByCategoryType(CategoryType categoryType, Pageable pageable) {
         return postRepository.findByCategoryType(categoryType, pageable);
     }
 }

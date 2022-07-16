@@ -1,15 +1,15 @@
-package org.gig.withpet.core.domain.post.dto;
+package org.gig.withpet.core.domain.community.dto;
 
 import lombok.Data;
-import org.gig.withpet.core.domain.post.domain.CategoryType;
-import org.gig.withpet.core.domain.post.domain.Post;
+import org.gig.withpet.core.domain.community.CategoryType;
+import org.gig.withpet.core.domain.community.Community;
 import org.gig.withpet.core.domain.user.member.Member;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-public class PostDto {
+public class CommunityDto {
     private Long postId;
     private CategoryType categoryType;
     private String title;
@@ -33,7 +33,7 @@ public class PostDto {
         }
     }
 
-    public PostDto(Post post) {
+    public CommunityDto(Community post) {
         this.postId = post.getId();
         this.categoryType = post.getCategoryType();
         this.title = post.getTitle();
