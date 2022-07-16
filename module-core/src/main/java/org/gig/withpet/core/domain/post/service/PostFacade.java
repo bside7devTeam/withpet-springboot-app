@@ -1,7 +1,7 @@
 package org.gig.withpet.core.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.common.PageDto;
+import org.gig.withpet.core.domain.common.dto.response.PageResponseDto;
 import org.gig.withpet.core.domain.post.domain.CategoryType;
 import org.gig.withpet.core.domain.post.domain.Post;
 import org.gig.withpet.core.domain.post.dto.PostCreateDto;
@@ -47,10 +47,10 @@ public class PostFacade {
         return new PostDto(post);
     }
 
-    public PageDto<PostDto> getPostList(CategoryType categoryType, Pageable pageable) {
+    public PageResponseDto<PostDto> getPostList(CategoryType categoryType, Pageable pageable) {
         Page<Post> posts = postService.getPostListByCategoryType(categoryType, pageable);
 
-        return new PageDto<>(
+        return new PageResponseDto<>(
                 posts.getPageable().getPageNumber(),
                 posts.getSize(),
                 posts.getTotalElements(),

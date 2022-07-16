@@ -5,10 +5,11 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.codehaus.groovy.util.StringUtil;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalDetailDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalListDto;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalSearchDto;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AdoptAnimalListResponse;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AdoptSuccessResponse;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AnimalKindInfoResponse;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
@@ -16,6 +17,7 @@ import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -61,28 +63,41 @@ public class AdoptAnimalQueryRepository {
         return new PageImpl<>(result.getResults(), searchDto.getPageRequest(), result.getTotal());
     }
 
-    public Page<AdoptAnimalListDto> getSuccessAdoptAnimalPageDto(AdoptAnimalSearchDto searchDto) {
+    public Page<AdoptSuccessResponse> getSuccessAdoptAnimalPageDto(PageRequest pageRequest) {
 
-
-        QueryResults<AdoptAnimalListDto> result = this.queryFactory
-                .select(Projections.constructor(AdoptAnimalListDto.class,
+        QueryResults<AdoptSuccessResponse> result = this.queryFactory
+                .select(Projections.constructor(AdoptSuccessResponse.class,
                         adoptAnimal))
                 .from(adoptAnimal)
                 .where(
                         notDeleted(),
-                        eqAnimalKindType(searchDto.getAnimalKindType()),
                         adoptAnimal.processStatus.eq(ProcessStatus.TERMINAL),
                         adoptAnimal.terminalState.eq(TerminalStatus.ADOPT),
                         adoptAnimal.adoptSuccessDate.isNotNull(),
                         adoptAnimal.adoptSuccessDate.after(LocalDate.now().minusMonths(1))
                 )
                 .orderBy(adoptAnimal.adoptSuccessDate.desc())
-                .offset(searchDto.getPageRequest().getOffset())
-                .limit(searchDto.getPageRequest().getPageSize())
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
                 .fetchResults()
                 ;
 
-        return new PageImpl<>(result.getResults(), searchDto.getPageRequest(), result.getTotal());
+        return new PageImpl<>(result.getResults(), pageRequest, result.getTotal());
+    }
+
+    public List<AdoptAnimalListResponse> getAdoptAnimalEmergencyList() {
+
+        List<AdoptAnimalListResponse> fetch = this.queryFactory
+                .select(Projections.constructor(AdoptAnimalListResponse.class, adoptAnimal))
+                .from(adoptAnimal)
+                .where(
+                        notDeleted(),
+                        adoptAnimal.processStatus.eq(ProcessStatus.NOTICE),
+                        adoptAnimal.noticeEndDate.between(LocalDate.now().minusDays(3), LocalDate.now())
+                )
+                .fetch();
+
+        return fetch;
     }
 
     public List<AnimalKindInfoResponse> getAdoptAnimalKindInfo(AdoptAnimalSearchDto searchDto) {
@@ -176,6 +191,4 @@ public class AdoptAnimalQueryRepository {
 
         return adoptAnimal.id.eq(adoptAnimalId);
     }
-
-
 }

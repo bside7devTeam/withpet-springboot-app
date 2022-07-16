@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.common;
+package org.gig.withpet.core.domain.common.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class PageDto<T> {
+public class PageResponseDto<T> {
     int page;
     int size;
     Long totalCount;

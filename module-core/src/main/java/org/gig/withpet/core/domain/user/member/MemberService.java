@@ -72,9 +72,9 @@ public class MemberService {
         member.updateAddInfo(addInfoRequestDto);
         activityAreasService.saveActivityArea(
                 member,
-                addInfoRequestDto.getRegion1DepthName(),
-                addInfoRequestDto.getRegion2DepthName(),
-                addInfoRequestDto.getRegion3DepthName()
+                addInfoRequestDto.getSido(),
+                addInfoRequestDto.getSigungo(),
+                addInfoRequestDto.getEmd()
         );
 
         return Map.of("saveYn", "Y");

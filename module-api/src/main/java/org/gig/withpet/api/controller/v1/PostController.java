@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.utils.ApiResponse;
-import org.gig.withpet.core.domain.common.PageDto;
+import org.gig.withpet.core.domain.common.dto.response.PageResponseDto;
 import org.gig.withpet.core.domain.post.domain.CategoryType;
 import org.gig.withpet.core.domain.post.dto.PostCreateDto;
 import org.gig.withpet.core.domain.post.dto.PostDto;
@@ -56,7 +56,7 @@ public class PostController {
     @ApiOperation(value = "게시판 조회 (Page)")
     @GetMapping("/posts")
     public ApiResponse getPostList(CategoryType categoryType, Pageable pageable) {
-        PageDto<PostDto> pageRes = postFacade.getPostList(categoryType, pageable);
+        PageResponseDto<PostDto> pageRes = postFacade.getPostList(categoryType, pageable);
 
         return ApiResponse.OK(pageRes);
     }

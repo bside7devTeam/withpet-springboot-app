@@ -3,7 +3,7 @@ package org.gig.withpet.core.domain.shelter.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.gig.withpet.core.domain.common.BasePageDto;
+import org.gig.withpet.core.domain.common.dto.BasePageDto;
 import org.springframework.data.domain.PageRequest;
 
 /**
