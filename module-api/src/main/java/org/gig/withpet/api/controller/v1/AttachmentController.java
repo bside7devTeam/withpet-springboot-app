@@ -3,8 +3,10 @@ package org.gig.withpet.api.controller.v1;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.gig.withpet.api.utils.ApiResponse;
 import org.gig.withpet.core.domain.attachment.AttachmentService;
 import org.gig.withpet.core.domain.attachment.dto.UploadFileDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +29,7 @@ public class AttachmentController {
 
     @PostMapping("upload")
     @ResponseBody
-    public ResponseEntity<UploadFileDto> upload(
+    public ResponseEntity<ApiResponse> upload(
             @RequestParam(value = "file") MultipartFile multipartFile) throws IOException {
 
         UploadFileDto uploadFileDto = null;
@@ -38,6 +40,6 @@ public class AttachmentController {
         }
         log.info("===== S3 multipartFileList Successfully Uploaded. =====");
 
-        return ResponseEntity.ok().body(uploadFileDto);
+        return new ResponseEntity<>(ApiResponse.OK(uploadFileDto), HttpStatus.OK);
     }
 }
