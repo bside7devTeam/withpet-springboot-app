@@ -3,25 +3,29 @@ package org.gig.withpet.core.data.animalProtect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.shaded.json.parser.JSONParser;
+import javassist.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.gig.withpet.core.data.animalProtect.dto.*;
-import org.gig.withpet.core.domain.Area.SiggArea;
-import org.gig.withpet.core.domain.Area.SiggAreaRepository;
-import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimal;
-import org.gig.withpet.core.domain.adoptAnimal.AdoptAnimalRepository;
-import org.gig.withpet.core.domain.adoptAnimal.AnimalKind;
-import org.gig.withpet.core.domain.adoptAnimal.AnimalKindRepository;
-import org.gig.withpet.core.domain.Area.SidoArea;
-import org.gig.withpet.core.domain.Area.SidoAreaRepository;
+import org.gig.withpet.core.domain.area.siggArea.SiggArea;
+import org.gig.withpet.core.domain.area.siggArea.SiggAreaQueryRepository;
+import org.gig.withpet.core.domain.area.siggArea.SiggAreaRepository;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimal;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.AdoptAnimalRepository;
+import org.gig.withpet.core.data.animalProtect.adoptAnimalData.AdoptAnimalData;
+import org.gig.withpet.core.data.animalProtect.adoptAnimalData.AdoptAnimalDataRepository;
+import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.vo.AdoptAnimalVo;
+import org.gig.withpet.core.domain.adoptAnimal.animalKind.AnimalKind;
+import org.gig.withpet.core.domain.adoptAnimal.animalKind.AnimalKindRepository;
+import org.gig.withpet.core.domain.area.sidoArea.SidoArea;
+import org.gig.withpet.core.domain.area.sidoArea.SidoAreaRepository;
+import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.shelter.Shelter;
 import org.gig.withpet.core.domain.shelter.ShelterRepository;
-import org.gig.withpet.core.utils.AnimalProtectProperties;
+import org.gig.withpet.core.utils.properties.AnimalProtectProperties;
 import org.gig.withpet.core.utils.CommonUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -34,6 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,9 +54,11 @@ public class AnimalProtectApiService {
 
     private final AnimalProtectProperties properties;
     private final AdoptAnimalRepository adoptAnimalRepository;
+    private final AdoptAnimalDataRepository adoptAnimalDataRepository;
     private final AnimalKindRepository animalKindRepository;
     private final SidoAreaRepository sidoAreaRepository;
     private final SiggAreaRepository siggAreaRepository;
+    private final SiggAreaQueryRepository siggAreaQueryRepository;
     private final ShelterRepository shelterRepository;
 
     @Transactional
@@ -84,36 +91,15 @@ public class AnimalProtectApiService {
 
         JSONObject convertResult = CommonUtils.convertXmlToJson(sb.toString());
 
-        if (StringUtils.hasText(reqParam.getSaveYn()) && reqParam.getSaveYn().equals("Y")) {
-            parseJsonData(suffixUrl, convertResult, reqParam);
+        if (StringUtils.hasText(reqParam.getSaveYn()) && reqParam.getSaveYn().equals("Y")
+        || StringUtils.hasText(reqParam.getMappingYn()) && reqParam.getMappingYn().equals("Y")) {
+            parseJsonData(suffixUrl, convertResult, reqParam, reqParam.getSaveYn(), reqParam.getMappingYn());
         }
 
         return convertResult.toMap();
     }
 
-    public void saveShelterInfoAll(AnimalProtectReqDto reqParam, String suffixUrl) throws IOException {
-
-        List<SidoArea> sidoAreas = sidoAreaRepository.findAll();
-
-        if (CollectionUtils.isEmpty(sidoAreas)) {
-            return;
-        }
-
-        for (SidoArea sidoArea : sidoAreas) {
-            List<SiggArea> siggAreas = siggAreaRepository.findAllBySido(sidoArea);
-            if (CollectionUtils.isEmpty(siggAreas)) {
-                continue;
-            }
-
-            for (SiggArea siggArea : siggAreas) {
-                reqParam.setUprCd(sidoArea.getAdmCode());
-                reqParam.setOrgCd(siggArea.getAdmCode());
-                getAbandonmentPublicApi(reqParam, suffixUrl);
-            }
-        }
-    }
-
-    private void parseJsonData(String suffixUrl, JSONObject data, AnimalProtectReqDto reqParam) {
+    private void parseJsonData(String suffixUrl, JSONObject data, AnimalProtectReqDto reqParam, String saveYn, String mappingYn) {
         JSONObject response = data.getJSONObject("response");
         JSONObject header = response.getJSONObject("header");
         if (!header.getString("resultCode").equals("00")) {
@@ -140,8 +126,6 @@ public class AnimalProtectApiService {
             return;
         }
 
-
-
         ObjectMapper objectMapper = new ObjectMapper();
         try {
 
@@ -149,47 +133,169 @@ public class AnimalProtectApiService {
                 case "/abandonmentPublic":
                     List<AnimalProtectDto> animalProtectList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectDto>>() {
                     });
-                    saveAdoptAnimal(animalProtectList);
+                    if (saveYn.equals("Y")) {
+                        saveAdoptAnimalData(animalProtectList, reqParam.getUpkind(), reqParam.getCareRegNo());
+                    }
                     break;
                 case "/sido":
                     List<AnimalProtectSidoDto> sidoDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSidoDto>>() {
                     });
-                    saveSido(sidoDtoList);
+                    if (saveYn.equals("Y")) {
+                        saveSido(sidoDtoList);
+                    }
+                    if (mappingYn.equals("Y")) {
+                        mappingSido(sidoDtoList);
+                    }
                     break;
                 case "/sigungu":
                     List<AnimalProtectSiggDto> siggDtoList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectSiggDto>>() {
                     });
-                    saveSigg(siggDtoList);
+                    if (saveYn.equals("Y")) {
+                        saveSigg(siggDtoList);
+                    }
+                    if (mappingYn.equals("Y")) {
+                        mappingSigg(siggDtoList);
+                    }
                     break;
                 case "/shelter":
                     List<AnimalProtectShelterDto> shelterList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectShelterDto>>() {
                     });
-                    saveShelter(shelterList, reqParam.getUprCd(), reqParam.getOrgCd());
+                    if (saveYn.equals("Y")) {
+                        saveShelter(shelterList, reqParam.getUprCd(), reqParam.getOrgCd());
+                    }
+
                     break;
                 case "/kind":
                     List<AnimalProtectKindDto> animalKindList = objectMapper.readValue(jsonArray.toString(), new TypeReference<List<AnimalProtectKindDto>>() {
                     });
-                    saveAnimalKind(animalKindList, reqParam.getUpkind());
+                    if (saveYn.equals("Y")) {
+                        saveAnimalKind(animalKindList, reqParam.getUpkind());
+                    }
+
                     break;
                 default:
                     break;
             }
 
 
-        } catch (JsonProcessingException e) {
+        } catch (JsonProcessingException | NotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    private void saveAdoptAnimal(List<AnimalProtectDto> animalProtectDtoList) {
+    private void mappingSido(List<AnimalProtectSidoDto> sidoDtoList) {
+
+        if (CollectionUtils.isEmpty(sidoDtoList)) {
+            return;
+        }
+
+        for (AnimalProtectSidoDto dto : sidoDtoList) {
+            Optional<SidoArea> findSido = sidoAreaRepository.findSidoAreaByAdmName(dto.getAdmName());
+            if (findSido.isEmpty()) {
+                log.info(MessageFormat.format("sido area {0}", dto.getAdmName()));
+                continue;
+            }
+
+            SidoArea sidoArea = findSido.get();
+            sidoArea.setAdoptAnimalAdmCode(dto.getAdmCode());
+            sidoAreaRepository.save(sidoArea);
+        }
+    }
+
+    private void mappingSigg(List<AnimalProtectSiggDto> siggDtoList) {
+
+        if (CollectionUtils.isEmpty(siggDtoList)) {
+            return;
+        }
+
+        for (AnimalProtectSiggDto dto : siggDtoList) {
+            List<SiggArea> findSigg = siggAreaQueryRepository.getSiggAreaByAdmNameAndSidoParentCode(dto.getAdmName(), dto.getParentAdmCode());
+            if (findSigg.isEmpty()) {
+                log.info(MessageFormat.format("empty sigg Area {0} {1} {2}", dto.getAdmCode(), dto.getAdmName(), dto.getParentAdmCode()));
+                continue;
+            }
+
+            if (findSigg.size() > 1) {
+                log.info(MessageFormat.format("size 1 bigger sigg Area {0} {1} {2}", dto.getAdmCode(), dto.getAdmName(), dto.getParentAdmCode()));
+            }
+
+            for (SiggArea siggArea : findSigg) {
+                siggArea.setAdoptAnimalAdmCode(dto.getAdmCode());
+                siggAreaRepository.save(siggArea);
+            }
+        }
+    }
+
+    public void saveShelterInfoAll(AnimalProtectReqDto reqParam, String suffixUrl) throws IOException {
+
+        List<SidoArea> sidoAreas = sidoAreaRepository.findAll();
+
+        if (CollectionUtils.isEmpty(sidoAreas)) {
+            return;
+        }
+
+        for (SidoArea sidoArea : sidoAreas) {
+            List<SiggArea> siggAreas = siggAreaRepository.findAllBySido(sidoArea);
+            if (CollectionUtils.isEmpty(siggAreas)) {
+                continue;
+            }
+
+            for (SiggArea siggArea : siggAreas) {
+                reqParam.setUprCd(sidoArea.getAdmCode());
+                reqParam.setOrgCd(siggArea.getAdmCode());
+                getAbandonmentPublicApi(reqParam, suffixUrl);
+            }
+        }
+    }
+
+    public void saveShelterAdoptAnimalInfo(AnimalProtectReqDto reqParam, String suffixUrl) throws IOException {
+
+        List<Shelter> shelters = shelterRepository.findAllByDeleteYn(YnType.N);
+
+        if (CollectionUtils.isEmpty(shelters)) {
+            return;
+        }
+
+        for (Shelter shelter : shelters) {
+            reqParam.setCareRegNo(shelter.getAdoptAnimalRegNo());
+            getAbandonmentPublicApi(reqParam, suffixUrl);
+        }
+    }
+
+    private void saveAdoptAnimalData(List<AnimalProtectDto> animalProtectDtoList, String upKindCd, String careRegNo) throws NotFoundException {
 
         if (CollectionUtils.isEmpty(animalProtectDtoList)) {
             return;
         }
 
         for (AnimalProtectDto dto : animalProtectDtoList) {
-            AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(dto);
+
+            Optional<AdoptAnimalData> findAdoptAnimalData = adoptAnimalDataRepository.findAdoptAnimalDataByNoticeNoAndDeleteYn(dto.getNoticeNo(), YnType.N);
+            if (findAdoptAnimalData.isPresent() && findAdoptAnimalData.get().isNotNeedUpdate(dto)) {
+                continue;
+            }
+
+            Long adoptAnimalDataId = findAdoptAnimalData.map(AdoptAnimalData::getId).orElse(null);
+            AdoptAnimalData adoptAnimalData = AdoptAnimalData.insertPublicData(dto, adoptAnimalDataId);
+            adoptAnimalDataRepository.save(adoptAnimalData);
+
+            AdoptAnimalVo vo = new AdoptAnimalVo(dto, upKindCd);
+
+            Optional<AdoptAnimal> findAdoptAnimal = adoptAnimalRepository.findAdoptAnimalByNoticeNoAndDeleteYn(vo.getNoticeNo(), YnType.N);
+            if (findAdoptAnimal.isPresent()) {
+                if (findAdoptAnimal.get().isNotNeedUpdate(vo)) {
+                    continue;
+                }
+            }
+
+            Long adoptAnimalId = findAdoptAnimal.map(AdoptAnimal::getId).orElse(null);
+            AdoptAnimal adoptAnimal = AdoptAnimal.insertPublicData(vo, adoptAnimalId);
             adoptAnimalRepository.save(adoptAnimal);
+
+            if (StringUtils.hasText(careRegNo)) {
+                Optional<Shelter> findShelter = shelterRepository.findByAdoptAnimalRegNoAndDeleteYn(careRegNo, YnType.N);
+                findShelter.ifPresent(adoptAnimal::setShelter);
+            }
         }
 
     }
@@ -266,6 +372,8 @@ public class AnimalProtectApiService {
                 if (reqParam.getNeuterYn() != null) {urlBuilder.append("&neuter_yn=" + reqParam.getNeuterYn());}
                 break;
             case "/sido":
+                if (reqParam.getPageNo() != null) {urlBuilder.append("&pageNo=" + reqParam.getPageNo());}
+                if (reqParam.getNumOfRows() != null) {urlBuilder.append("&numOfRows=" + reqParam.getNumOfRows());}
                 break;
             case "/sigungu" :
                 if (reqParam.getUprCd() != null) {urlBuilder.append("&upr_cd=" + reqParam.getUprCd());}

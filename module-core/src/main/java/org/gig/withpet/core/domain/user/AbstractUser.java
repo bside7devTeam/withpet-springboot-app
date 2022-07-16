@@ -47,6 +47,8 @@ public abstract class AbstractUser extends BaseTimeEntity {
 
     private LocalDateTime withDrawAt;
 
+    private LocalDateTime joinedAt;
+
     public abstract Long getId();
 
     public abstract Set<Role> getRoles();

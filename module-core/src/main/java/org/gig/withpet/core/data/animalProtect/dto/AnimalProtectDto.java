@@ -1,13 +1,19 @@
 package org.gig.withpet.core.data.animalProtect.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author : JAKE
  * @date : 2022/06/01
  */
 @Getter
+@Setter
 @NoArgsConstructor
 public class AnimalProtectDto {
 
@@ -56,4 +62,16 @@ public class AnimalProtectDto {
     private String age;
 
     private String noticeComment;
+
+    public LocalDate getNoticeEndDate() {
+        return LocalDate.parse(this.noticeEdt, DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
+
+    public LocalDate getNoticeStartDate() {
+        return LocalDate.parse(this.noticeEdt, DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
+
+    public LocalDate getHappenDate() {
+        return LocalDate.parse(this.happenDt, DateTimeFormatter.ofPattern("yyyyMMdd"));
+    }
 }
