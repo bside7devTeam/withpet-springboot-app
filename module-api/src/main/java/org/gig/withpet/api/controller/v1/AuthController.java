@@ -5,6 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.config.jwt.JwtTokenProvider;
 import org.gig.withpet.api.utils.ApiResponse;
+import org.gig.withpet.core.data.kakaoMap.KakaoMapApiService;
+import org.gig.withpet.core.data.vWorldAddress.dto.AddressResDto;
+import org.gig.withpet.core.domain.common.dto.response.AddressResponse;
 import org.gig.withpet.core.domain.user.member.dto.AddInfoRequestDto;
 import org.gig.withpet.core.domain.user.member.dto.SignInRequestDto;
 import org.gig.withpet.core.domain.user.member.dto.SignInResponseDto;
@@ -14,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Map;
 
@@ -21,8 +25,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 public class AuthController {
+
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberService memberService;
+    private final KakaoMapApiService kakaoMapApiService;
 
     @ApiOperation(value = "로그인/회원가입 API")
     @PostMapping("/member/login")
@@ -78,5 +84,17 @@ public class AuthController {
     public ResponseEntity<ApiResponse> completed(String uid) {
         memberService.getMemberByUid(uid);
         return new ResponseEntity<>(ApiResponse.OK(), HttpStatus.OK);
+    }
+
+    @ApiOperation(
+            value = "좌표로 주소 검색 API"
+    )
+    @GetMapping(value = "/member/coord/address", produces="application/json;charset=UTF-8")
+    public ResponseEntity<ApiResponse> getAddressByCoord(
+            @RequestParam("latitude") String latitude,
+            @RequestParam("longitude") String longitude
+    ) throws IOException {
+        AddressResponse data = kakaoMapApiService.getAddressByCoord(latitude, longitude);
+        return new ResponseEntity<>(ApiResponse.OK(data), HttpStatus.OK);
     }
 }

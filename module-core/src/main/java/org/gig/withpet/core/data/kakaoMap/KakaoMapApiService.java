@@ -2,16 +2,22 @@ package org.gig.withpet.core.data.kakaoMap;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
+import org.gig.withpet.core.data.vWorldAddress.dto.AddressResDto;
+import org.gig.withpet.core.domain.common.dto.response.AddressResponse;
 import org.gig.withpet.core.utils.properties.KakaoApiProperties;
 import org.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.security.InvalidParameterException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,6 +54,31 @@ public class KakaoMapApiService {
         }
 
         return null;
+    }
+
+    @Transactional(readOnly = true)
+    public AddressResponse getAddressByCoord(String latitude, String longitude) {
+
+        KakaoMapReqDto reqParam = KakaoMapReqDto.builder()
+                .x(latitude)
+                .y(longitude)
+                .inputCoord("WGS84")
+                .build();
+
+        Map<String, Object> data = getKakaoLocalApi(reqParam, "/v2/local/geo/coord2address.json");
+
+        List<HashMap<String, Object>> list = (List<HashMap<String, Object>>) data.get("documents");
+
+        if (CollectionUtils.isEmpty(list)) {
+            throw new InvalidParameterException("해당 좌표에 대한 주소가 없습니다.");
+        }
+
+        if (list.size() > 1) {
+            throw new InvalidParameterException("해당 좌표에 대한 주소가 2개 이상 조회됩니다.");
+        }
+
+        HashMap<String, String> map = (HashMap<String, String>) list.get(0).get("address");
+        return new AddressResponse(map.get("region_1depth_name"), map.get("region_2depth_name"), map.get("region_3depth_name"));
     }
 
     private UriComponents setKakaoApiParam(KakaoMapReqDto reqParam, String apiPath, String suffixUrl) {

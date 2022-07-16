@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.common;
+package org.gig.withpet.core.domain.common.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -6,9 +6,8 @@ import lombok.Setter;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
-import org.gig.withpet.core.domain.common.BasePageDto;
+import org.gig.withpet.core.domain.common.dto.BasePageDto;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 

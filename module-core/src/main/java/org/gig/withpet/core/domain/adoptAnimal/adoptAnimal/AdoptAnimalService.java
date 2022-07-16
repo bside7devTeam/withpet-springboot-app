@@ -8,8 +8,8 @@ import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.AdoptAnimalSearch
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AdoptAnimalListResponse;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AdoptSuccessResponse;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AnimalKindInfoResponse;
-import org.gig.withpet.core.domain.common.PageResponseDto;
-import org.gig.withpet.core.domain.common.PageRequestDto;
+import org.gig.withpet.core.domain.common.dto.response.PageResponseDto;
+import org.gig.withpet.core.domain.common.dto.request.PageRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;

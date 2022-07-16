@@ -4,7 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.utils.ApiResponse;
-import org.gig.withpet.core.domain.common.PageResponseDto;
+import org.gig.withpet.core.domain.common.dto.response.PageResponseDto;
 import org.gig.withpet.core.domain.post.domain.CategoryType;
 import org.gig.withpet.core.domain.post.dto.PostCreateDto;
 import org.gig.withpet.core.domain.post.dto.PostDto;

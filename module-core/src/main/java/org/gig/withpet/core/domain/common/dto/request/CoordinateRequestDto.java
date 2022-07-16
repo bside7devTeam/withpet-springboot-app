@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.common;
+package org.gig.withpet.core.domain.common.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PageRequestDto {
+public class CoordinateRequestDto {
 
-    int page = 0;
+    private String latitude;
 
-    int size = 10;
+    private String longitude;
 }

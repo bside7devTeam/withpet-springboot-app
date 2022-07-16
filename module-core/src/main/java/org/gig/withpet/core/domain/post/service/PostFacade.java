@@ -1,7 +1,7 @@
 package org.gig.withpet.core.domain.post.service;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.common.PageResponseDto;
+import org.gig.withpet.core.domain.common.dto.response.PageResponseDto;
 import org.gig.withpet.core.domain.post.domain.CategoryType;
 import org.gig.withpet.core.domain.post.domain.Post;
 import org.gig.withpet.core.domain.post.dto.PostCreateDto;

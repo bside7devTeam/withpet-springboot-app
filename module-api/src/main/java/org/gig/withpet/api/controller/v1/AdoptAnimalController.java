@@ -16,8 +16,8 @@ import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.dto.response.AnimalKi
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.AnimalKindType;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.ProcessStatus;
 import org.gig.withpet.core.domain.adoptAnimal.adoptAnimal.types.TerminalStatus;
-import org.gig.withpet.core.domain.common.PageResponseDto;
-import org.gig.withpet.core.domain.common.PageRequestDto;
+import org.gig.withpet.core.domain.common.dto.response.PageResponseDto;
+import org.gig.withpet.core.domain.common.dto.request.PageRequestDto;
 import org.gig.withpet.core.utils.CommonUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -42,8 +42,11 @@ public class AdoptAnimalController {
             value = "입양 성공한 동물 조회 API"
     )
     @GetMapping(value = "success", produces ="application/json;charset=UTF-8")
-    public ResponseEntity<ApiResponse> getAdoptSuccessPage(PageRequestDto pageRequestDto) {
-        PageResponseDto<AdoptSuccessResponse> pages =  adoptAnimalService.getSuccessAdoptAnimalPageDto(pageRequestDto);
+    public ResponseEntity<ApiResponse> getAdoptSuccessPage(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size
+    ) {
+        PageResponseDto<AdoptSuccessResponse> pages =  adoptAnimalService.getSuccessAdoptAnimalPageDto(new PageRequestDto(page, size));
         return new ResponseEntity<>(ApiResponse.OK(pages), HttpStatus.OK);
     }
 

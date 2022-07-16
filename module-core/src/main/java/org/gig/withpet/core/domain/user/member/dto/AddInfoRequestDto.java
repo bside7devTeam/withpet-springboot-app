@@ -15,9 +15,9 @@ public class AddInfoRequestDto {
 
     private String profileImage;
 
-    private String region1DepthName;
+    private String sido;
 
-    private String region2DepthName;
+    private String sigungo;
 
-    private String region3DepthName;
+    private String emd;
 }
