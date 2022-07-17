@@ -13,37 +13,37 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Service
 public class CommunityService {
-    private final CommunityRepository postRepository;
+    private final CommunityRepository communityRepository;
 
-    public Community create(Member writer, CommunityCreateDto postCreateDto) {
-        Community post = Community.Of(
-                postCreateDto.getCategoryType(),
+    public Community create(Member writer, CommunityCreateDto communityCreateDto) {
+        Community community = Community.Of(
+                communityCreateDto.getCategoryType(),
                 writer,
-                postCreateDto.getTitle(),
-                postCreateDto.getContent());
+                communityCreateDto.getTitle(),
+                communityCreateDto.getContent());
 
-        return postRepository.save(post);
+        return communityRepository.save(community);
     }
 
     public Community update(Member modifier, CommunityUpdateDto postUpdateDto) {
-        Community post = getPost(postUpdateDto.getPostId());
+        Community post = getCommunity(postUpdateDto.getPostId());
         post.update(modifier.getUid(), postUpdateDto.getTitle(), postUpdateDto.getContent());
 
         return post;
     }
 
     public void delete(Member deleter, Long postId) {
-        Community post = getPost(postId);
+        Community post = getCommunity(postId);
         post.delete(deleter.getUid());
     }
 
     @Transactional(readOnly = true)
-    public Community getPost(Long postId) {
-        return postRepository.findById(postId)
+    public Community getCommunity(Long postId) {
+        return communityRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException());
     }
 
     public Page<Community> getPostListByCategoryType(CategoryType categoryType, Pageable pageable) {
-        return postRepository.findByCategoryType(categoryType, pageable);
+        return communityRepository.findByCategoryType(categoryType, pageable);
     }
 }

@@ -1,6 +1,7 @@
 package org.gig.withpet.core.domain.community.dto;
 
 import lombok.Data;
+import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.community.CategoryType;
 import org.gig.withpet.core.domain.community.Community;
 import org.gig.withpet.core.domain.user.member.Member;
@@ -17,7 +18,7 @@ public class CommunityDto {
     private LocalDateTime createdAt;
     private Integer commentCount;
     private Integer likeCount;
-    private Boolean isLike;
+    private YnType likeYn;
     private User writer;
     private List<String> images;
 
@@ -41,7 +42,7 @@ public class CommunityDto {
         this.createdAt = post.getCreatedAt();
         this.commentCount = 0; //TODO
         this.likeCount = 0; //TODO
-        this.isLike = false; //TODO
+        this.likeYn = YnType.N; //TODO
         this.writer = new User(post.getWriter());
         this.images = null; //TODO
     }

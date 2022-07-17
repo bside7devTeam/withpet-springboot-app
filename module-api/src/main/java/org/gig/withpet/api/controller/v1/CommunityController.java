@@ -11,56 +11,59 @@ import org.gig.withpet.core.domain.community.dto.CommunityDto;
 import org.gig.withpet.core.domain.community.dto.CommunityUpdateDto;
 import org.gig.withpet.core.domain.community.CommunityFacade;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
 @Api(value = "게시판 API V1")
 @RequiredArgsConstructor
-@RequestMapping("community")
+@RequestMapping("communities")
 @RestController
 public class CommunityController {
     private final CommunityFacade communityFacade;
 
     @ApiOperation(value = "게시판 조회 (Page)")
     @GetMapping
-    public ApiResponse getCommunityList(
+    public ResponseEntity<ApiResponse> getCommunityList(
             @RequestParam("categoryType") CategoryType categoryType,
             @RequestParam("page") int page,
             @RequestParam("size") int size
     ) {
         PageResponseDto<CommunityDto> pageRes = communityFacade.getCommunityPageList(categoryType, page, size);
-        return ApiResponse.OK(pageRes);
+        return new ResponseEntity<>(ApiResponse.OK(pageRes), HttpStatus.OK);
     }
 
     @ApiOperation(value = "게시판 생성")
     @PostMapping
-    public ApiResponse create(CommunityCreateDto createDto, Principal principal) {
+    public ResponseEntity<ApiResponse> create(@RequestBody CommunityCreateDto createDto,
+                                 Principal principal) {
         CommunityDto community = communityFacade.create(principal.getName(), createDto);
-        return ApiResponse.OK(community);
+        return new ResponseEntity<>(ApiResponse.OK(community), HttpStatus.OK);
     }
 
     @ApiOperation(value = "게시판 수정")
     @PutMapping("/update")
-    public ApiResponse postUpdate(CommunityUpdateDto postUpdateDto, Principal principal) {
-        CommunityDto post = communityFacade.update(principal.getName(), postUpdateDto);
+    public ResponseEntity<ApiResponse> update(CommunityUpdateDto postUpdateDto, Principal principal) {
+        CommunityDto community = communityFacade.update(principal.getName(), postUpdateDto);
 
-        return ApiResponse.OK(post);
+        return new ResponseEntity<>(ApiResponse.OK(community), HttpStatus.OK);
     }
 
     @ApiOperation(value = "게시판 삭제")
     @PostMapping("/{postId}/delete")
-    public ApiResponse postDelete(@PathVariable Long postId, Principal principal) {
+    public ResponseEntity<ApiResponse> postDelete(@PathVariable Long postId, Principal principal) {
         communityFacade.delete(principal.getName(), postId);
 
-        return ApiResponse.OK();
+        return new ResponseEntity<>(ApiResponse.OK(), HttpStatus.OK);
     }
 
     @ApiOperation(value = "게시판 조회")
     @GetMapping("/{communityId}")
-    public ApiResponse getPost(@PathVariable Long communityId) {
-        CommunityDto postDto = communityFacade.getPost(communityId);
+    public ResponseEntity<ApiResponse> getPost(@PathVariable Long communityId) {
+        CommunityDto community = communityFacade.getCommunity(communityId);
 
-        return ApiResponse.OK(postDto);
+        return new ResponseEntity<>(ApiResponse.OK(community), HttpStatus.OK);
     }
 }

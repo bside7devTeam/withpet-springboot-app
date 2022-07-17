@@ -20,35 +20,34 @@ import java.util.stream.Collectors;
 @Service
 public class CommunityFacade {
     private final MemberService memberService;
-    private final CommunityService postService;
+    private final CommunityService communityService;
 
     public CommunityDto create(String uid, CommunityCreateDto postCreateDto) {
         Member writer = memberService.getMemberByUid(uid);
-
-        return new CommunityDto(postService.create(writer, postCreateDto));
+        return new CommunityDto(communityService.create(writer, postCreateDto));
     }
 
     public CommunityDto update(String uid, CommunityUpdateDto postUpdateDto) {
         Member modifier = memberService.getMemberByUid(uid);
 
-        return new CommunityDto(postService.update(modifier, postUpdateDto));
+        return new CommunityDto(communityService.update(modifier, postUpdateDto));
     }
 
     public void delete(String uid, Long postId) {
         Member deleter = memberService.getMemberByUid(uid);
 
-        postService.delete(deleter, postId);
+        communityService.delete(deleter, postId);
     }
 
-    public CommunityDto getPost(Long postId) {
-        Community post = postService.getPost(postId);
+    public CommunityDto getCommunity(Long postId) {
+        Community community = communityService.getCommunity(postId);
 
-        return new CommunityDto(post);
+        return new CommunityDto(community);
     }
 
     @Transactional(readOnly = true)
     public PageResponseDto<CommunityDto> getCommunityPageList(CategoryType categoryType, int page, int size) {
-        Page<Community> communities = postService.getPostListByCategoryType(categoryType, PageRequest.of(page, size));
+        Page<Community> communities = communityService.getPostListByCategoryType(categoryType, PageRequest.of(page, size));
 
         return new PageResponseDto<>(
                 communities.getPageable().getPageNumber(),
