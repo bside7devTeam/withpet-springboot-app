@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
-    private static final long ACCESS_TOKEN_VALID_TIME = 1000 * 60;
-    private static final long REFRESH_TOKEN_VALID_TIME = 1000 * 60 * 3;
+    private static final long ACCESS_TOKEN_VALID_TIME = 1000 * 60 * 60 * 2;
+    private static final long REFRESH_TOKEN_VALID_TIME = 1000 * 60 * 60 * 6;
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER = "Bearer";
 
