@@ -6,20 +6,17 @@ import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.config.jwt.JwtTokenProvider;
 import org.gig.withpet.api.utils.ApiResponse;
 import org.gig.withpet.core.data.kakaoMap.KakaoMapApiService;
-import org.gig.withpet.core.data.vWorldAddress.dto.AddressResDto;
 import org.gig.withpet.core.domain.common.dto.response.AddressResponse;
-import org.gig.withpet.core.domain.user.member.dto.AddInfoRequestDto;
-import org.gig.withpet.core.domain.user.member.dto.SignInRequestDto;
-import org.gig.withpet.core.domain.user.member.dto.SignInResponseDto;
-import org.gig.withpet.core.domain.user.member.dto.TokenDto;
+import org.gig.withpet.core.domain.exception.NotFoundException;
+import org.gig.withpet.core.domain.user.member.dto.*;
 import org.gig.withpet.core.domain.user.member.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Map;
 
 @Api(value = "인증 API V1")
 @RequiredArgsConstructor
@@ -30,16 +27,39 @@ public class AuthController {
     private final MemberService memberService;
     private final KakaoMapApiService kakaoMapApiService;
 
-    @ApiOperation(value = "로그인/회원가입 API")
+    /**
+     * 서로 다른 SNS 계정으로 가입하려 하는 경우
+     * @param signInRequestDto
+     * @return
+     */
+    @ApiOperation(value = "로그인 API")
     @PostMapping("/member/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody SignInRequestDto signInRequestDto) {
-        SignInResponseDto member = memberService.signIn(signInRequestDto);
-        String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRole());
-        String refreshToken = jwtTokenProvider.createRefreshToken(member.getUid(), member.getRole());
-        memberService.logIn(member.getUid(), refreshToken);
+    public ResponseEntity<ApiResponse> login(@RequestBody SignInRequest signInRequestDto) {
 
-        return new ResponseEntity<>(ApiResponse.OK(new TokenDto(accessToken, refreshToken)), HttpStatus.OK);
+        try {
+            MemberDto member = memberService.getMemberDtoByUid(signInRequestDto.uid);
+            String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRole());
+            String refreshToken = jwtTokenProvider.createRefreshToken(member.getUid(), member.getRole());
+            memberService.logIn(member.getUid(), refreshToken);
 
+            return new ResponseEntity<>(ApiResponse.OK(new TokenDto(accessToken, refreshToken)), HttpStatus.OK);
+        } catch (NotFoundException ne) {
+            ne.printStackTrace();
+            return new ResponseEntity<>(ApiResponse.ERROR(HttpStatus.NOT_FOUND, ne.getMessage()), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @ApiOperation(value = "회원가입 API")
+    @PostMapping("/member/sign-up")
+    public ResponseEntity<ApiResponse> signUp(@RequestBody SignUpRequest signUpRequestDto) {
+        SignUpResponse res = null;
+        try {
+            res = memberService.signUp(signUpRequestDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<>(ApiResponse.OK(res), HttpStatus.OK);
     }
 
     @ApiOperation(value = "로그아웃 API")
@@ -54,30 +74,12 @@ public class AuthController {
     public ResponseEntity<ApiResponse> accessTokenRefresh(
             Principal principal,
             @RequestHeader(value="Authorization") String token) {
-        SignInResponseDto member =
+        SignInResponse member =
                 memberService.compareToken(principal.getName(), jwtTokenProvider.tokenParsing(token));
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRole());
         return new ResponseEntity<>(ApiResponse.OK(new TokenDto(accessToken, null)), HttpStatus.OK);
     }
-
-    @ApiOperation(value = "회원 추가정보 입력 API")
-    @PostMapping("/member/add-info")
-    public ResponseEntity<ApiResponse> memberAddInfo(
-            @RequestBody AddInfoRequestDto addInfoRequestDto
-        ) {
-
-        Map<String, String> result = null;
-        try {
-            result = memberService.updateAddMemberInfo(addInfoRequestDto);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return new ResponseEntity<>(ApiResponse.OK(result), HttpStatus.OK);
-    }
-
-
 
     @ApiOperation(value = "회원가입 여부 API")
     @GetMapping("/member")

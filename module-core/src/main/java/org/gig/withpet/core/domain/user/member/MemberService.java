@@ -2,10 +2,10 @@ package org.gig.withpet.core.domain.user.member;
 
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.activityAreas.activityAreas.ActivityAreasService;
+import org.gig.withpet.core.domain.exception.NotFoundException;
 import org.gig.withpet.core.domain.role.RoleService;
-import org.gig.withpet.core.domain.user.member.dto.AddInfoRequestDto;
-import org.gig.withpet.core.domain.user.member.dto.SignInRequestDto;
-import org.gig.withpet.core.domain.user.member.dto.SignInResponseDto;
+import org.gig.withpet.core.domain.user.UserStatus;
+import org.gig.withpet.core.domain.user.member.dto.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,25 +25,27 @@ public class MemberService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public SignInResponseDto signIn(SignInRequestDto signInRequestDto) {
-        Optional<Member> member = memberRepository.findByUid(signInRequestDto.uid);
-        return member.map(SignInResponseDto::new)
-                .orElseGet(() -> signUp(signInRequestDto));
-    }
-
-    private SignInResponseDto signUp(SignInRequestDto signInRequestDto) {
+    @Transactional
+    public SignUpResponse signUp(SignUpRequest signUpRequestDto) throws Exception {
 
         Member member = Member.signUp(
-                signInRequestDto.uid,
-                signInRequestDto.email,
-                passwordEncoder.encode(signInRequestDto.getUid()),
-                signInRequestDto.snsType
+                signUpRequestDto,
+                passwordEncoder.encode(signUpRequestDto.getUid())
         );
 
         MemberRole memberRole = MemberRole.addMemberRole(member, roleService.findByRoleName("ROLE_USER"));
         member.addRole(memberRole);
 
-        return new SignInResponseDto(memberRepository.save(member));
+        Member savedMember = memberRepository.save(member);
+
+        activityAreasService.saveActivityArea(
+                savedMember,
+                signUpRequestDto.getSido(),
+                signUpRequestDto.getSigungo(),
+                signUpRequestDto.getEmd()
+        );
+
+        return new SignUpResponse(savedMember);
     }
 
     @Transactional
@@ -58,32 +60,28 @@ public class MemberService {
         member.deleteRefreshToken();
     }
 
-    public SignInResponseDto compareToken(String uid, String token) {
+    public SignInResponse compareToken(String uid, String token) {
         Member member = getMemberByUid(uid);
         if (!member.compareToken(token))
             throw new RuntimeException();
 
-        return new SignInResponseDto(member);
-    }
-
-    @Transactional
-    public Map<String, String> updateAddMemberInfo(AddInfoRequestDto addInfoRequestDto) throws Exception {
-        Member member = getMemberByUid(addInfoRequestDto.getUid());
-        member.updateAddInfo(addInfoRequestDto);
-        activityAreasService.saveActivityArea(
-                member,
-                addInfoRequestDto.getSido(),
-                addInfoRequestDto.getSigungo(),
-                addInfoRequestDto.getEmd()
-        );
-
-        return Map.of("saveYn", "Y");
+        return new SignInResponse(member);
     }
 
     @Transactional(readOnly = true)
     public Member getMemberByUid(String uid) {
         return memberRepository.findByUid(uid)
                 .orElseThrow(() -> new RuntimeException());
+    }
+
+    @Transactional(readOnly = true)
+    public MemberDto getMemberDtoByUid(String uid) throws NotFoundException {
+        Optional<Member> findMember = memberRepository.findByUidAndStatus(uid, UserStatus.NORMAL);
+        if (findMember.isEmpty()) {
+            throw new NotFoundException("회원 정보가 없습니다.");
+        }
+
+        return new MemberDto(findMember.get());
     }
 
 

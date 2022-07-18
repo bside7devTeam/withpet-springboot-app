@@ -2,10 +2,11 @@ package org.gig.withpet.core.domain.user.member;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.user.AbstractUser;
 import org.gig.withpet.core.domain.user.UserStatus;
-import org.gig.withpet.core.domain.user.member.dto.AddInfoRequestDto;
+import org.gig.withpet.core.domain.user.member.dto.SignUpRequest;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -45,7 +46,7 @@ public class Member extends AbstractUser {
     @Column(length = 1000)
     private String profileImage;
 
-    private LocalDateTime ageConfirmAt;
+    private LocalDateTime ageOver14ConfirmAt;
 
     private LocalDateTime policyAgreementAt;
 
@@ -58,25 +59,22 @@ public class Member extends AbstractUser {
     private Set<MemberRole> memberRoles = new HashSet<>();
 
 
-    public static Member signUp(String uid, String email, String password, SnsType snsType) {
+    public static Member signUp(SignUpRequest request, String password) {
         return Member.builder()
-                .uid(uid)
+                .uid(request.getUid())
                 .password(password)
-                .username(email)
-                .email(email)
-                .snsType(snsType)
+                .username(request.getEmail())
+                .email(request.getEmail())
+                .nickName(request.getNickname())
+                .profileImage(request.getProfileImage())
+                .snsType(request.getSnsType())
                 .status(UserStatus.NORMAL)
-                .policyAgreementAt(LocalDateTime.now())
-                .marketingAgreementAt(LocalDateTime.now())
-                .privacyAgreementAt(LocalDateTime.now())
-                .ageConfirmAt(LocalDateTime.now())
+                .policyAgreementAt(request.getAgreePolicyYn() == YnType.Y ? LocalDateTime.now() : null)
+                .marketingAgreementAt(request.getAgreeMarketingYn() == YnType.Y ? LocalDateTime.now() : null)
+                .privacyAgreementAt(request.getAgreePrivacyYn() == YnType.Y ? LocalDateTime.now() : null)
+                .ageOver14ConfirmAt(request.getAgreeOver14Yn() == YnType.Y ? LocalDateTime.now() : null)
                 .joinedAt(LocalDateTime.now())
                 .build();
-    }
-
-    public void updateAddInfo(AddInfoRequestDto addInfoRequestDto) {
-        this.nickName = addInfoRequestDto.getNickname();
-        this.profileImage = addInfoRequestDto.getProfileImage();
     }
 
     @Override
