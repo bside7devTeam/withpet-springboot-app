@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Map;
 
 @Api(value = "인증 API V1")
 @RequiredArgsConstructor
@@ -55,6 +56,9 @@ public class AuthController {
         SignUpResponse res = null;
         try {
             res = memberService.signUp(signUpRequestDto);
+            String accessToken = jwtTokenProvider.createAccessToken(res.getUid(), res.getRole());
+            String refreshToken = jwtTokenProvider.createRefreshToken(res.getUid(), res.getRole());
+            res.setToken(accessToken, refreshToken);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,10 +86,10 @@ public class AuthController {
     }
 
     @ApiOperation(value = "회원가입 여부 API")
-    @GetMapping("/member")
-    public ResponseEntity<ApiResponse> completed(String uid) {
-        memberService.getMemberByUid(uid);
-        return new ResponseEntity<>(ApiResponse.OK(), HttpStatus.OK);
+    @GetMapping("/member/{uid}")
+    public ResponseEntity<ApiResponse> checkIsMember(@PathVariable("uid") String uid) {
+        Map<String, String> data = memberService.getMemberByUid(uid);
+        return new ResponseEntity<>(ApiResponse.OK(data), HttpStatus.OK);
     }
 
     @ApiOperation(

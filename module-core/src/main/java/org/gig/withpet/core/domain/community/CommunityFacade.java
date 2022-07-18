@@ -23,18 +23,18 @@ public class CommunityFacade {
     private final CommunityService communityService;
 
     public CommunityDto create(String uid, CommunityCreateDto postCreateDto) {
-        Member writer = memberService.getMemberByUid(uid);
+        Member writer = memberService.getMember(uid);
         return new CommunityDto(communityService.create(writer, postCreateDto));
     }
 
     public CommunityDto update(String uid, CommunityUpdateDto postUpdateDto) {
-        Member modifier = memberService.getMemberByUid(uid);
+        Member modifier = memberService.getMember(uid);
 
         return new CommunityDto(communityService.update(modifier, postUpdateDto));
     }
 
     public void delete(String uid, Long postId) {
-        Member deleter = memberService.getMemberByUid(uid);
+        Member deleter = memberService.getMember(uid);
 
         communityService.delete(deleter, postId);
     }

@@ -2,6 +2,7 @@ package org.gig.withpet.core.domain.user.member;
 
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.activityAreas.activityAreas.ActivityAreasService;
+import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.exception.NotFoundException;
 import org.gig.withpet.core.domain.role.RoleService;
 import org.gig.withpet.core.domain.user.UserStatus;
@@ -50,18 +51,18 @@ public class MemberService {
 
     @Transactional
     public void logIn(String uid, String refreshToken) {
-        Member member = getMemberByUid(uid);
+        Member member = getMember(uid);
         member.updateRefreshToken(refreshToken);
         member.loginSuccess();
     }
 
     public void logout(String uid) {
-        Member member = getMemberByUid(uid);
+        Member member = getMember(uid);
         member.deleteRefreshToken();
     }
 
     public SignInResponse compareToken(String uid, String token) {
-        Member member = getMemberByUid(uid);
+        Member member = getMember(uid);
         if (!member.compareToken(token))
             throw new RuntimeException();
 
@@ -69,9 +70,19 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member getMemberByUid(String uid) {
+    public Member getMember(String uid) {
         return memberRepository.findByUid(uid)
                 .orElseThrow(() -> new RuntimeException());
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, String> getMemberByUid(String uid) {
+
+        Optional<Member> findMember = memberRepository.findByUid(uid);
+        if (findMember.isEmpty()) {
+            return Map.of("memberYn", YnType.N.toString());
+        }
+        return Map.of("memberYn", YnType.Y.toString());
     }
 
     @Transactional(readOnly = true)
