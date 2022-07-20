@@ -5,12 +5,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.utils.ApiResponse;
 import org.gig.withpet.core.domain.common.dto.response.PageResponseDto;
-import org.gig.withpet.core.domain.community.CategoryType;
+import org.gig.withpet.core.domain.community.types.CategoryType;
 import org.gig.withpet.core.domain.community.dto.CommunityCreateDto;
 import org.gig.withpet.core.domain.community.dto.CommunityDto;
 import org.gig.withpet.core.domain.community.dto.CommunityUpdateDto;
 import org.gig.withpet.core.domain.community.CommunityFacade;
-import org.springframework.data.domain.Pageable;
+import org.gig.withpet.core.domain.community.types.CommunitySearchType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,11 +27,13 @@ public class CommunityController {
     @ApiOperation(value = "게시판 조회 (Page)")
     @GetMapping
     public ResponseEntity<ApiResponse> getCommunityList(
+            @RequestParam("communitySearchType") CommunitySearchType searchType,
             @RequestParam("categoryType") CategoryType categoryType,
             @RequestParam("page") int page,
-            @RequestParam("size") int size
+            @RequestParam("size") int size,
+            Principal principal
     ) {
-        PageResponseDto<CommunityDto> pageRes = communityFacade.getCommunityPageList(categoryType, page, size);
+        PageResponseDto<CommunityDto> pageRes = communityFacade.getCommunityPageList(principal, searchType, categoryType, page, size);
         return new ResponseEntity<>(ApiResponse.OK(pageRes), HttpStatus.OK);
     }
 

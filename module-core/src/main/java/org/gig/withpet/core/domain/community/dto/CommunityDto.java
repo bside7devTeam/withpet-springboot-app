@@ -2,7 +2,7 @@ package org.gig.withpet.core.domain.community.dto;
 
 import lombok.Data;
 import org.gig.withpet.core.domain.common.types.YnType;
-import org.gig.withpet.core.domain.community.CategoryType;
+import org.gig.withpet.core.domain.community.types.CategoryType;
 import org.gig.withpet.core.domain.community.Community;
 import org.gig.withpet.core.domain.user.member.Member;
 

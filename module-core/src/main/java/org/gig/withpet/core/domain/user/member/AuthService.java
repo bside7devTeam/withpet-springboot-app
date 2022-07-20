@@ -5,8 +5,15 @@ import org.gig.withpet.core.domain.activityAreas.activityAreas.ActivityAreasServ
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.exception.NotFoundException;
 import org.gig.withpet.core.domain.role.RoleService;
+import org.gig.withpet.core.domain.user.UserService;
 import org.gig.withpet.core.domain.user.UserStatus;
-import org.gig.withpet.core.domain.user.member.dto.*;
+import org.gig.withpet.core.domain.user.member.dto.MemberDto;
+import org.gig.withpet.core.domain.user.member.dto.SignInResponse;
+import org.gig.withpet.core.domain.user.member.dto.SignUpRequest;
+import org.gig.withpet.core.domain.user.member.dto.SignUpResponse;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +24,11 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 @Service
-public class MemberService {
+public class AuthService {
 
     private final MemberRepository memberRepository;
-
     private final RoleService roleService;
     private final ActivityAreasService activityAreasService;
-
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -51,28 +56,22 @@ public class MemberService {
 
     @Transactional
     public void logIn(String uid, String refreshToken) {
-        Member member = getMember(uid);
+        Member member = getUser(uid);
         member.updateRefreshToken(refreshToken);
         member.loginSuccess();
     }
 
     public void logout(String uid) {
-        Member member = getMember(uid);
+        Member member = getUser(uid);
         member.deleteRefreshToken();
     }
 
     public SignInResponse compareToken(String uid, String token) {
-        Member member = getMember(uid);
+        Member member = getUser(uid);
         if (!member.compareToken(token))
             throw new RuntimeException();
 
         return new SignInResponse(member);
-    }
-
-    @Transactional(readOnly = true)
-    public Member getMember(String uid) {
-        return memberRepository.findByUid(uid)
-                .orElseThrow(() -> new RuntimeException());
     }
 
     @Transactional(readOnly = true)
@@ -95,5 +94,11 @@ public class MemberService {
         return new MemberDto(findMember.get());
     }
 
-
+    public Member getUser(String uid) {
+        Optional<Member> findMember = memberRepository.findByUid(uid);
+        if (findMember.isEmpty()) {
+            throw new UsernameNotFoundException("회원을 찾을 수 없습니다.");
+        }
+        return findMember.get();
+    }
 }

@@ -2,6 +2,7 @@ package org.gig.withpet.core.domain.user.member;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.gig.withpet.core.domain.activityAreas.activityEmdAreaas.ActivityEmdAreas;
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.user.AbstractUser;
@@ -12,6 +13,7 @@ import org.gig.withpet.core.domain.user.member.types.SnsType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +58,10 @@ public class Member extends AbstractUser {
     @Builder.Default
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Set<MemberRole> memberRoles = new HashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "activityAreas", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<ActivityEmdAreas> activityEmdAreas = new ArrayList<>();
 
 
     public static Member signUp(SignUpRequest request, String password) {

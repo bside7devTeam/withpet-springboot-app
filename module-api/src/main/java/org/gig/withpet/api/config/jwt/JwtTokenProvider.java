@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,8 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
     private static final long ACCESS_TOKEN_VALID_TIME = 1000L * 60 * 30;
     private static final long REFRESH_TOKEN_VALID_TIME = 1000L * 60 * 60 * 24 * 7;
@@ -28,6 +29,8 @@ public class JwtTokenProvider {
 
     @Value("${JWT.TOKEN.KEY}")
     private String key;
+    private final UserDetailsService userDetailsService;
+
 
     public Boolean checkAuthorization(HttpServletRequest request) {
         return request.getHeader(AUTHORIZATION) == null;
@@ -96,6 +99,7 @@ public class JwtTokenProvider {
                         .collect(Collectors.toList());
 
         UserDetails principal = new User(claims.getSubject(), "", authorities);
+//        UserDetails principal = userDetailsService.loadUserByUsername(claims.getSubject());
 
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }

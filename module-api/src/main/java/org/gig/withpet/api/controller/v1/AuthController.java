@@ -9,10 +9,9 @@ import org.gig.withpet.core.data.kakaoMap.KakaoMapApiService;
 import org.gig.withpet.core.domain.common.dto.response.AddressResponse;
 import org.gig.withpet.core.domain.exception.NotFoundException;
 import org.gig.withpet.core.domain.user.member.dto.*;
-import org.gig.withpet.core.domain.user.member.MemberService;
+import org.gig.withpet.core.domain.user.member.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,13 +24,13 @@ import java.util.Map;
 public class AuthController {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberService memberService;
+    private final AuthService authService;
     private final KakaoMapApiService kakaoMapApiService;
 
     @ApiOperation(value = "회원가입 여부 API")
     @GetMapping("/member/{uid}")
     public ResponseEntity<ApiResponse> checkIsMember(@PathVariable("uid") String uid) {
-        Map<String, String> data = memberService.getMemberByUid(uid);
+        Map<String, String> data = authService.getMemberByUid(uid);
         return new ResponseEntity<>(ApiResponse.OK(data), HttpStatus.OK);
     }
 
@@ -40,7 +39,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse> signUp(@RequestBody SignUpRequest signUpRequestDto) {
         SignUpResponse res = null;
         try {
-            res = memberService.signUp(signUpRequestDto);
+            res = authService.signUp(signUpRequestDto);
             String accessToken = jwtTokenProvider.createAccessToken(res.getUid(), res.getRoles());
             String refreshToken = jwtTokenProvider.createRefreshToken(res.getUid(), res.getRoles());
             res.setToken(accessToken, refreshToken);
@@ -61,10 +60,10 @@ public class AuthController {
     public ResponseEntity<ApiResponse> login(@RequestBody SignInRequest signInRequestDto) {
 
         try {
-            MemberDto member = memberService.getMemberDtoByUid(signInRequestDto.uid);
+            MemberDto member = authService.getMemberDtoByUid(signInRequestDto.uid);
             String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRoles());
             String refreshToken = jwtTokenProvider.createRefreshToken(member.getUid(), member.getRoles());
-            memberService.logIn(member.getUid(), refreshToken);
+            authService.logIn(member.getUid(), refreshToken);
 
             return new ResponseEntity<>(ApiResponse.OK(new TokenDto(accessToken, refreshToken)), HttpStatus.OK);
         } catch (NotFoundException ne) {
@@ -76,7 +75,7 @@ public class AuthController {
     @ApiOperation(value = "로그아웃 API")
     @PostMapping("/member/logout")
     public ResponseEntity<ApiResponse> logout(Principal principal) {
-        memberService.logout(principal.getName());
+        authService.logout(principal.getName());
         return new ResponseEntity<>(ApiResponse.OK("logout"), HttpStatus.OK);
     }
 
@@ -86,7 +85,7 @@ public class AuthController {
             Principal principal,
             @RequestHeader(value="Authorization") String token) {
         SignInResponse member =
-                memberService.compareToken(principal.getName(), jwtTokenProvider.tokenParsing(token));
+                authService.compareToken(principal.getName(), jwtTokenProvider.tokenParsing(token));
 
         String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRoles());
         return new ResponseEntity<>(ApiResponse.OK(new TokenDto(accessToken)), HttpStatus.OK);

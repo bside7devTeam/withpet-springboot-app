@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.community;
+package org.gig.withpet.core.domain.community.types;
 
 public enum CategoryType {
     TOGETHER,       //같이하기
