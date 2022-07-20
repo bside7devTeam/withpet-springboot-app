@@ -7,10 +7,13 @@ import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.user.AbstractUser;
 import org.gig.withpet.core.domain.user.UserStatus;
 import org.gig.withpet.core.domain.user.member.dto.SignUpRequest;
+import org.gig.withpet.core.domain.user.member.types.RoleType;
+import org.gig.withpet.core.domain.user.member.types.SnsType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,10 +36,6 @@ public class Member extends AbstractUser {
     private String nickName;
 
     private String name;
-
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    private RoleType roleType = RoleType.USER;
 
     @Enumerated(EnumType.STRING)
     private SnsType snsType;
@@ -80,6 +79,10 @@ public class Member extends AbstractUser {
     @Override
     public Set<Role> getRoles() {
         return memberRoles.stream().map(MemberRole::getRole).collect(Collectors.toSet());
+    }
+
+    public List<String> getRoleNames() {
+        return memberRoles.stream().map(MemberRole::getMemberRoleName).collect(Collectors.toList());
     }
 
     public void addRole(MemberRole role) {

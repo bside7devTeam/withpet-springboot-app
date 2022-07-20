@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -42,21 +43,21 @@ public class JwtTokenProvider {
         return token.replace(BEARER + " ", "");
     }
 
-    public String createAccessToken(String uid, String role) {
+    public String createAccessToken(String uid, List<String> roles) {
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(uid)
-                .claim("role", role)
+                .claim("roles", roles)
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALID_TIME))
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
     }
 
-    public String createRefreshToken(String uid, String role) {
+    public String createRefreshToken(String uid, List<String> roles) {
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setSubject(uid)
-                .claim("role", role)
+                .claim("roles", roles)
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALID_TIME))
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
@@ -90,7 +91,7 @@ public class JwtTokenProvider {
                 .getBody();
 
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get("role").toString().split(","))
+                Arrays.stream(claims.get("roles").toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 

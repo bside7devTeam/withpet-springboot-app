@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.gig.withpet.core.domain.user.member.Member;
 import org.gig.withpet.core.domain.user.member.MemberRole;
 
+import java.util.List;
+
 /**
  * @author : JAKE
  * @date : 2022/07/18
@@ -12,10 +14,10 @@ import org.gig.withpet.core.domain.user.member.MemberRole;
 public class MemberDto {
 
     private String uid;
-    private String role;
+    private List<String> roles;
 
     public MemberDto(Member member) {
         this.uid = member.getUid();
-        this.role = member.getRoleType().toString();
+        this.roles = member.getRoleNames();
     }
 }

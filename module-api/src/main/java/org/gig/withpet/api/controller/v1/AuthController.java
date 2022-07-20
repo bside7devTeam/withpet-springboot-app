@@ -28,6 +28,29 @@ public class AuthController {
     private final MemberService memberService;
     private final KakaoMapApiService kakaoMapApiService;
 
+    @ApiOperation(value = "회원가입 여부 API")
+    @GetMapping("/member/{uid}")
+    public ResponseEntity<ApiResponse> checkIsMember(@PathVariable("uid") String uid) {
+        Map<String, String> data = memberService.getMemberByUid(uid);
+        return new ResponseEntity<>(ApiResponse.OK(data), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "회원가입 API")
+    @PostMapping("/member/sign-up")
+    public ResponseEntity<ApiResponse> signUp(@RequestBody SignUpRequest signUpRequestDto) {
+        SignUpResponse res = null;
+        try {
+            res = memberService.signUp(signUpRequestDto);
+            String accessToken = jwtTokenProvider.createAccessToken(res.getUid(), res.getRoles());
+            String refreshToken = jwtTokenProvider.createRefreshToken(res.getUid(), res.getRoles());
+            res.setToken(accessToken, refreshToken);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity<>(ApiResponse.OK(res), HttpStatus.OK);
+    }
+
     /**
      * 서로 다른 SNS 계정으로 가입하려 하는 경우
      * @param signInRequestDto
@@ -39,8 +62,8 @@ public class AuthController {
 
         try {
             MemberDto member = memberService.getMemberDtoByUid(signInRequestDto.uid);
-            String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRole());
-            String refreshToken = jwtTokenProvider.createRefreshToken(member.getUid(), member.getRole());
+            String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRoles());
+            String refreshToken = jwtTokenProvider.createRefreshToken(member.getUid(), member.getRoles());
             memberService.logIn(member.getUid(), refreshToken);
 
             return new ResponseEntity<>(ApiResponse.OK(new TokenDto(accessToken, refreshToken)), HttpStatus.OK);
@@ -48,22 +71,6 @@ public class AuthController {
             ne.printStackTrace();
             return new ResponseEntity<>(ApiResponse.ERROR(HttpStatus.NOT_FOUND, ne.getMessage()), HttpStatus.NOT_FOUND);
         }
-    }
-
-    @ApiOperation(value = "회원가입 API")
-    @PostMapping("/member/sign-up")
-    public ResponseEntity<ApiResponse> signUp(@RequestBody SignUpRequest signUpRequestDto) {
-        SignUpResponse res = null;
-        try {
-            res = memberService.signUp(signUpRequestDto);
-            String accessToken = jwtTokenProvider.createAccessToken(res.getUid(), res.getRole());
-            String refreshToken = jwtTokenProvider.createRefreshToken(res.getUid(), res.getRole());
-            res.setToken(accessToken, refreshToken);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return new ResponseEntity<>(ApiResponse.OK(res), HttpStatus.OK);
     }
 
     @ApiOperation(value = "로그아웃 API")
@@ -81,15 +88,8 @@ public class AuthController {
         SignInResponse member =
                 memberService.compareToken(principal.getName(), jwtTokenProvider.tokenParsing(token));
 
-        String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRole());
-        return new ResponseEntity<>(ApiResponse.OK(new TokenDto(accessToken, null)), HttpStatus.OK);
-    }
-
-    @ApiOperation(value = "회원가입 여부 API")
-    @GetMapping("/member/{uid}")
-    public ResponseEntity<ApiResponse> checkIsMember(@PathVariable("uid") String uid) {
-        Map<String, String> data = memberService.getMemberByUid(uid);
-        return new ResponseEntity<>(ApiResponse.OK(data), HttpStatus.OK);
+        String accessToken = jwtTokenProvider.createAccessToken(member.getUid(), member.getRoles());
+        return new ResponseEntity<>(ApiResponse.OK(new TokenDto(accessToken)), HttpStatus.OK);
     }
 
     @ApiOperation(
