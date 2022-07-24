@@ -2,6 +2,7 @@ package org.gig.withpet.core.domain.attachment;
 
 import com.google.common.base.Strings;
 import org.apache.commons.io.FilenameUtils;
+import org.gig.withpet.core.domain.attachment.types.FileType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;

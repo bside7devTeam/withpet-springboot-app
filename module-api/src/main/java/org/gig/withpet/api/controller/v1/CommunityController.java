@@ -38,9 +38,8 @@ public class CommunityController {
 
     @ApiOperation(value = "게시판 생성")
     @PostMapping
-    public ResponseEntity<ApiResponse> create(@RequestBody CommunityCreateDto createDto,
-                                 Principal principal) {
-        CommunityDto community = communityFacade.create(principal.getName(), createDto);
+    public ResponseEntity<ApiResponse> create(@RequestBody CommunityCreateDto createDto) {
+        CommunityDto community = communityFacade.create(createDto);
         return new ResponseEntity<>(ApiResponse.OK(community), HttpStatus.OK);
     }
 

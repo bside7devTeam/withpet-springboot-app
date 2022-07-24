@@ -1,13 +1,12 @@
 package org.gig.withpet.core.domain.attachment;
 
-import com.amazonaws.services.s3.transfer.Upload;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.attachment.dto.UploadFileDto;
+import org.gig.withpet.core.domain.attachment.types.FileType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Optional;
 
 /**
@@ -39,7 +38,7 @@ public class ImageManagerService {
 
             String saveFilePath = uploadImage.upload(uploadFile, filePath, saveFileName);
 
-            return UploadFileDto.create(originalFilename, saveFilePath);
+            return UploadFileDto.create(FileType.Image, originalFilename, saveFileName, saveFilePath);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("파일을 업로드 하던 중 에러가 발생했습니다.");

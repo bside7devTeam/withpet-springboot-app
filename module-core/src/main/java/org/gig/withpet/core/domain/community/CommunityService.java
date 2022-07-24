@@ -36,7 +36,9 @@ public class CommunityService {
                 communityCreateDto.getCategoryType(),
                 writer,
                 communityCreateDto.getTitle(),
-                communityCreateDto.getContent());
+                communityCreateDto.getContent()
+        );
+
 
         return communityRepository.save(community);
     }

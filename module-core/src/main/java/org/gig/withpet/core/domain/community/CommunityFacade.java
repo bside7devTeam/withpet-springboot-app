@@ -26,8 +26,8 @@ public class CommunityFacade {
     private final AuthService authService;
     private final CommunityService communityService;
 
-    public CommunityDto create(String uid, CommunityCreateDto postCreateDto) {
-        Member writer = authService.getUser(uid);
+    public CommunityDto create(CommunityCreateDto postCreateDto) {
+        Member writer = authService.getLoginUser();
         return new CommunityDto(communityService.create(writer, postCreateDto));
     }
 
