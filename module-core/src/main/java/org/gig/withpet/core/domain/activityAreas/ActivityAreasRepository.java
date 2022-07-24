@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.activityAreas.activityAreas;
+package org.gig.withpet.core.domain.activityAreas;
 
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.user.member.Member;

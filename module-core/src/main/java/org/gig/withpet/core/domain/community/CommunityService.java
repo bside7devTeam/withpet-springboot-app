@@ -1,14 +1,12 @@
 package org.gig.withpet.core.domain.community;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.activityAreas.activityEmdAreaas.ActivityEmdAreas;
+import org.gig.withpet.core.domain.activityAreas.ActivityAreas;
 import org.gig.withpet.core.domain.community.dto.CommunityCreateDto;
 import org.gig.withpet.core.domain.community.dto.CommunityUpdateDto;
 import org.gig.withpet.core.domain.community.types.CategoryType;
-import org.gig.withpet.core.domain.community.types.CommunitySearchType;
 import org.gig.withpet.core.domain.user.member.Member;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +27,8 @@ public class CommunityService {
     }
 
     @Transactional(readOnly = true)
-    public Page<Community> getPostListByMyTown(CategoryType categoryType, List<ActivityEmdAreas> emdAreasList, Pageable pageable) {
-        return queryRepository.getCommunityMyTownPage(categoryType, emdAreasList, pageable);
+    public Page<Community> getPostListByMyTown(CategoryType categoryType, List<Long> emdIds, Pageable pageable) {
+        return queryRepository.getCommunityMyTownPage(categoryType, emdIds, pageable);
     }
 
     public Community create(Member writer, CommunityCreateDto communityCreateDto) {

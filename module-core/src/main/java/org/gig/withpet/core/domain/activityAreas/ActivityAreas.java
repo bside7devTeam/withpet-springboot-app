@@ -1,16 +1,14 @@
-package org.gig.withpet.core.domain.activityAreas.activityAreas;
+package org.gig.withpet.core.domain.activityAreas;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.gig.withpet.core.domain.activityAreas.activityEmdAreaas.ActivityEmdAreas;
+import org.gig.withpet.core.domain.area.emdArea.EmdArea;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.user.member.Member;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author : JAKE
@@ -39,13 +37,14 @@ public class ActivityAreas extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "activityAreas", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<ActivityEmdAreas> activityEmdAreas = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "emd_area_id")
+    private EmdArea emdArea;
 
-    public static ActivityAreas insertActivityAreas(Member member) {
+    public static ActivityAreas insertActivityAreas(Member member, EmdArea emdArea) {
         return ActivityAreas.builder()
                 .member(member)
+                .emdArea(emdArea)
                 .build();
     }
 }

@@ -30,10 +30,9 @@ public class CommunityController {
             @RequestParam("communitySearchType") CommunitySearchType searchType,
             @RequestParam("categoryType") CategoryType categoryType,
             @RequestParam("page") int page,
-            @RequestParam("size") int size,
-            Principal principal
+            @RequestParam("size") int size
     ) {
-        PageResponseDto<CommunityDto> pageRes = communityFacade.getCommunityPageList(principal, searchType, categoryType, page, size);
+        PageResponseDto<CommunityDto> pageRes = communityFacade.getCommunityPageList(searchType, categoryType, page, size);
         return new ResponseEntity<>(ApiResponse.OK(pageRes), HttpStatus.OK);
     }
 
@@ -55,9 +54,8 @@ public class CommunityController {
 
     @ApiOperation(value = "게시판 삭제")
     @PostMapping("/{postId}/delete")
-    public ResponseEntity<ApiResponse> postDelete(@PathVariable Long postId, Principal principal) {
-        communityFacade.delete(principal.getName(), postId);
-
+    public ResponseEntity<ApiResponse> postDelete(@PathVariable Long postId) {
+        communityFacade.delete(postId);
         return new ResponseEntity<>(ApiResponse.OK(), HttpStatus.OK);
     }
 

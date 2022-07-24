@@ -1,20 +1,23 @@
 package org.gig.withpet.core.domain.user.member;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.activityAreas.activityAreas.ActivityAreasService;
+import org.gig.withpet.core.domain.activityAreas.ActivityAreasService;
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.exception.NotFoundException;
 import org.gig.withpet.core.domain.role.RoleService;
-import org.gig.withpet.core.domain.user.UserService;
+import org.gig.withpet.core.domain.user.LoginUser;
 import org.gig.withpet.core.domain.user.UserStatus;
+import org.gig.withpet.core.domain.user.administrator.Administrator;
 import org.gig.withpet.core.domain.user.member.dto.MemberDto;
 import org.gig.withpet.core.domain.user.member.dto.SignInResponse;
 import org.gig.withpet.core.domain.user.member.dto.SignUpRequest;
 import org.gig.withpet.core.domain.user.member.dto.SignUpResponse;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -100,5 +103,19 @@ public class AuthService {
             throw new UsernameNotFoundException("회원을 찾을 수 없습니다.");
         }
         return findMember.get();
+    }
+
+    @Transactional(readOnly = true)
+    public Member getLoginUser() {
+        if (SecurityContextHolder.getContext() != null) {
+            if (SecurityContextHolder.getContext().getAuthentication() == null) return null;
+            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            Optional<Member> findMember = memberRepository.findByUid(principal.getUsername());
+            if (findMember.isEmpty()) {
+                return null;
+            }
+            return findMember.get();
+        }
+        return null;
     }
 }

@@ -2,13 +2,12 @@ package org.gig.withpet.core.domain.user.member;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.gig.withpet.core.domain.activityAreas.activityEmdAreaas.ActivityEmdAreas;
+import org.gig.withpet.core.domain.activityAreas.ActivityAreas;
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.user.AbstractUser;
 import org.gig.withpet.core.domain.user.UserStatus;
 import org.gig.withpet.core.domain.user.member.dto.SignUpRequest;
-import org.gig.withpet.core.domain.user.member.types.RoleType;
 import org.gig.withpet.core.domain.user.member.types.SnsType;
 
 import javax.persistence.*;
@@ -60,9 +59,8 @@ public class Member extends AbstractUser {
     private Set<MemberRole> memberRoles = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "activityAreas", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
-    private List<ActivityEmdAreas> activityEmdAreas = new ArrayList<>();
-
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<ActivityAreas> activityAreas = new ArrayList<>();
 
     public static Member signUp(SignUpRequest request, String password) {
         return Member.builder()
@@ -105,5 +103,13 @@ public class Member extends AbstractUser {
 
     public boolean compareToken(String token) {
         return this.refreshToken.equals(token);
+    }
+
+    public List<Long> getEmdIds() {
+        List<Long> emdAreaIds = new ArrayList<>();
+        for (ActivityAreas area : this.activityAreas) {
+            emdAreaIds.add(area.getEmdArea().getId());
+        }
+        return emdAreaIds;
     }
 }

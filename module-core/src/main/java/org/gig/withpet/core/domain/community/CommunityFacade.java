@@ -1,7 +1,7 @@
 package org.gig.withpet.core.domain.community;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.activityAreas.activityEmdAreaas.ActivityEmdAreas;
+import org.gig.withpet.core.domain.activityAreas.ActivityAreas;
 import org.gig.withpet.core.domain.common.dto.response.PageResponseDto;
 import org.gig.withpet.core.domain.community.dto.CommunityCreateDto;
 import org.gig.withpet.core.domain.community.dto.CommunityDto;
@@ -37,29 +37,25 @@ public class CommunityFacade {
         return new CommunityDto(communityService.update(modifier, postUpdateDto));
     }
 
-    public void delete(String uid, Long postId) {
-        Member deleter = authService.getUser(uid);
-
+    public void delete(Long postId) {
+        Member deleter = authService.getLoginUser();
         communityService.delete(deleter, postId);
     }
 
     public CommunityDto getCommunity(Long postId) {
         Community community = communityService.getCommunity(postId);
-
         return new CommunityDto(community);
     }
 
     @Transactional(readOnly = true)
-    public PageResponseDto<CommunityDto> getCommunityPageList(Principal principal, CommunitySearchType searchType, CategoryType categoryType, int page, int size) {
+    public PageResponseDto<CommunityDto> getCommunityPageList(CommunitySearchType searchType, CategoryType categoryType, int page, int size) {
         Page<Community> communities = null;
 
-        Member loginUser = authService.getUser(principal.getName());
-        List<ActivityEmdAreas> emdAreas = loginUser.getActivityEmdAreas();
-
-
+        Member me = authService.getLoginUser();
+        List<Long> emdIds = me.getEmdIds();
 
         if (searchType == CommunitySearchType.TOWN) {
-            communities = communityService.getPostListByMyTown(categoryType, emdAreas, PageRequest.of(page, size));
+            communities = communityService.getPostListByMyTown(categoryType, emdIds, PageRequest.of(page, size));
         } else {
             communities = communityService.getPostListByCategoryType(categoryType, PageRequest.of(page, size));
         }
