@@ -2,12 +2,18 @@ package org.gig.withpet.api.config.security;
 
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.config.jwt.JwtAuthenticationFilter;
+import org.gig.withpet.core.config.security.UserDetailsServiceImpl;
+import org.gig.withpet.core.domain.user.member.AuthService;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -20,7 +26,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+//    private final AuthService authService;
 
+//    @Override
+//    public UserDetailsService userDetailsService() {
+//        return new UserDetailsServiceImpl(authService);
+//    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService());
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -37,8 +59,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/api/v1/v-world/**",
                         "/api/v1/attachment/**",
                         "/api/v1/member/login",
-                        "/api/v1/member",
-                        "/api/v1/member/add-info",
+                        "/api/v1/member/**",
+                        "/api/v1/member/sign-up",
                         "/api/v1/member/coord/address",
                         "/api/v1/communities",
                         "/api/v1/health-check")

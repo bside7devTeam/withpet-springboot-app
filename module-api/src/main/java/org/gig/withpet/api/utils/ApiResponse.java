@@ -25,6 +25,11 @@ public class ApiResponse {
         this.data = data;
     }
 
+    public ApiResponse(HttpStatus status, String message) {
+        this.status = status;
+        this.message = message;
+    }
+
     public static ApiResponse OK() {
         return new ApiResponse(HttpStatus.OK, null);
     }
@@ -41,7 +46,8 @@ public class ApiResponse {
     public static ApiResponse ERROR(HttpStatus status, Object data, String message) {
         return new ApiResponse(status, data, message);
     }
-    public static ApiResponse ERROR(HttpStatus status, Object data) {
-        return new ApiResponse(status, data);
+
+    public static ApiResponse ERROR(HttpStatus status, String message) {
+        return new ApiResponse(status, message);
     }
 }

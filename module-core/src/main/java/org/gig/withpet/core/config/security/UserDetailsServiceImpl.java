@@ -7,6 +7,7 @@ import org.gig.withpet.core.domain.user.LoginUser;
 import org.gig.withpet.core.domain.user.UserService;
 import org.gig.withpet.core.domain.user.UserType;
 import org.gig.withpet.core.domain.user.administrator.AdministratorService;
+import org.gig.withpet.core.domain.user.member.AuthService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +34,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         userService = administratorService;
         userType = UserType.ADMIN;
     }
+
+//    public UserDetailsServiceImpl(AuthService authService) {
+//        userService = authService;
+//        userType = UserType.USER;
+//    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

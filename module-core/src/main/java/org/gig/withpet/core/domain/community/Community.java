@@ -7,8 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
-import org.gig.withpet.core.domain.common.DefaultEntity;
 import org.gig.withpet.core.domain.common.types.YnType;
+import org.gig.withpet.core.domain.community.types.CategoryType;
 import org.gig.withpet.core.domain.user.member.Member;
 
 import javax.persistence.*;

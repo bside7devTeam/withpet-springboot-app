@@ -2,14 +2,19 @@ package org.gig.withpet.core.domain.user.member;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.gig.withpet.core.domain.activityAreas.ActivityAreas;
+import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.user.AbstractUser;
 import org.gig.withpet.core.domain.user.UserStatus;
-import org.gig.withpet.core.domain.user.member.dto.AddInfoRequestDto;
+import org.gig.withpet.core.domain.user.member.dto.SignUpRequest;
+import org.gig.withpet.core.domain.user.member.types.SnsType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,10 +38,6 @@ public class Member extends AbstractUser {
 
     private String name;
 
-    @Builder.Default
-    @Enumerated(EnumType.STRING)
-    private RoleType roleType = RoleType.USER;
-
     @Enumerated(EnumType.STRING)
     private SnsType snsType;
 
@@ -45,7 +46,7 @@ public class Member extends AbstractUser {
     @Column(length = 1000)
     private String profileImage;
 
-    private LocalDateTime ageConfirmAt;
+    private LocalDateTime ageOver14ConfirmAt;
 
     private LocalDateTime policyAgreementAt;
 
@@ -57,31 +58,35 @@ public class Member extends AbstractUser {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Set<MemberRole> memberRoles = new HashSet<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<ActivityAreas> activityAreas = new ArrayList<>();
 
-    public static Member signUp(String uid, String email, String password, SnsType snsType) {
+    public static Member signUp(SignUpRequest request, String password) {
         return Member.builder()
-                .uid(uid)
+                .uid(request.getUid())
                 .password(password)
-                .username(email)
-                .email(email)
-                .snsType(snsType)
+                .username(request.getEmail())
+                .email(request.getEmail())
+                .nickName(request.getNickname())
+                .profileImage(request.getProfileImage())
+                .snsType(request.getSnsType())
                 .status(UserStatus.NORMAL)
-                .policyAgreementAt(LocalDateTime.now())
-                .marketingAgreementAt(LocalDateTime.now())
-                .privacyAgreementAt(LocalDateTime.now())
-                .ageConfirmAt(LocalDateTime.now())
+                .policyAgreementAt(request.getAgreePolicyYn() == YnType.Y ? LocalDateTime.now() : null)
+                .marketingAgreementAt(request.getAgreeMarketingYn() == YnType.Y ? LocalDateTime.now() : null)
+                .privacyAgreementAt(request.getAgreePrivacyYn() == YnType.Y ? LocalDateTime.now() : null)
+                .ageOver14ConfirmAt(request.getAgreeOver14Yn() == YnType.Y ? LocalDateTime.now() : null)
                 .joinedAt(LocalDateTime.now())
                 .build();
-    }
-
-    public void updateAddInfo(AddInfoRequestDto addInfoRequestDto) {
-        this.nickName = addInfoRequestDto.getNickname();
-        this.profileImage = addInfoRequestDto.getProfileImage();
     }
 
     @Override
     public Set<Role> getRoles() {
         return memberRoles.stream().map(MemberRole::getRole).collect(Collectors.toSet());
+    }
+
+    public List<String> getRoleNames() {
+        return memberRoles.stream().map(MemberRole::getMemberRoleName).collect(Collectors.toList());
     }
 
     public void addRole(MemberRole role) {
@@ -98,5 +103,13 @@ public class Member extends AbstractUser {
 
     public boolean compareToken(String token) {
         return this.refreshToken.equals(token);
+    }
+
+    public List<Long> getEmdIds() {
+        List<Long> emdAreaIds = new ArrayList<>();
+        for (ActivityAreas area : this.activityAreas) {
+            emdAreaIds.add(area.getEmdArea().getId());
+        }
+        return emdAreaIds;
     }
 }
