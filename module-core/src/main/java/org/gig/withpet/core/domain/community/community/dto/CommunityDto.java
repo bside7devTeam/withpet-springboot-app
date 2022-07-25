@@ -1,9 +1,9 @@
-package org.gig.withpet.core.domain.community.dto;
+package org.gig.withpet.core.domain.community.community.dto;
 
 import lombok.Data;
 import org.gig.withpet.core.domain.common.types.YnType;
-import org.gig.withpet.core.domain.community.types.CategoryType;
-import org.gig.withpet.core.domain.community.Community;
+import org.gig.withpet.core.domain.community.community.types.CategoryType;
+import org.gig.withpet.core.domain.community.community.Community;
 import org.gig.withpet.core.domain.user.member.Member;
 
 import java.time.LocalDateTime;

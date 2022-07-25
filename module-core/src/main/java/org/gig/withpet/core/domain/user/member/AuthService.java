@@ -3,6 +3,7 @@ package org.gig.withpet.core.domain.user.member;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.activityAreas.ActivityAreasService;
 import org.gig.withpet.core.domain.common.types.YnType;
+import org.gig.withpet.core.domain.exception.ForbiddenException;
 import org.gig.withpet.core.domain.exception.NotFoundException;
 import org.gig.withpet.core.domain.role.RoleService;
 import org.gig.withpet.core.domain.user.LoginUser;
@@ -112,7 +113,7 @@ public class AuthService {
             User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Optional<Member> findMember = memberRepository.findByUid(principal.getUsername());
             if (findMember.isEmpty()) {
-                return null;
+                throw new ForbiddenException("접근 권한이 없습니다.");
             }
             return findMember.get();
         }

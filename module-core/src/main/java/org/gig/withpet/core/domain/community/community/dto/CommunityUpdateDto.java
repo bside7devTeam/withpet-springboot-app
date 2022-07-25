@@ -1,14 +1,13 @@
-package org.gig.withpet.core.domain.community.dto;
+package org.gig.withpet.core.domain.community.community.dto;
 
 import lombok.Data;
 import org.gig.withpet.core.domain.common.image.ImageModel;
-import org.gig.withpet.core.domain.community.types.CategoryType;
 
 import java.util.List;
 
 @Data
-public class CommunityCreateDto {
-    private CategoryType categoryType;
+public class CommunityUpdateDto {
+    private Long postId;
     private String title;
     private String content;
     private List<ImageModel> images;

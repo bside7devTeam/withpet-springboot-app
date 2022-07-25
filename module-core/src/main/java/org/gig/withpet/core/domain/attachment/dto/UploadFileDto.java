@@ -35,5 +35,6 @@ public class UploadFileDto {
     @AllArgsConstructor
     public static class Response {
         private String fullPath;
+        private Long id;
     }
 }

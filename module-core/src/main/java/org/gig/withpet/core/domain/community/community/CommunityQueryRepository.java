@@ -1,12 +1,11 @@
-package org.gig.withpet.core.domain.community;
+package org.gig.withpet.core.domain.community.community;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.activityAreas.ActivityAreas;
 import org.gig.withpet.core.domain.common.types.YnType;
-import org.gig.withpet.core.domain.community.types.CategoryType;
+import org.gig.withpet.core.domain.community.community.types.CategoryType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

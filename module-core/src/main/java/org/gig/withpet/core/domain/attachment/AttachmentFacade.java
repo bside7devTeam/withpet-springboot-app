@@ -32,8 +32,8 @@ public class AttachmentFacade {
         String filePath = folderName + File.separator + foldDlv + "/profile";
 
         UploadFileDto uploadFileDto = imageManagerService.createAndUploadFile(multipartFile, filePath);
-        attachmentService.create(uploadFileDto, usageType);
+        Long id = attachmentService.create(uploadFileDto, usageType);
 
-        return new UploadFileDto.Response(uploadFileDto.getFullPath());
+        return new UploadFileDto.Response(uploadFileDto.getFullPath(), id);
     }
 }

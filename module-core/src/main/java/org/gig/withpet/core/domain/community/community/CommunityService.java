@@ -1,10 +1,14 @@
-package org.gig.withpet.core.domain.community;
+package org.gig.withpet.core.domain.community.community;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.activityAreas.ActivityAreas;
-import org.gig.withpet.core.domain.community.dto.CommunityCreateDto;
-import org.gig.withpet.core.domain.community.dto.CommunityUpdateDto;
-import org.gig.withpet.core.domain.community.types.CategoryType;
+import org.gig.withpet.core.domain.attachment.Attachment;
+import org.gig.withpet.core.domain.attachment.AttachmentService;
+import org.gig.withpet.core.domain.common.image.ImageModel;
+import org.gig.withpet.core.domain.community.community.dto.CommunityCreateDto;
+import org.gig.withpet.core.domain.community.community.dto.CommunityUpdateDto;
+import org.gig.withpet.core.domain.community.community.types.CategoryType;
+import org.gig.withpet.core.domain.community.communityImage.CommunityAttachment;
+import org.gig.withpet.core.domain.community.communityImage.CommunityAttachmentService;
 import org.gig.withpet.core.domain.user.member.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +24,8 @@ public class CommunityService {
 
     private final CommunityRepository communityRepository;
     private final CommunityQueryRepository queryRepository;
+    private final AttachmentService attachmentService;
+    private final CommunityAttachmentService communityAttachmentService;
 
     @Transactional(readOnly = true)
     public Page<Community> getPostListByCategoryType(CategoryType categoryType, Pageable pageable) {
@@ -31,7 +37,9 @@ public class CommunityService {
         return queryRepository.getCommunityMyTownPage(categoryType, emdIds, pageable);
     }
 
+    @Transactional
     public Community create(Member writer, CommunityCreateDto communityCreateDto) {
+
         Community community = Community.Of(
                 communityCreateDto.getCategoryType(),
                 writer,
@@ -39,6 +47,13 @@ public class CommunityService {
                 communityCreateDto.getContent()
         );
 
+        communityRepository.save(community);
+
+        for (ImageModel image : communityCreateDto.getImages()) {
+            Attachment attachment = attachmentService.findById(image.getId());
+            CommunityAttachment communityAttachment = CommunityAttachment.addAttachment(community, attachment, image.getFullPath());
+            communityAttachmentService.create(communityAttachment);
+        }
 
         return communityRepository.save(community);
     }
