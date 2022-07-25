@@ -53,6 +53,7 @@ public class CommunityService {
             Attachment attachment = attachmentService.findById(image.getId());
             CommunityAttachment communityAttachment = CommunityAttachment.addAttachment(community, attachment, image.getFullPath());
             communityAttachmentService.create(communityAttachment);
+            community.addAttachment(communityAttachment);
         }
 
         return communityRepository.save(community);

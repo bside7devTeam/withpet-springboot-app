@@ -15,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.gig.withpet.core.domain.activityAreas.QActivityAreas.activityAreas;
-import static org.gig.withpet.core.domain.community.QCommunity.community;
+
+import static org.gig.withpet.core.domain.community.community.QCommunity.community;
 import static org.gig.withpet.core.domain.user.member.QMember.member;
 
 /**
