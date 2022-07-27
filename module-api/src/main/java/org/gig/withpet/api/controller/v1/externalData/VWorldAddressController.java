@@ -1,4 +1,4 @@
-package org.gig.withpet.api.controller.v1;
+package org.gig.withpet.api.controller.v1.externalData;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -23,7 +23,7 @@ import java.util.Map;
 @Api(value = "PDAddressController V1")
 @RequestMapping("/v-world/address")
 @RequiredArgsConstructor
-public class PDAddressController {
+public class VWorldAddressController {
 
     private final VWorldApiService vWorldApiService;
 

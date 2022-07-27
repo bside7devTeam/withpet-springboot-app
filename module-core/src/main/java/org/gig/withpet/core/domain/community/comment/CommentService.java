@@ -12,6 +12,8 @@ import org.gig.withpet.core.domain.community.community.Community;
 import org.gig.withpet.core.domain.community.communityAttachment.CommunityAttachment;
 import org.gig.withpet.core.domain.exception.NotFoundException;
 import org.gig.withpet.core.domain.user.member.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class CommentService {
 
     private final AttachmentService attachmentService;
     private final CommunityCommentRepository commentRepository;
+    private final CommunityCommentQueryRepository queryRepository;
     private final CommunityCommentAttachmentService commentAttachmentService;
 
     @Transactional
@@ -47,6 +50,26 @@ public class CommentService {
         commentRepository.save(comment);
         createCommentImages(comment, request.getImages());
         return comment;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CommunityComment> getCommentPageList(Long communityId, PageRequest pageable) {
+        return queryRepository.getCommentPage(communityId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CommunityComment> getChildCommentPageList(Long communityId, Long parentId, PageRequest pageable) {
+        return queryRepository.getChildCommentPage(communityId, parentId, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public long getTotalCommentCount(Long communityId) {
+        return queryRepository.getTotalCommentsCount(communityId);
+    }
+
+    @Transactional(readOnly = true)
+    public long getChildCommentCount(Long parentId) {
+        return queryRepository.getChildCommentCount(parentId);
     }
 
     private void createCommentImages(CommunityComment comment, List<ImageModel> images) {

@@ -23,6 +23,7 @@ public class CommentDto {
     private Long communityId;
     private User writer;
     private List<String> images;
+    private long childCommentCount;
 
     public CommentDto(CommunityComment comment) {
         this.comment = comment.getComment();
@@ -31,6 +32,16 @@ public class CommentDto {
         this.communityId = comment.getCommunity().getId();
         this.writer = new User(comment.getWriter());
         this.images = comment.getCommentAttachments().stream().map(CommunityCommentAttachment::getFullPath).collect(Collectors.toList());
+    }
+
+    public CommentDto(CommunityComment comment, long childCommentCount) {
+        this.comment = comment.getComment();
+        this.commentId = comment.getId();
+        this.parentId = comment.getParent() != null ? comment.getParent().getId() : null;
+        this.communityId = comment.getCommunity().getId();
+        this.writer = new User(comment.getWriter());
+        this.images = comment.getCommentAttachments().stream().map(CommunityCommentAttachment::getFullPath).collect(Collectors.toList());
+        this.childCommentCount = childCommentCount;
     }
 
     public static class User {
