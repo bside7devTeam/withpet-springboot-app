@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.community.types;
+package org.gig.withpet.core.domain.community.community.types;
 
 /**
  * @author : JAKE

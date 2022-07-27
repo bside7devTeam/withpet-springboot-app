@@ -1,13 +1,12 @@
-package org.gig.withpet.core.domain.community;
+package org.gig.withpet.core.domain.community.community;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.activityAreas.ActivityAreas;
 import org.gig.withpet.core.domain.common.dto.response.PageResponseDto;
-import org.gig.withpet.core.domain.community.dto.CommunityCreateDto;
-import org.gig.withpet.core.domain.community.dto.CommunityDto;
-import org.gig.withpet.core.domain.community.dto.CommunityUpdateDto;
-import org.gig.withpet.core.domain.community.types.CategoryType;
-import org.gig.withpet.core.domain.community.types.CommunitySearchType;
+import org.gig.withpet.core.domain.community.community.dto.CommunityCreateDto;
+import org.gig.withpet.core.domain.community.community.dto.CommunityDto;
+import org.gig.withpet.core.domain.community.community.dto.CommunityUpdateDto;
+import org.gig.withpet.core.domain.community.community.types.CategoryType;
+import org.gig.withpet.core.domain.community.community.types.CommunitySearchType;
 import org.gig.withpet.core.domain.user.member.Member;
 import org.gig.withpet.core.domain.user.member.AuthService;
 import org.springframework.data.domain.Page;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,9 +24,11 @@ public class CommunityFacade {
     private final AuthService authService;
     private final CommunityService communityService;
 
-    public CommunityDto create(String uid, CommunityCreateDto postCreateDto) {
-        Member writer = authService.getUser(uid);
-        return new CommunityDto(communityService.create(writer, postCreateDto));
+    public CommunityDto create(CommunityCreateDto postCreateDto) {
+        Member writer = authService.getLoginUser();
+        Community newCommunity = communityService.create(writer, postCreateDto);
+
+        return new CommunityDto(newCommunity);
     }
 
     public CommunityDto update(String uid, CommunityUpdateDto postUpdateDto) {

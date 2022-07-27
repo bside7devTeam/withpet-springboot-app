@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.attachment;
+package org.gig.withpet.core.domain.attachment.types;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.community;
+package org.gig.withpet.core.domain.community.community;
 
 
 import lombok.AccessLevel;
@@ -8,10 +8,13 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 import org.gig.withpet.core.domain.common.types.YnType;
-import org.gig.withpet.core.domain.community.types.CategoryType;
+import org.gig.withpet.core.domain.community.community.types.CategoryType;
+import org.gig.withpet.core.domain.community.communityImage.CommunityAttachment;
 import org.gig.withpet.core.domain.user.member.Member;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @SuperBuilder
@@ -42,6 +45,11 @@ public class Community extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Member writer;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "community", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<CommunityAttachment> communityAttachments = new ArrayList<>();
+
 
     @Builder
     public Community(CategoryType categoryType, String title, String content, Boolean deleted, Member writer) {
@@ -75,4 +83,9 @@ public class Community extends BaseTimeEntity {
 
         this.deleteYn = YnType.Y;
     }
+
+    public void addAttachment(CommunityAttachment communityAttachment) {
+        this.communityAttachments.add(communityAttachment);
+    }
+
 }

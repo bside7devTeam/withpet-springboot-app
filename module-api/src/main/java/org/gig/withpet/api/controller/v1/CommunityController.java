@@ -5,12 +5,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.api.utils.ApiResponse;
 import org.gig.withpet.core.domain.common.dto.response.PageResponseDto;
-import org.gig.withpet.core.domain.community.types.CategoryType;
-import org.gig.withpet.core.domain.community.dto.CommunityCreateDto;
-import org.gig.withpet.core.domain.community.dto.CommunityDto;
-import org.gig.withpet.core.domain.community.dto.CommunityUpdateDto;
-import org.gig.withpet.core.domain.community.CommunityFacade;
-import org.gig.withpet.core.domain.community.types.CommunitySearchType;
+import org.gig.withpet.core.domain.community.community.types.CategoryType;
+import org.gig.withpet.core.domain.community.community.dto.CommunityCreateDto;
+import org.gig.withpet.core.domain.community.community.dto.CommunityDto;
+import org.gig.withpet.core.domain.community.community.dto.CommunityUpdateDto;
+import org.gig.withpet.core.domain.community.community.CommunityFacade;
+import org.gig.withpet.core.domain.community.community.types.CommunitySearchType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,9 +38,8 @@ public class CommunityController {
 
     @ApiOperation(value = "게시판 생성")
     @PostMapping
-    public ResponseEntity<ApiResponse> create(@RequestBody CommunityCreateDto createDto,
-                                 Principal principal) {
-        CommunityDto community = communityFacade.create(principal.getName(), createDto);
+    public ResponseEntity<ApiResponse> create(@RequestBody CommunityCreateDto createDto) {
+        CommunityDto community = communityFacade.create(createDto);
         return new ResponseEntity<>(ApiResponse.OK(community), HttpStatus.OK);
     }
 
@@ -63,7 +62,6 @@ public class CommunityController {
     @GetMapping("/{communityId}")
     public ResponseEntity<ApiResponse> getPost(@PathVariable Long communityId) {
         CommunityDto community = communityFacade.getCommunity(communityId);
-
         return new ResponseEntity<>(ApiResponse.OK(community), HttpStatus.OK);
     }
 }

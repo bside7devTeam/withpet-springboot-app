@@ -1,8 +1,12 @@
 package org.gig.withpet.core.domain.common.image;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-@Data
+@Getter
+@AllArgsConstructor
 public class ImageModel {
 
+    private String fullPath;
+    private Long id;
 }
