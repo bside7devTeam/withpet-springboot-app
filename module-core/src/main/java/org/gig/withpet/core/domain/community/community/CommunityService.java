@@ -5,10 +5,12 @@ import org.gig.withpet.core.domain.attachment.Attachment;
 import org.gig.withpet.core.domain.attachment.AttachmentService;
 import org.gig.withpet.core.domain.common.image.ImageModel;
 import org.gig.withpet.core.domain.community.community.dto.CommunityCreateDto;
+import org.gig.withpet.core.domain.community.community.dto.CommunityDto;
 import org.gig.withpet.core.domain.community.community.dto.CommunityUpdateDto;
 import org.gig.withpet.core.domain.community.community.types.CategoryType;
 import org.gig.withpet.core.domain.community.communityImage.CommunityAttachment;
 import org.gig.withpet.core.domain.community.communityImage.CommunityAttachmentService;
+import org.gig.withpet.core.domain.exception.NotFoundException;
 import org.gig.withpet.core.domain.user.member.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @RequiredArgsConstructor
@@ -72,8 +75,12 @@ public class CommunityService {
     }
 
     @Transactional(readOnly = true)
-    public Community getCommunity(Long postId) {
-        return communityRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException());
+    public Community getCommunity(Long communityId) {
+        Optional<Community> findCommunity = queryRepository.getDetail(communityId);
+        if (findCommunity.isEmpty()) {
+            throw new NotFoundException("해당 게시글을 찾을 수 없습니다.");
+        }
+
+        return findCommunity.get();
     }
 }

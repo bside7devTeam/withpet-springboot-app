@@ -62,7 +62,6 @@ public class CommunityController {
     @GetMapping("/{communityId}")
     public ResponseEntity<ApiResponse> getPost(@PathVariable Long communityId) {
         CommunityDto community = communityFacade.getCommunity(communityId);
-
         return new ResponseEntity<>(ApiResponse.OK(community), HttpStatus.OK);
     }
 }

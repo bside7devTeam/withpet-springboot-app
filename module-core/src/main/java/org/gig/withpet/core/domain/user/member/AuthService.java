@@ -13,6 +13,7 @@ import org.gig.withpet.core.domain.user.member.dto.MemberDto;
 import org.gig.withpet.core.domain.user.member.dto.SignInResponse;
 import org.gig.withpet.core.domain.user.member.dto.SignUpRequest;
 import org.gig.withpet.core.domain.user.member.dto.SignUpResponse;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -109,11 +110,15 @@ public class AuthService {
     @Transactional(readOnly = true)
     public Member getLoginUser() {
         if (SecurityContextHolder.getContext() != null) {
-            if (SecurityContextHolder.getContext().getAuthentication() == null) return null;
-            User principal = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || authentication.getPrincipal().equals("anonymousUser")){
+                throw new ForbiddenException("접근 권한이 없습니다.");
+            }
+            User principal = (User) authentication.getPrincipal();
             Optional<Member> findMember = memberRepository.findByUid(principal.getUsername());
             if (findMember.isEmpty()) {
-                throw new ForbiddenException("접근 권한이 없습니다.");
+                throw new NotFoundException("회원 정보가 없습니다.");
             }
             return findMember.get();
         }
