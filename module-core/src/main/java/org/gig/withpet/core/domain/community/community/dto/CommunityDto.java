@@ -27,18 +27,6 @@ public class CommunityDto {
     private User writer;
     private List<String> images;
 
-    public static class User {
-        public Long userId;
-        public String name;
-        public String thumbnail;
-
-        public User(Member member) {
-            this.userId = member.getId();
-            this.name = member.getNickName();
-            this.thumbnail = member.getProfileImage();
-        }
-    }
-
     public CommunityDto(Community community) {
         this.communityId = community.getId();
         this.categoryType = community.getCategoryType();
@@ -50,5 +38,17 @@ public class CommunityDto {
         this.likeYn = YnType.N; //TODO
         this.writer = new User(community.getWriter());
         this.images = community.getCommunityAttachments().stream().map(CommunityAttachment::getFullPath).collect(Collectors.toList());
+    }
+
+    public static class User {
+        public Long userId;
+        public String name;
+        public String thumbnail;
+
+        public User(Member member) {
+            this.userId = member.getId();
+            this.name = member.getNickName();
+            this.thumbnail = member.getProfileImage();
+        }
     }
 }

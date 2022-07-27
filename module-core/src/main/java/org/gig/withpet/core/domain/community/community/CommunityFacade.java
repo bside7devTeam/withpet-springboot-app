@@ -37,15 +37,21 @@ public class CommunityFacade {
         return new CommunityDto(communityService.update(modifier, postUpdateDto));
     }
 
-    public void delete(Long postId) {
+    public void delete(Long communityId) {
         Member deleter = authService.getLoginUser();
-        communityService.delete(deleter, postId);
+        communityService.delete(deleter, communityId);
     }
 
-    public CommunityDto getCommunity(Long postId) {
-        Community community = communityService.getCommunity(postId);
+    public CommunityDto getCommunityDto(Long communityId) {
+        Community community = communityService.getCommunity(communityId);
         return new CommunityDto(community);
     }
+
+    @Transactional(readOnly = true)
+    public Community getCommunity(Long communityId) {
+        return communityService.getCommunity(communityId);
+    }
+
 
     @Transactional(readOnly = true)
     public PageResponseDto<CommunityDto> getCommunityPageList(CommunitySearchType searchType, CategoryType categoryType, int page, int size) {
