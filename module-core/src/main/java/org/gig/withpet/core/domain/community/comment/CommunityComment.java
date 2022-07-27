@@ -7,8 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 import org.gig.withpet.core.domain.common.types.YnType;
+import org.gig.withpet.core.domain.community.commentAttachment.CommunityCommentAttachment;
 import org.gig.withpet.core.domain.community.community.Community;
 import org.gig.withpet.core.domain.community.community.types.CategoryType;
+import org.gig.withpet.core.domain.community.communityAttachment.CommunityAttachment;
 import org.gig.withpet.core.domain.user.member.Member;
 
 import javax.persistence.*;
@@ -52,6 +54,10 @@ public class CommunityComment extends BaseTimeEntity {
     @OneToMany(mappedBy = "parent", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private List<CommunityComment> child = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<CommunityCommentAttachment> commentAttachments = new ArrayList<>();
+
     public static CommunityComment create(String comment, Community community, Member writer) {
         return CommunityComment.builder()
                 .comment(comment)
@@ -72,5 +78,9 @@ public class CommunityComment extends BaseTimeEntity {
     public void addParent(CommunityComment parent) {
         this.parent = parent;
         parent.getChild().add(this);
+    }
+
+    public void addAttachment(CommunityCommentAttachment communityAttachment) {
+        this.commentAttachments.add(communityAttachment);
     }
 }

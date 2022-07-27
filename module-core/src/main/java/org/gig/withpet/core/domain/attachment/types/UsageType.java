@@ -12,7 +12,8 @@ import lombok.Getter;
 public enum UsageType {
 
     Profile("profile", "프로필 이미지"),
-    Community("community", "커뮤니티 이미지");
+    Community("community", "커뮤니티 이미지"),
+    CommunityComment("community-comment", "커뮤니티 댓글 이미지");
 
     final private String type;
     final private String description;

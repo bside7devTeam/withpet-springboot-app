@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.community.communityImage;
+package org.gig.withpet.core.domain.community.communityAttachment;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

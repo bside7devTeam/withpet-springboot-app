@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.community.community.types.CategoryType;
-import org.gig.withpet.core.domain.community.communityImage.CommunityAttachment;
+import org.gig.withpet.core.domain.community.communityAttachment.CommunityAttachment;
 import org.gig.withpet.core.domain.user.member.Member;
 
 import javax.persistence.*;

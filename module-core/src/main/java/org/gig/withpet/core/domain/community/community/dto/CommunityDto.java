@@ -1,16 +1,13 @@
 package org.gig.withpet.core.domain.community.community.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.community.community.types.CategoryType;
 import org.gig.withpet.core.domain.community.community.Community;
-import org.gig.withpet.core.domain.community.communityImage.CommunityAttachment;
+import org.gig.withpet.core.domain.community.communityAttachment.CommunityAttachment;
 import org.gig.withpet.core.domain.user.member.Member;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

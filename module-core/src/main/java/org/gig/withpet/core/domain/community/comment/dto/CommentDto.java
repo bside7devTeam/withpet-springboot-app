@@ -2,11 +2,13 @@ package org.gig.withpet.core.domain.community.comment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.gig.withpet.core.domain.common.image.ImageModel;
 import org.gig.withpet.core.domain.community.comment.CommunityComment;
-import org.gig.withpet.core.domain.community.community.dto.CommunityDto;
+import org.gig.withpet.core.domain.community.commentAttachment.CommunityCommentAttachment;
 import org.gig.withpet.core.domain.user.member.Member;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author : JAKE
@@ -28,6 +30,7 @@ public class CommentDto {
         this.parentId = comment.getParent() != null ? comment.getParent().getId() : null;
         this.communityId = comment.getCommunity().getId();
         this.writer = new User(comment.getWriter());
+        this.images = comment.getCommentAttachments().stream().map(CommunityCommentAttachment::getFullPath).collect(Collectors.toList());
     }
 
     public static class User {
@@ -43,10 +46,12 @@ public class CommentDto {
     }
 
     @Getter
+    @AllArgsConstructor
     public static class Request {
         private String comment;
         private Long parentId;
         private Long communityId;
+        private List<ImageModel> images;
 
         public boolean hasParent() {
             return this.parentId != null;
