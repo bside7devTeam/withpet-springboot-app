@@ -9,9 +9,8 @@ import org.gig.withpet.core.domain.common.BaseTimeEntity;
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.community.commentAttachment.CommunityCommentAttachment;
 import org.gig.withpet.core.domain.community.community.Community;
-import org.gig.withpet.core.domain.community.community.types.CategoryType;
-import org.gig.withpet.core.domain.community.communityAttachment.CommunityAttachment;
 import org.gig.withpet.core.domain.user.member.Member;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -25,6 +24,7 @@ import java.util.List;
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Where(clause = "delete_yn='N'")
 public class CommunityComment extends BaseTimeEntity {
 
     @Id
@@ -54,6 +54,7 @@ public class CommunityComment extends BaseTimeEntity {
     @OneToMany(mappedBy = "parent", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     private List<CommunityComment> child = new ArrayList<>();
 
+
     @Builder.Default
     @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<CommunityCommentAttachment> commentAttachments = new ArrayList<>();
@@ -75,6 +76,10 @@ public class CommunityComment extends BaseTimeEntity {
                 .build();
     }
 
+    public void update(String comment) {
+        this.comment = comment;
+    }
+
     public void addParent(CommunityComment parent) {
         this.parent = parent;
         parent.getChild().add(this);
@@ -82,5 +87,17 @@ public class CommunityComment extends BaseTimeEntity {
 
     public void addAttachment(CommunityCommentAttachment communityAttachment) {
         this.commentAttachments.add(communityAttachment);
+    }
+
+    public boolean isOwner(String loginUId) {
+        return loginUId.equals(this.writer.getUid());
+    }
+
+    public boolean isCommunity(Long communityId) {
+        return communityId.equals(this.community.getId());
+    }
+
+    public void delete() {
+        this.deleteYn = YnType.Y;
     }
 }

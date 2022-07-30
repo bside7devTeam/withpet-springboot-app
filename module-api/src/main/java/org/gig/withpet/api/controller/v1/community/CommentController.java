@@ -51,11 +51,32 @@ public class CommentController {
 
 
     @ApiOperation(value = "댓글 생성")
-    @PostMapping("communities/comments")
-    public ResponseEntity<ApiResponse> create(@RequestBody CommentDto.Request request) {
-        CommentDto community = commentFacade.create(request);
+    @PostMapping("communities/{communityId}/comments")
+    public ResponseEntity<ApiResponse> create(
+            @PathVariable("communityId") Long communityId,
+            @RequestBody CommentDto.Request request) {
+        CommentDto community = commentFacade.create(request, communityId);
         return new ResponseEntity<>(ApiResponse.OK(community), HttpStatus.OK);
     }
 
+    @ApiOperation(value = "댓글 수정")
+    @PutMapping("/communities/{communityId}/comments/{commentId}")
+    public ResponseEntity<ApiResponse> update(
+            @PathVariable("communityId") Long communityId,
+            @PathVariable("commentId") Long commentId,
+            @RequestBody CommentDto.ModifyRequest request) {
+        CommentDto community = commentFacade.update(request, communityId, commentId);
+        return new ResponseEntity<>(ApiResponse.OK(community), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "게시판 삭제")
+    @DeleteMapping("/communities/{communityId}/comments/{commentId}")
+    public ResponseEntity<ApiResponse> delete(
+            @PathVariable("communityId") Long communityId,
+            @PathVariable("commentId") Long commentId
+    ) {
+        commentFacade.delete(communityId, commentId);
+        return new ResponseEntity<>(ApiResponse.OK(), HttpStatus.OK);
+    }
 
 }

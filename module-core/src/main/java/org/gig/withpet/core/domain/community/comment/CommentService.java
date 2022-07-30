@@ -10,6 +10,7 @@ import org.gig.withpet.core.domain.community.commentAttachment.CommunityCommentA
 import org.gig.withpet.core.domain.community.commentAttachment.CommunityCommentAttachmentService;
 import org.gig.withpet.core.domain.community.community.Community;
 import org.gig.withpet.core.domain.community.communityAttachment.CommunityAttachment;
+import org.gig.withpet.core.domain.exception.ForbiddenException;
 import org.gig.withpet.core.domain.exception.NotFoundException;
 import org.gig.withpet.core.domain.user.member.Member;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +43,7 @@ public class CommentService {
         return comment;
     }
 
+    @Transactional
     public CommunityComment createChild(CommentDto.Request request, Community community, Member writer) {
         Optional<CommunityComment> findParent = commentRepository.findByIdAndDeleteYn(request.getParentId(), YnType.N);
         if (findParent.isEmpty()) {
@@ -50,6 +53,48 @@ public class CommentService {
         commentRepository.save(comment);
         createCommentImages(comment, request.getImages());
         return comment;
+    }
+
+    @Transactional
+    public CommunityComment update(CommentDto.ModifyRequest request, Long commentId, Community community, Member loginUser) {
+        Optional<CommunityComment> findComment = commentRepository.findByIdAndDeleteYn(commentId, YnType.N);
+
+        if (findComment.isEmpty()) {
+            throw new NotFoundException("해당 댓글을 찾을 수 없습니다.");
+        }
+        CommunityComment comment = findComment.get();
+        if (!comment.isOwner(loginUser.getUid())) {
+            throw new ForbiddenException("댓글 수정 권한을 가지고 있지 않습니다.");
+        }
+        if (!comment.isCommunity(community.getId())) {
+            throw new InvalidParameterException("잘못된 요청입니다.");
+        }
+
+        comment.update(request.getComment());
+        commentRepository.save(comment);
+
+        commentAttachmentService.deleteAttachmentsByComment(comment);
+        createCommentImages(comment, request.getImages());
+
+        return comment;
+    }
+
+    @Transactional
+    public void delete(Long commentId, Community community, Member loginUser) {
+        Optional<CommunityComment> findComment = commentRepository.findByIdAndDeleteYn(commentId, YnType.N);
+
+        if (findComment.isEmpty()) {
+            throw new NotFoundException("해당 댓글을 찾을 수 없습니다.");
+        }
+        CommunityComment comment = findComment.get();
+        if (!comment.isOwner(loginUser.getUid())) {
+            throw new ForbiddenException("댓글 수정 권한을 가지고 있지 않습니다.");
+        }
+        if (!comment.isCommunity(community.getId())) {
+            throw new InvalidParameterException("잘못된 요청입니다.");
+        }
+
+        comment.delete();
     }
 
     @Transactional(readOnly = true)
@@ -73,6 +118,8 @@ public class CommentService {
     }
 
     private void createCommentImages(CommunityComment comment, List<ImageModel> images) {
+
+        comment.getCommentAttachments().clear();
 
         for (ImageModel image : images) {
             Attachment attachment = attachmentService.findById(image.getId());

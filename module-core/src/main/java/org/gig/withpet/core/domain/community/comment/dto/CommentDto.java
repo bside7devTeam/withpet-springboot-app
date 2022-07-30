@@ -44,6 +44,15 @@ public class CommentDto {
         this.childCommentCount = childCommentCount;
     }
 
+    public CommentDto(CommunityComment comment, List<CommunityCommentAttachment> attachments) {
+        this.comment = comment.getComment();
+        this.commentId = comment.getId();
+        this.parentId = comment.getParent() != null ? comment.getParent().getId() : null;
+        this.communityId = comment.getCommunity().getId();
+        this.writer = new User(comment.getWriter());
+        this.images = attachments.stream().map(CommunityCommentAttachment::getFullPath).collect(Collectors.toList());
+    }
+
     public static class User {
         public Long userId;
         public String name;
@@ -61,11 +70,21 @@ public class CommentDto {
     public static class Request {
         private String comment;
         private Long parentId;
-        private Long communityId;
         private List<ImageModel> images;
 
         public boolean hasParent() {
             return this.parentId != null;
+        }
+    }
+
+    @Getter
+    public static class ModifyRequest {
+        private String comment;
+        private List<ImageModel> images;
+
+        public ModifyRequest(String comment, List<ImageModel> images) {
+            this.comment = comment;
+            this.images = images;
         }
     }
 }

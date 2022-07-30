@@ -3,6 +3,8 @@ package org.gig.withpet.core.domain.community.comment;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.common.dto.response.PageResponseDto;
 import org.gig.withpet.core.domain.community.comment.dto.CommentDto;
+import org.gig.withpet.core.domain.community.commentAttachment.CommunityCommentAttachment;
+import org.gig.withpet.core.domain.community.commentAttachment.CommunityCommentAttachmentService;
 import org.gig.withpet.core.domain.community.community.Community;
 import org.gig.withpet.core.domain.community.community.CommunityFacade;
 import org.gig.withpet.core.domain.user.member.AuthService;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -25,6 +28,7 @@ public class CommentFacade {
     private final AuthService authService;
     private final CommunityFacade communityFacade;
     private final CommentService commentService;
+    private final CommunityCommentAttachmentService attachmentService;
 
     @Transactional(readOnly = true)
     public PageResponseDto<CommentDto> getCommentPageList(Long communityId, int page, int size) {
@@ -53,9 +57,9 @@ public class CommentFacade {
     }
 
     @Transactional
-    public CommentDto create(CommentDto.Request request) {
+    public CommentDto create(CommentDto.Request request, Long communityId) {
         Member writer = authService.getLoginUser();
-        Community community = communityFacade.getCommunity(request.getCommunityId());
+        Community community = communityFacade.getCommunity(communityId);
 
         CommunityComment comment = null;
         if (request.hasParent()) {
@@ -65,5 +69,20 @@ public class CommentFacade {
         }
 
         return new CommentDto(comment);
+    }
+
+    @Transactional
+    public CommentDto update(CommentDto.ModifyRequest request, Long communityId, Long commentId) {
+        Member writer = authService.getLoginUser();
+        Community community = communityFacade.getCommunity(communityId);
+        CommunityComment comment = commentService.update(request, commentId, community, writer);
+        return new CommentDto(comment);
+    }
+
+    @Transactional
+    public void delete(Long communityId, Long commentId) {
+        Member writer = authService.getLoginUser();
+        Community community = communityFacade.getCommunity(communityId);
+        commentService.delete(commentId, community, writer);
     }
 }

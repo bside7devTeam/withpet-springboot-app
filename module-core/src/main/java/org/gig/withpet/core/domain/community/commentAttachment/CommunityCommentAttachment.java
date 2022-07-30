@@ -1,12 +1,15 @@
 package org.gig.withpet.core.domain.community.commentAttachment;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.gig.withpet.core.domain.attachment.Attachment;
 import org.gig.withpet.core.domain.common.BaseTimeEntity;
+import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.community.comment.CommunityComment;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
@@ -18,6 +21,7 @@ import javax.persistence.*;
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@Where(clause = "delete_yn='N'")
 public class CommunityCommentAttachment extends BaseTimeEntity {
 
     @Id
@@ -33,7 +37,13 @@ public class CommunityCommentAttachment extends BaseTimeEntity {
     @JoinColumn(name = "attachment_id")
     private Attachment attachment;
 
+    @Column(length = 1024)
     private String fullPath;
+
+    @Builder.Default
+    @Column(columnDefinition = "varchar(2) default 'N'")
+    @Enumerated(EnumType.STRING)
+    private YnType deleteYn = YnType.N;
 
     public static CommunityCommentAttachment addAttachment(CommunityComment comment, Attachment attachment, String fullPath) {
         return CommunityCommentAttachment.builder()
@@ -41,5 +51,9 @@ public class CommunityCommentAttachment extends BaseTimeEntity {
                 .attachment(attachment)
                 .fullPath(fullPath)
                 .build();
+    }
+
+    public void delete() {
+        this.deleteYn = YnType.Y;
     }
 }
