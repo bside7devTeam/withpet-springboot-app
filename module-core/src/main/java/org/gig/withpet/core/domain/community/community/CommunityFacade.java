@@ -8,6 +8,7 @@ import org.gig.withpet.core.domain.community.community.dto.CommunityUpdateDto;
 import org.gig.withpet.core.domain.community.community.types.CategoryType;
 import org.gig.withpet.core.domain.community.community.types.CommunitySearchType;
 import org.gig.withpet.core.domain.community.communityLikeMember.CommunityLikeMemberService;
+import org.gig.withpet.core.domain.community.communityReport.CommunityReportService;
 import org.gig.withpet.core.domain.user.member.Member;
 import org.gig.withpet.core.domain.user.member.AuthService;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ public class CommunityFacade {
     private final AuthService authService;
     private final CommunityService communityService;
     private final CommunityLikeMemberService likeMemberService;
+    private final CommunityReportService reportService;
 
     public CommunityDto create(CommunityCreateDto communityCreateDto) {
         Member writer = authService.getLoginUser();
@@ -82,5 +84,12 @@ public class CommunityFacade {
         Community community = communityService.getCommunity(communityId);
         boolean isLiked = likeMemberService.like(community, writer);
         return new CommunityDto.LikeResponse(isLiked);
+    }
+
+    @Transactional
+    public void report(Long communityId, CommunityDto.ReportRequest request) {
+        Member loginUser = authService.getLoginUser();
+        Community community = communityService.getCommunity(communityId);
+        reportService.report(request, community, loginUser);
     }
 }
