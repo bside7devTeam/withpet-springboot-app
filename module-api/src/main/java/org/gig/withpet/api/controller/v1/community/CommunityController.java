@@ -67,9 +67,19 @@ public class CommunityController {
 
     @ApiOperation(value = "커뮤니티 좋아요")
     @PostMapping("/{communityId}/like")
-    public ResponseEntity<ApiResponse> likeCommunity(@PathVariable Long communityId) {
+    public ResponseEntity<ApiResponse> like(@PathVariable Long communityId) {
         CommunityDto.LikeResponse result = communityFacade.saveLikeCommunity(communityId);
         return new ResponseEntity<>(ApiResponse.OK(result), HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "커뮤니티 신고하기")
+    @PostMapping("/{communityId}/report")
+    public ResponseEntity<ApiResponse> report(
+            @PathVariable Long communityId,
+            @RequestBody CommunityDto.ReportRequest request
+    ) {
+        communityFacade.report(communityId, request);
+        return new ResponseEntity<>(ApiResponse.OK(), HttpStatus.OK);
     }
 
 }

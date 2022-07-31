@@ -1,11 +1,13 @@
 package org.gig.withpet.core.domain.community.community.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.community.community.types.CategoryType;
 import org.gig.withpet.core.domain.community.community.Community;
 import org.gig.withpet.core.domain.community.communityAttachment.CommunityAttachment;
+import org.gig.withpet.core.domain.community.community.types.ReportType;
 import org.gig.withpet.core.domain.user.member.Member;
 
 import java.time.LocalDateTime;
@@ -52,11 +54,17 @@ public class CommunityDto {
 
     @Getter
     public static class LikeResponse {
-
         private boolean isLiked;
 
         public LikeResponse(boolean isLiked) {
             this.isLiked = isLiked;
         }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class ReportRequest {
+        private ReportType reportType;
+        private String reportReason;
     }
 }
