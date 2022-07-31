@@ -28,7 +28,7 @@ public class UploadImageS3 {
     public String upload(File uploadFile, String filePath, String saveFileName) {
 
         AmazonS3 s3Client = getS3Client();
-        String fileName = filePath + "/" + saveFileName;
+        String fileName = filePath + File.separator + saveFileName;
         s3Client.putObject(new PutObjectRequest(s3Properties.getBucketName(), fileName, uploadFile)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
 

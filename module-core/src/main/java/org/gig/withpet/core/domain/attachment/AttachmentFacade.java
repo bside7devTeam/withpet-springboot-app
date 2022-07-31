@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 public class AttachmentFacade {
 
     private static final String formDataFileKey = "image";
-    private static final String folderName = "image";
+    private static final String fileType = "image";
 
     private final ImageManagerService imageManagerService;
     private final AttachmentService attachmentService;
@@ -29,7 +29,7 @@ public class AttachmentFacade {
     public UploadFileDto.Response upload(MultipartFile multipartFile, UsageType usageType) throws Exception {
 
         String foldDlv = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMM"));
-        String filePath = folderName + File.separator + foldDlv + "/profile";
+        String filePath = usageType.getType() + File.separator +  fileType + File.separator + foldDlv;
 
         UploadFileDto uploadFileDto = imageManagerService.createAndUploadFile(multipartFile, filePath);
         Long id = attachmentService.create(uploadFileDto, usageType);

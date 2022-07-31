@@ -1,4 +1,4 @@
-package org.gig.withpet.api.controller.v1;
+package org.gig.withpet.api.controller.v1.adoptAnimal;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;

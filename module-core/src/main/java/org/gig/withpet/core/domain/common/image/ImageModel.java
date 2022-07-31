@@ -6,7 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ImageModel {
-
     private String fullPath;
     private Long id;
 }

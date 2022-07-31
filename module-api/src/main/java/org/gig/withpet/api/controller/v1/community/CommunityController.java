@@ -1,4 +1,4 @@
-package org.gig.withpet.api.controller.v1;
+package org.gig.withpet.api.controller.v1.community;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -52,16 +52,16 @@ public class CommunityController {
     }
 
     @ApiOperation(value = "게시판 삭제")
-    @PostMapping("/{postId}/delete")
-    public ResponseEntity<ApiResponse> postDelete(@PathVariable Long postId) {
-        communityFacade.delete(postId);
+    @PostMapping("/{communityId}/delete")
+    public ResponseEntity<ApiResponse> communityDelete(@PathVariable Long communityId) {
+        communityFacade.delete(communityId);
         return new ResponseEntity<>(ApiResponse.OK(), HttpStatus.OK);
     }
 
     @ApiOperation(value = "게시판 조회")
     @GetMapping("/{communityId}")
     public ResponseEntity<ApiResponse> getPost(@PathVariable Long communityId) {
-        CommunityDto community = communityFacade.getCommunity(communityId);
+        CommunityDto community = communityFacade.getCommunityDto(communityId);
         return new ResponseEntity<>(ApiResponse.OK(community), HttpStatus.OK);
     }
 }

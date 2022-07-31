@@ -1,4 +1,4 @@
-package org.gig.withpet.api.controller.v1;
+package org.gig.withpet.api.controller.v1.externalData;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
