@@ -1,6 +1,7 @@
 package org.gig.withpet.core.domain.community.community.dto;
 
 import lombok.Data;
+import lombok.Getter;
 import org.gig.withpet.core.domain.common.types.YnType;
 import org.gig.withpet.core.domain.community.community.types.CategoryType;
 import org.gig.withpet.core.domain.community.community.Community;
@@ -46,6 +47,16 @@ public class CommunityDto {
             this.userId = member.getId();
             this.name = member.getNickName();
             this.thumbnail = member.getProfileImage();
+        }
+    }
+
+    @Getter
+    public static class LikeResponse {
+
+        private boolean isLiked;
+
+        public LikeResponse(boolean isLiked) {
+            this.isLiked = isLiked;
         }
     }
 }

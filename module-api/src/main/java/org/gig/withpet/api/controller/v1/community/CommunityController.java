@@ -60,8 +60,16 @@ public class CommunityController {
 
     @ApiOperation(value = "게시판 조회")
     @GetMapping("/{communityId}")
-    public ResponseEntity<ApiResponse> getPost(@PathVariable Long communityId) {
+    public ResponseEntity<ApiResponse> getCommunity(@PathVariable Long communityId) {
         CommunityDto community = communityFacade.getCommunityDto(communityId);
         return new ResponseEntity<>(ApiResponse.OK(community), HttpStatus.OK);
     }
+
+    @ApiOperation(value = "커뮤니티 좋아요")
+    @PostMapping("/{communityId}/like")
+    public ResponseEntity<ApiResponse> likeCommunity(@PathVariable Long communityId) {
+        CommunityDto.LikeResponse result = communityFacade.saveLikeCommunity(communityId);
+        return new ResponseEntity<>(ApiResponse.OK(result), HttpStatus.OK);
+    }
+
 }
