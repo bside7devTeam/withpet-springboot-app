@@ -7,6 +7,7 @@ import org.gig.withpet.core.domain.community.community.dto.CommunityDto;
 import org.gig.withpet.core.domain.community.community.dto.CommunityUpdateDto;
 import org.gig.withpet.core.domain.community.community.types.CategoryType;
 import org.gig.withpet.core.domain.community.community.types.CommunitySearchType;
+import org.gig.withpet.core.domain.community.communityLikeMember.CommunityLikeMemberService;
 import org.gig.withpet.core.domain.user.member.Member;
 import org.gig.withpet.core.domain.user.member.AuthService;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class CommunityFacade {
     private final AuthService authService;
     private final CommunityService communityService;
+    private final CommunityLikeMemberService likeMemberService;
 
     public CommunityDto create(CommunityCreateDto communityCreateDto) {
         Member writer = authService.getLoginUser();
@@ -72,5 +74,13 @@ public class CommunityFacade {
                 communities.getTotalElements(),
                 communities.getContent().stream().map(CommunityDto::new)
                         .collect(Collectors.toList()));
+    }
+
+    @Transactional
+    public CommunityDto.LikeResponse saveLikeCommunity(Long communityId) {
+        Member writer = authService.getLoginUser();
+        Community community = communityService.getCommunity(communityId);
+        boolean isLiked = likeMemberService.like(community, writer);
+        return new CommunityDto.LikeResponse(isLiked);
     }
 }

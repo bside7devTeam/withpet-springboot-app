@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * @author : JAKE
  * @date : 2022/07/27
  */
-@Api(value = "게시판 API V1")
+@Api(value = "게시판 댓글 API V1")
 @RequiredArgsConstructor
 @RequestMapping
 @RestController
