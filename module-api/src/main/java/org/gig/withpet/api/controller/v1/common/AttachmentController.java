@@ -1,4 +1,4 @@
-package org.gig.withpet.api.controller.v1;
+package org.gig.withpet.api.controller.v1.common;
 
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;

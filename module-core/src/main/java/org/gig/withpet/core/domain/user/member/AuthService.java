@@ -124,4 +124,9 @@ public class AuthService {
         }
         return null;
     }
+
+    @Transactional(readOnly = true)
+    public MemberDto.LoginDto getLoginUserDto() {
+        return new MemberDto.LoginDto(getLoginUser().getUid());
+    }
 }
