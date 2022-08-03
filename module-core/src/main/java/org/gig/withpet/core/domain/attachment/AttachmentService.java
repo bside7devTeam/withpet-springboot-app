@@ -3,7 +3,7 @@ package org.gig.withpet.core.domain.attachment;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.attachment.dto.UploadFileDto;
 import org.gig.withpet.core.domain.attachment.types.UsageType;
-import org.gig.withpet.core.domain.exception.NotFoundException;
+import org.gig.withpet.core.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

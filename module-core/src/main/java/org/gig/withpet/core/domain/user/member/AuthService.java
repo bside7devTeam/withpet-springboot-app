@@ -3,12 +3,10 @@ package org.gig.withpet.core.domain.user.member;
 import lombok.RequiredArgsConstructor;
 import org.gig.withpet.core.domain.activityAreas.ActivityAreasService;
 import org.gig.withpet.core.domain.common.types.YnType;
-import org.gig.withpet.core.domain.exception.ForbiddenException;
-import org.gig.withpet.core.domain.exception.NotFoundException;
+import org.gig.withpet.core.exception.ForbiddenException;
+import org.gig.withpet.core.exception.NotFoundException;
 import org.gig.withpet.core.domain.role.RoleService;
-import org.gig.withpet.core.domain.user.LoginUser;
 import org.gig.withpet.core.domain.user.UserStatus;
-import org.gig.withpet.core.domain.user.administrator.Administrator;
 import org.gig.withpet.core.domain.user.member.dto.MemberDto;
 import org.gig.withpet.core.domain.user.member.dto.SignInResponse;
 import org.gig.withpet.core.domain.user.member.dto.SignUpRequest;
@@ -16,10 +14,8 @@ import org.gig.withpet.core.domain.user.member.dto.SignUpResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,5 +119,10 @@ public class AuthService {
             return findMember.get();
         }
         return null;
+    }
+
+    @Transactional(readOnly = true)
+    public MemberDto.LoginDto getLoginUserDto() {
+        return new MemberDto.LoginDto(getLoginUser().getUid());
     }
 }

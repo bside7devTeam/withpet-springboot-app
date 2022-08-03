@@ -9,7 +9,7 @@ import org.gig.withpet.core.domain.community.community.dto.CommunityUpdateDto;
 import org.gig.withpet.core.domain.community.community.types.CategoryType;
 import org.gig.withpet.core.domain.community.communityAttachment.CommunityAttachment;
 import org.gig.withpet.core.domain.community.communityAttachment.CommunityAttachmentService;
-import org.gig.withpet.core.domain.exception.NotFoundException;
+import org.gig.withpet.core.exception.NotFoundException;
 import org.gig.withpet.core.domain.user.member.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

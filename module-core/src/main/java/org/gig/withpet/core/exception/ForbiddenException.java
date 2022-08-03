@@ -1,4 +1,4 @@
-package org.gig.withpet.core.domain.exception;
+package org.gig.withpet.core.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

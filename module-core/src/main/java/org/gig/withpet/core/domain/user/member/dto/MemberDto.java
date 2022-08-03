@@ -1,5 +1,6 @@
 package org.gig.withpet.core.domain.user.member.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.gig.withpet.core.domain.user.member.Member;
 import org.gig.withpet.core.domain.user.member.MemberRole;
@@ -19,5 +20,11 @@ public class MemberDto {
     public MemberDto(Member member) {
         this.uid = member.getUid();
         this.roles = member.getRoleNames();
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class LoginDto {
+        private String uid;
     }
 }

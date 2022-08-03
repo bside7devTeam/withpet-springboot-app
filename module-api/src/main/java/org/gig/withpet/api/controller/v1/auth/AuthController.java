@@ -1,4 +1,4 @@
-package org.gig.withpet.api.controller.v1;
+package org.gig.withpet.api.controller.v1.auth;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -7,7 +7,7 @@ import org.gig.withpet.api.config.jwt.JwtTokenProvider;
 import org.gig.withpet.api.utils.ApiResponse;
 import org.gig.withpet.core.data.kakaoMap.KakaoMapApiService;
 import org.gig.withpet.core.domain.common.dto.response.AddressResponse;
-import org.gig.withpet.core.domain.exception.NotFoundException;
+import org.gig.withpet.core.exception.NotFoundException;
 import org.gig.withpet.core.domain.user.member.dto.*;
 import org.gig.withpet.core.domain.user.member.AuthService;
 import org.springframework.http.HttpStatus;

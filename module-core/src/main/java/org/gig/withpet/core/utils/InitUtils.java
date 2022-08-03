@@ -1,7 +1,7 @@
 package org.gig.withpet.core.utils;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.exception.AlreadyEntity;
+import org.gig.withpet.core.exception.AlreadyEntity;
 import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.role.RoleRepository;
 import org.gig.withpet.core.domain.role.RoleService;
