@@ -1,7 +1,7 @@
 package org.gig.withpet.core.domain.role;
 
 import lombok.RequiredArgsConstructor;
-import org.gig.withpet.core.domain.exception.NotFoundException;
+import org.gig.withpet.core.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;

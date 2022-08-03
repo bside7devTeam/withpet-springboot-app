@@ -2,9 +2,9 @@ package org.gig.withpet.api.controller.v1.exceptionHandler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.gig.withpet.api.utils.ApiResponse;
-import org.gig.withpet.core.domain.exception.DuplicationException;
-import org.gig.withpet.core.domain.exception.ForbiddenException;
-import org.gig.withpet.core.domain.exception.NotFoundException;
+import org.gig.withpet.core.exception.DuplicationException;
+import org.gig.withpet.core.exception.ForbiddenException;
+import org.gig.withpet.core.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -2,7 +2,7 @@ package org.gig.withpet.core.domain.user.administrator;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.gig.withpet.core.domain.exception.NotFoundException;
+import org.gig.withpet.core.exception.NotFoundException;
 import org.gig.withpet.core.domain.role.Role;
 import org.gig.withpet.core.domain.role.RoleService;
 import org.gig.withpet.core.domain.user.UserService;
