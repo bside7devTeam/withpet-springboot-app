@@ -25,6 +25,11 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
+bootJar{
+    archivesBaseName = 'withpet'
+    archiveFileName = 'withpet-api.jar'
+}
+
 test {
     useJUnitPlatform()
 }
